@@ -1,0 +1,32 @@
+{
+    "no_systray": false,
+    "timeout": 0.5,
+    "recent_thr": 0.1,
+    "compr_cnt": 3,
+    "ignore": [],
+    "position": "fixed",
+    "persist": false,
+    "window": null,
+    "font_desc": "Bitstream Vera Sans 10",
+    "font_size": "small",
+    "font_color": "#ffffffffffff",
+    "bg_color": "#000000000000",
+    "opacity": 0.5,
+    "key_mode": "composed",
+    "bak_mode": "baked",
+    "mods_mode": "tux",
+    "mods_only": false,
+    "multiline": false,
+    "vis_shift": true,
+    "vis_space": true,
+    "geometry": [
+        789,
+        1009,
+        1092,
+        45
+    ],
+    "screen": 0,
+    "start_disabled": false,
+    "mouse": false,
+    "button_hide_duration": 0.5
+}

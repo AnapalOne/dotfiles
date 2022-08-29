@@ -1,0 +1,55 @@
+                                                                                           -------------------------------------------------
+                                                                                           ==             List of programs:               ==
+                                                                                           -------------------------------------------------
+
+       // terminal:                                                                           // games
+          htop                   -- program manager                                              osu-stable          -- rhythm game where you click the circles
+          ranger                 -- file manager                                                 nethack             -- terminal-based dungeon game
+          ncdu                   -- disk analyzer                                                pcsx2               -- Playstation 2 emulator
+          df                     -- system filesize                                              chocolate-doom      -- doom DOS emulator (see ~/.local/share/games to play a game)
+          iwctl                  -- internet manager                                             retroarch           -- front-end retro video game console emulator
+          pacman, yay            -- package manager (yay for AUR)                                pychess             -- chess emulator
+          subl, vim              -- text editor                                                  minecraft-launcher  -- minecraft
+          xprop                  -- shows information about a window
+          flameshot              -- equivilent to prntscr in Windows
+          ani-cli                -- anime                                                     // code compilers:
+          espeak                 -- text-to-speech                                               gcc               -- C compiler
+          youtube-dl             -- youtube video downloader                                     g++               -- C++ compiler
+          cmus                   -- music                                                        python            -- Python compiler
+          spt                    -- spotify in terminal
+          alsamixer              -- sound system
+          bc, qalc               -- calculator
+          bashmount		 -- removable media manager
+          trackma		 -- myanimelist in terminal
+          gpg 			 -- encryption
+          cava			 -- audio visualizer
+          asciiquarium           -- aquarium in ascii
+          7z                     -- extracting/archiving files
+          lp                     -- print file
+       
+       // programs (WinKey + R to run):
+          nitrogen               -- wallpaper                                      
+          firefox                -- browser
+          krita                  -- drawing software
+          gimp                   -- image editor/drawing software
+          mpv, vlc               -- video software
+          audacity               -- audio software
+          mirage                 -- image viewer
+          spotify                -- music
+          discord                -- text and voice app
+          github-desktop         -- github
+          libreoffice            -- office suite
+          nemo                   -- file manager
+          qbittorrent            -- torrenting
+          calibre                -- e-book reader
+          obs-studio             -- recorder
+          kdenlive	         -- video editor
+          deepin-calculator      -- calculator
+          balena-etcher-electron -- image flasher to removable media
+          steam                  -- game launcher and distribution program
+          system-config-printer  -- printer configuration tool and status applet
+
+                                                                                                Do pacman -Qe to list all installed packages.
+                                                                                        See ~/.xmonad/xmonad.hs under [Key Binds] for key combinations.
+                                                                                        
+                                                                                                             Press q to exit.
