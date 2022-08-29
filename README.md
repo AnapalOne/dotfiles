@@ -1,8 +1,7 @@
-# dotfiles
+## dotfiles
  Scripts and configuration files for programs I use. For safe keepings.
 
-## TODO
-<sub><sup>may be empty once i've exhausted ideas!</sup></sub>
+## TODO <sub><sup>(may be empty once i've exhausted ideas!)</sup></sub>
 
 - Replace lightdm placeholder background image
 
@@ -15,6 +14,7 @@
 - htop - task manager
 - lightdm - display manager 
 - neofetch - system information tool
+- pacman - package manager
 - picom - X11 compositor
 - ranger - file manager 
 - screenkey - displays keystrokes
@@ -22,11 +22,10 @@
 - xmonad - window manager
 - xmobar - status bar
 - system configs
-    - pacman - package manager
     - systemd
         - user
-            - *Includes service files.
+            - *Includes service files.*
 - other
     - *Miscellaneous stuff.
     - scripts 
-        - *Script files
+        - *Script files.*
