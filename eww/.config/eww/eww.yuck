@@ -13,6 +13,8 @@
         (music_reveal)
 )
 
+(deflisten notifications_listen :initial '{"show": false, "content": ""}' './scr/music_notifications.sh')
+
 (defwidget music []
     (box :class "music-widget-eww"
        :space-evenly false 
@@ -36,7 +38,7 @@
   )
 )
 
-(deflisten notifications_listen :initial '{"show": false, "content": ""}' './scr/music_notifications.sh')
+
 
 ;(defwidget music-button []
 ;  (button :onclick "playerctl play-pause" 
