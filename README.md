@@ -3,7 +3,6 @@
 
 ## TODO <sub><sup>(may be empty once i've exhausted ideas!)</sup></sub>
 
-- Replace lightdm placeholder background image
 - Revamp help file in .xmonad
 
 ## Includes
