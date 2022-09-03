@@ -9,7 +9,7 @@ print_notification() {
 
 lastsong=
 while true; do
-  currentsong=\"$(playerctl metadata --ignore-player=firefox,vlc,mpv --format "{{ artist }} - {{ title }}" 2> /dev/null)\"
+  currentsong=\"$(playerctl metadata --player=spotify,cmus,spotifyd --format "{{ artist }} - {{ title }}" 2> /dev/null)\"
 
   print_notification "" "false"
 
