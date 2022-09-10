@@ -108,14 +108,14 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // floating windows
     , ((modm .|. shiftMask, xK_Tab    ), withFocused toggleFloat)                      -- toggle between tiled and floating window
-    , ((modm,               xK_Up     ), withFocused (keysMoveWindow (0,-10)))         -- move floating window 
-    , ((modm,               xK_Down   ), withFocused (keysMoveWindow (0,10)))          -- 
-    , ((modm,               xK_Left   ), withFocused (keysMoveWindow (-10,0)))         --
-    , ((modm,               xK_Right  ), withFocused (keysMoveWindow (10,0)))          --
-    , ((modm .|. shiftMask, xK_Up     ), withFocused (keysResizeWindow (0,-10) (0,0))) -- resize floating window
-    , ((modm .|. shiftMask, xK_Down   ), withFocused (keysResizeWindow (0,10) (0,0)))  --
-    , ((modm .|. shiftMask, xK_Left   ), withFocused (keysResizeWindow (-10,0) (0,0))) --
-    , ((modm .|. shiftMask, xK_Right  ), withFocused (keysResizeWindow (10,0) (0,0)))  --
+    , ((modm,               xK_Up     ), withFocused (keysMoveWindow (0,-35)))         -- move floating window 
+    , ((modm,               xK_Down   ), withFocused (keysMoveWindow (0,35)))          -- 
+    , ((modm,               xK_Left   ), withFocused (keysMoveWindow (-35,0)))         --
+    , ((modm,               xK_Right  ), withFocused (keysMoveWindow (35,0)))          --
+    , ((modm .|. shiftMask, xK_Up     ), withFocused (keysResizeWindow (0,-30) (0,0))) -- resize floating window
+    , ((modm .|. shiftMask, xK_Down   ), withFocused (keysResizeWindow (0,30) (0,0)))  --
+    , ((modm .|. shiftMask, xK_Left   ), withFocused (keysResizeWindow (-30,0) (0,0))) --
+    , ((modm .|. shiftMask, xK_Right  ), withFocused (keysResizeWindow (30,0) (0,0)))  --
     , ((modm .|. controlMask, xK_Left ), withFocused $ snapMove L Nothing)             -- snap window relative to window or desktop
     , ((modm .|. controlMask, xK_Right), withFocused $ snapMove R Nothing)             --
     , ((modm .|. controlMask, xK_Up   ), withFocused $ snapMove U Nothing)             --
