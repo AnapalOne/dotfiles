@@ -1,7 +1,7 @@
 ## dotfiles
  Scripts and configuration files for programs I use for safe keepings.
 
-## TODO <sub><sup>(may be empty once i've exhausted ideas!)</sup></sub>
+## TODO <sub>(may be empty once i've exhausted ideas!)</sub>
 
 - Revamp help file in .xmonad
 
