@@ -9,19 +9,21 @@ print_notification() {
 
 lastsong=
 while true; do
-  currentsong=\"$(playerctl metadata --player=spotify,cmus,spotifyd --format "{{ artist }} - {{ title }}" 2> /dev/null)\"
-
-  print_notification "" "false"
-
-  if [[ "$currentsong" != "$lastsong" ]] && [[ "$currentsong" != "\"\"" ]]; then
-      line=$(echo $currentsong | sed 's/"//g')
-      print_notification "$line" "true"
-      kill "$pid" 2> /dev/null
-      (sleep 8; print_notification "$line" "false") &
-      pid="$!"
-      line=
+  if [[ $(pgrep cmus) || $(pgrep spotifyd) || $(pgrep spotify) ]]; then
+    currentsong=\"$(playerctl metadata --player=spotify,cmus,spotifyd --format "{{ artist }} - {{ title }}" 2> /dev/null)\"
+  
+      print_notification "" "false"
+  
+      if [[ "$currentsong" != "$lastsong" ]] && [[ "$currentsong" != "\"\"" ]]; then
+          line=$(echo $currentsong | sed 's/"//g')
+          print_notification "$line" "true"
+          kill "$pid" 2> /dev/null
+          (sleep 8; print_notification "$line" "false") &
+          pid="$!"
+          line=
+      fi
+    lastsong=$currentsong
   fi
-  lastsong=$currentsong
   
   sleep 10;
 done
