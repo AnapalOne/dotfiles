@@ -7,15 +7,15 @@ help () {
 	echo ""
 	echo "todo-list options:"
 	echo "	edit, -e     edit the list"
-	echo ""
+	echo "	help, -h,    show this help message"
 
 }
 
 case $1 in
 	"edit") vim ~/.todo-list ;;
 	"-e") vim ~/.todo-list ;;
+	"help") help ;;
 	"-h") help ;;
-	"--help") help ;;
 	*) cat /home/anapal/.todo-list ;;
 esac
 
