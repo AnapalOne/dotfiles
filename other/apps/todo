@@ -1,0 +1,21 @@
+#!/bin/sh
+
+help () {
+	echo ""
+	echo "anapal's todo list"
+	echo "	todo [OPTIONS]"
+	echo ""
+	echo "todo-list options:"
+	echo "	edit, -e     edit the list"
+	echo ""
+
+}
+
+case $1 in
+	"edit") vim ~/.todo-list ;;
+	"-e") vim ~/.todo-list ;;
+	"-h") help ;;
+	"--help") help ;;
+	*) cat /home/anapal/.todo-list ;;
+esac
+

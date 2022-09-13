@@ -26,6 +26,8 @@
         - user
             - *Includes service files.*
 - other
+    - apps
+        - *App files.*
     - *Miscellaneous stuff.
     - scripts 
         - *Script files.*
