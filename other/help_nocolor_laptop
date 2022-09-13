@@ -1,0 +1,38 @@
+                                                            -------------------------------------------------
+                                                            ==             List of programs:               ==
+                                                            -------------------------------------------------
+
+   // terminal:                                                                 // games:
+      htop                 -- program manager                                      pychess           -- chess emulator
+      ranger               -- file manager                                         pcsx2             -- Playstation 2 emulator                    
+      ncdu                 -- disk analyzer                                        chocolate-doom    -- doom DOS emulator (see ~/.local/share/games to play a game)
+      df                   -- system filesize                                      nsnake            -- snake in terminal 
+      iwctl                -- internet manager                                     retroarch         -- front-end retro video game console emulator
+      aft-mtp-mount        -- mount android device   			           osu-stable        -- free-to-play rhythm game where you click circles to the beat
+      subl, vim            -- text editor			       
+      ani-cli              -- anime                                             // code compilers:
+      tlp, tlpui           -- battery manager                                      gcc               -- C compiler
+      youtube-dl           -- youtube video downloader                             g++               -- C++ compiler
+      cmus                 -- music                                                python            -- Python compiler
+      spt                  -- spotify in terminal				   dotnet            -- C# project builder (requires project, do 'dotnet new')
+      alsamixer            -- sound system
+      bc, qalc             -- calculator
+      bashmount	      	  -- removable media manager                            // fun commands:
+      gpg 		  -- encryption                                            cmatrix        -- cool code animation from matrix movie  
+      espeak               -- text-to-speech                                       cava           -- audio visualizer
+                                                                                   asciiquarium   -- aquarium in ascii
+                                       
+   // programs:
+      nitrogen            -- wallpaper                            renpy         -- visual novel engine                 discord         -- text and voice app      
+      nemo                -- file manager                         firefox       -- browser                             winetricks      -- wine manager       
+      github-desktop      -- github                               libreoffice   -- office suite                        krita           -- drawing software      
+      deepin-calculator   -- calculator                           spotify       -- music                               qbittorrent     -- torrenting
+      gimp                -- image editor                         kdenlive      -- video editor                        calibre         -- e-book reader 
+      mpv, vlc            -- video viewer                         blueman       -- bluetooth                           audacity        -- audio software      
+      obs                 -- streaming and recording software     steam         -- games and game store
+
+   						    	       Do pacman -Qe to list all installed packages.
+   							See ~/.xmonad/xmonad.hs under [Key Binds] for key combinations.
+   
+   									     Press q to exit.
+   
