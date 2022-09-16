@@ -4,7 +4,7 @@ Config {
      font =         "xft:Symbols Nerd Font:size=10,  Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
    , bgColor =      "black"
    , fgColor =      "white"
-   , borderColor =  "#646464"
+   , borderColor =  "#ffffff"
 
    -- options: Top, TopP, TopW, TopSize, Bottom, BottomP, BottomW, BottomSize or Static
    --          examples:
