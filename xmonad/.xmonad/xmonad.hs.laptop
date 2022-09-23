@@ -2,7 +2,7 @@
 --            XMonad Config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
---      > https://github.com/AnapalOne/dotfiles        --
+--    > https://github.com/AnapalOne/xmonad-packed     --
 ---------------------------------------------------------
 
 import XMonad
@@ -133,13 +133,19 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_Escape), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
     , ((modm .|. altMask  ,   xK_Escape), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
     , ((modm .|. controlMask, xK_Escape), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
-    , ((0,              xF86XK_PowerOff), spawn "systemctl suspend")                     --
     , ((0,                 xF86XK_Sleep), spawn "systemctl suspend")                                                               -- sleep mode
-    , ((0,       xF86XK_MonBrightnessUp), spawn "lux -a 5% -M 936")
-    , ((0,     xF86XK_MonBrightnessDown), spawn "lux -s 5% -m 50")
-    , ((0,      xF86XK_AudioRaiseVolume), spawn "pamixer -i 10")
-    , ((0,      xF86XK_AudioLowerVolume), spawn "pamixer -d 10")
-    , ((0,             xF86XK_AudioMute), spawn "pamixer -t")
+    , ((0,           xF86XK_ScreenSaver), spawn "xset dpms force suspend")                                                         -- suspend screen
+    , ((0,       xF86XK_MonBrightnessUp), spawn "lux -a 5% -M 936")                                                                -- change brightness
+    , ((0,     xF86XK_MonBrightnessDown), spawn "lux -s 5% -m 50")                                                                 --
+    , ((0,      xF86XK_AudioRaiseVolume), spawn "pamixer -i 10")                                                                   -- change volume
+    , ((0,      xF86XK_AudioLowerVolume), spawn "pamixer -d 10")                                                                   --
+    , ((0,             xF86XK_AudioMute), spawn "pamixer -t")                                                                      --
+
+    -- // playerctl
+    , ((0,             xF86XK_AudioPlay), spawn "playerctl play")                                                                  -- playerctl commands
+    , ((0,            xF86XK_AudioPause), spawn "playerctl pause")                                                                 --
+    , ((0,             xF86XK_AudioNext), spawn "playerctl next")                                                                  --
+    . ((0,             xF86XK_AudioPrev), spawn "playerctl previous")                                                              --
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
@@ -207,8 +213,8 @@ myScratchpads =
        floatScratchpad = customFloating $ W.RationalRect l t w h
                 where
                     w = 0.9
-                    h = 0.89
-                    l = 0.95 - h
+                    h = 0.88
+                    l = 0.94 - h
                     t = 0.98 - w
 
 
@@ -273,7 +279,8 @@ myManageHook = composeAll
         , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
         , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
         --game
-        , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
+        , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>"
+        , className =? "Pychess"        --> doShift "<action=xdotool key super+6>\xf11b</action>"
         --chat
         , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
         --art
