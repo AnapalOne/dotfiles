@@ -1,7 +1,7 @@
 Config { 
 
    -- // appearance
-     font =         "xft:Symbols Nerd Font:size=10, Bitstream Vera Sans Mono:size=7:bold:antialias=true:hinting=true"
+     font =         "xft:Bitstream Vera Sans Mono:size=7:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10"
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
