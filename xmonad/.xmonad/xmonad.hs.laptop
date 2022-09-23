@@ -2,7 +2,7 @@
 --            XMonad Config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
---    > https://github.com/AnapalOne/xmonad-packed     --
+--       > https://github.com/AnapalOne/dotfiles       --
 ---------------------------------------------------------
 
 import XMonad
@@ -145,12 +145,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,             xF86XK_AudioPlay), spawn "playerctl play")                                                                  -- playerctl commands
     , ((0,            xF86XK_AudioPause), spawn "playerctl pause")                                                                 --
     , ((0,             xF86XK_AudioNext), spawn "playerctl next")                                                                  --
-    . ((0,             xF86XK_AudioPrev), spawn "playerctl previous")                                                              --
+    , ((0,             xF86XK_AudioPrev), spawn "playerctl previous")                                                              --
+
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
     , ((modm .|. shiftMask, xK_s     ), spawn "flameshot gui")                                      -- equivelent to prntscr
-    , ((modm,               xK_r     ), spawn "dmenu_run -b -nb black -nf white")               -- run program
+    , ((modm,               xK_r     ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
     , ((modm .|. shiftMask, xK_v     ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
     , ((modm .|. shiftMask, xK_c     ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask, xK_k     ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
