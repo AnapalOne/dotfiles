@@ -2,7 +2,7 @@
 --            XMonad Config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
---    > https://github.com/AnapalOne/xmonad-packed     --
+--      > https://github.com/AnapalOne/dotfiles        --
 ---------------------------------------------------------
 
 import XMonad
