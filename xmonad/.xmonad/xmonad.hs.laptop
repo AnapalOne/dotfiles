@@ -155,6 +155,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_v     ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
     , ((modm .|. shiftMask, xK_c     ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask, xK_k     ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
+    , ((0,      xF86XK_TouchpadToggle), spawn "~/Scripts/toggle_touchpad.sh")                       -- toggle touchpad off and on
 
     
     -- // scratchpad
