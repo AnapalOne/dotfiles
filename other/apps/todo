@@ -1,21 +1,22 @@
 #!/bin/sh
 
 help () {
+	echo "todo [OPTIONS]"
 	echo ""
 	echo "anapal's todo list"
-	echo "	todo [OPTIONS]"
 	echo ""
-	echo "todo-list options:"
-	echo "	edit, -e     edit the list"
+	echo "options:"
 	echo "	help, -h,    show this help message"
+	echo "	edit, -e     edit the list"
 
 }
 
-case $1 in
-	"edit") vim ~/.todo-list ;;
-	"-e") vim ~/.todo-list ;;
-	"help") help ;;
-	"-h") help ;;
-	*) cat /home/anapal/.todo-list ;;
-esac
-
+if [ -a $HOME/.todo-list ]; then
+	case $1 in
+		"edit" | "-e") vim ~/.todo-list ;;
+		"help" | "-h") help ;;
+		*) cat /home/anapal/.todo-list ;;
+	esac
+else
+	echo "ERROR: .todo-list not found! Please create one."
+fi
