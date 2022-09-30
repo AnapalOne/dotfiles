@@ -21,9 +21,9 @@ Config {
 
 
    -- // layout
-   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  %battery%  %default:Master%  | %UnsafeStdinReader%}{                <fc=#909090>%cpu% / %coretemp%</fc> | <fc=#909090>%memory%</fc> | <fc=#909090>%dynnetwork%</fc> [ <fc=#ABABAB>%uptime% | %date%</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$}{                <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
 
@@ -46,8 +46,8 @@ Config {
         , Run UnsafeStdinReader
 
         -- disk size monitor
-        , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
-                    [] 100
+        -- , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        ---            [] 100
 
         -- network activity monitor (dynamic interface resolution)
         , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
