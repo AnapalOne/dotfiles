@@ -12,9 +12,9 @@ while true; do
   if [[ $(pgrep cmus) || $(pgrep spotifyd) || $(pgrep spotify) ]]; then
     currentsong=\"$(playerctl metadata --player=spotify,cmus,spotifyd --format "{{ artist }} - {{ title }}" 2> /dev/null)\"
   
-      print_notification "" "false"
+    print_notification "" "false"
   
-      if [[ "$currentsong" != "$lastsong" ]] && [[ "$currentsong" != "\"\"" ]]; then
+      if [[ "$currentsong" != "$lastsong" ]]; then
           line=$(echo $currentsong | sed 's/"//g')
           print_notification "$line" "true"
           kill "$pid" 2> /dev/null
@@ -25,5 +25,5 @@ while true; do
     lastsong=$currentsong
   fi
   
-  sleep 10;
+  sleep 10
 done
