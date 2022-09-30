@@ -168,7 +168,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_m     ), namedScratchpadAction myScratchpads "ScrP_spt")
 
     -- // grid
-    , ((modm,                 xK_Tab   ), goToSelected def)
+    , ((modm,                 xK_Tab   ), goToSelected $ gridSystemColor systemColorizer)
     , ((0,                    xK_Menu  ), spawnSelected def myGridSpawn)
     ]
     ++
@@ -177,6 +177,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+
+        -- // grid color
+gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
+    
+systemColorizer = colorRangeFromClassName
+                     minBound            -- lowest inactive bg
+                     minBound            -- highest inactive bg
+                     (0x2a,0x50,0x9a)    -- active bg
+                     maxBound            -- inactive fg
+                     maxBound            -- active fg
  
 
 
@@ -313,7 +323,7 @@ myStartupHook = do
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
-       -- spawnOnce "eww open todo-list --config /home/anapal/.config/eww/"
+        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
         setDefaultCursor myCursor
 
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
