@@ -30,6 +30,7 @@ import XMonad.Layout.Spiral
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
 import XMonad.Layout.Circle
+import XMonad.Layout.Renamed
 
 import XMonad.ManageHook
 import XMonad.Hooks.StatusBar
@@ -135,13 +136,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                    xK_F12), spawn "pamixer -i 5")
     , ((modm,                    xK_F11), spawn "pamixer -d 5")
     , ((modm,                    xK_F10), spawn "pamixer -t")
+    , ((modm,                     xK_F7), spawn "xset dpms force suspend")                                                         -- suspend screen
+
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
     , ((modm .|. shiftMask, xK_s     ), spawn "flameshot gui")                                      -- equivelent to prntscr
-    , ((modm,               xK_r     ), spawn "dmenu_run")                                          -- run program
+    , ((modm,               xK_r     ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
     , ((modm .|. shiftMask, xK_v     ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
     , ((modm .|. shiftMask, xK_k     ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
+    , ((modm .|. shiftMask, xK_c     ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     
     -- // scratchpad
     , ((modm .|. controlMask, xK_Return), namedScratchpadAction myScratchpads "ScrP_alacritty")
@@ -153,7 +157,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_m     ), namedScratchpadAction myScratchpads "ScrP_spt")
 
     -- // grid
-    , ((modm,                 xK_Tab   ), goToSelected def)
+    , ((modm,                 xK_Tab   ), goToSelected $ gridSystemColor systemColorizer)
     , ((0,                    xK_Menu  ), spawnSelected def myGridSpawn)
     ]
     ++
@@ -162,6 +166,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+
+        -- // grid color
+gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
+    
+systemColorizer = colorRangeFromClassName
+                     minBound            -- lowest inactive bg
+                     minBound            -- highest inactive bg
+                     (0x2a,0x50,0x9a)    -- active bg
+                     maxBound            -- inactive fg
+                     maxBound            -- active fg
  
 
 
@@ -170,7 +184,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 ---------------------------------------------------------
 
 myLayout = avoidStruts
-        (spacingWithEdge 8 $ smartBorders ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
+        (renamed [CutWordsLeft 1] $ spacingWithEdge 8 $ smartBorders ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
   where
      tiled = Tall nmaster delta ratio
      nmaster = 1
@@ -274,11 +288,11 @@ myManageHook = composeAll
         , className =? "Gimp"           --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
 
         -- Places the window in floating mode.
-        , className =? "Nemo"           --> doCenterFloat
-        , className =? "kmix"           --> doFloat
-        , title     =? "alsamixer"      --> doCenterFloat
-        , className =? "Sxiv"           --> doFloat
         , title     =? "welcome"        --> doCenterFloat
+        , title     =? "alsamixer"      --> doCenterFloat
+        , className =? "Nemo"           --> doCenterFloat
+        , className =? "XTerm"          --> doCenterFloat
+        , className =? "Sxiv"           --> doFloat
         ]
 
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
@@ -294,13 +308,14 @@ myStartupHook = do
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
-        -- spawnOnce "spotifyd --no-daemon &"
+        spawnOnce "spotifyd --no-daemon &"
+        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
         -- spawnOnce "~/Scripts/battery_notifs.sh &"
         setDefaultCursor myCursor
 
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
-       	                           { ppOutput = hPutStrLn xmproc 
-       	                           , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+                                   { ppOutput = hPutStrLn xmproc 
+                                   , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppVisible = xmobarColor "#4381fb" ""
                                    , ppHidden = xmobarColor "#d1426e" "" . wrap "*" ""
                                    , ppHiddenNoWindows = xmobarColor "#061d8e" ""
@@ -357,3 +372,11 @@ xmobarEscape = concatMap doubleLts
    where
            doubleLts '<' = "<<"
            doubleLts x   = [x]
+
+qalcPrompt :: XPConfig -> String -> X () 
+qalcPrompt c ans =
+    inputPrompt c (trim ans) ?+ \input -> 
+        liftIO(runProcessWithInput "qalc" [input] "") >>= qalcPrompt c 
+    where
+        trim  = f . f
+            where f = reverse . dropWhile isSpace
