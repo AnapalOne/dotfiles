@@ -52,8 +52,8 @@ import qualified Data.Map        as M
 
 ---------------------------------------------------------
 -- Configs
--- > For quick configuration without scrolling the entire config file (it's a little tiring for me to
---   find some parts that I want to configure). 
+-- > For quick configuration without scrolling the entire config file. 
+--   (it's a little tiring for me to find some parts that I want to configure) 
 ---------------------------------------------------------
 
 myTerminal              = "alacritty"
@@ -329,7 +329,7 @@ spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> d
         -- Event handling. Not quite sure how this works yet.
 myEventHook = spotifyWindowNameFix
 
-        -- Executes whenever xmonad starts once, and only once.
+        -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "nitrogen --restore &"
         spawnOnce "picom &"
