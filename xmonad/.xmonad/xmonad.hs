@@ -52,6 +52,8 @@ import qualified Data.Map        as M
 
 ---------------------------------------------------------
 -- Configs
+-- > For quick configuration without scrolling the entire config file (it's a little tiring for me to
+--   find some parts that I want to configure). 
 ---------------------------------------------------------
 
 myTerminal              = "alacritty"
@@ -68,16 +70,23 @@ myGridSpawn = [ "subl","firefox","github-desktop",
                 "discord","spotify","gimp","krita","obs",
                 "audacity","steam"]
 
+myWorkspaceList, myWorkspaceListWords :: [String]
+myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
+myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
+
+    -- Size of window when it is toggled into floating mode.
+toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
+
 
 
 ---------------------------------------------------------
 -- Workspaces
+-- > 9 workspaces for the terminal application, development tools/software, 
+--   browsers, documents (libreoffice or msoffice), videos, gaming, 
+--   messaging apps (discord, messenger, etc), music, and art.
 ---------------------------------------------------------
 
-myWorkspaces :: [String]
-myWorkspaces = clickable . (map xmobarEscape) 
-            -- $ ["ter","doc","www","dev","vid","game","chat","mus","art"] -- text
-            $ ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- icons
+myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList 
     where
           clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
                         (i,ws) <- zip [1..9] l,
@@ -87,9 +96,10 @@ myWorkspaces = clickable . (map xmobarEscape)
 
 ---------------------------------------------------------
 -- Key Binds
+-- > These are keybindings that I use for everything in xmonad. Might add a help section for this.
+-- 
 -- > modm = myModMask
---
--- Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
+-- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
 ---------------------------------------------------------
 
 altMask = mod1Mask
@@ -133,11 +143,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask, xK_Escape), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
     , ((modm .|. shiftMask,   xK_Escape), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
     , ((modm .|. altMask  ,   xK_Escape), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
-    , ((modm,                    xK_F12), spawn "pamixer -i 5")
-    , ((modm,                    xK_F11), spawn "pamixer -d 5")
-    , ((modm,                    xK_F10), spawn "pamixer -t")
     , ((modm,                     xK_F7), spawn "xset dpms force suspend")                                                         -- suspend screen
-
+    , ((modm,                    xK_F12), spawn "pamixer -i 5")                                                                    -- increase volume
+    , ((modm,                    xK_F11), spawn "pamixer -d 5")                                                                    -- decrease volume
+    , ((modm,                    xK_F10), spawn "pamixer -t")                                                                      -- mute volume
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
@@ -167,7 +176,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
 
-        -- // grid color
+    -- // grid color
+    -- At this moment, I can't figure out how to apply color to spawnSelected.
+    -- It could be a bug, but I'll figure something out.
 gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
     
 systemColorizer = colorRangeFromClassName
@@ -177,51 +188,60 @@ systemColorizer = colorRangeFromClassName
                      maxBound            -- inactive fg
                      maxBound            -- active fg
  
+ 
 
 
 ---------------------------------------------------------
 -- Layouts
+-- > A list of layouts, use [mod-space] to cycle layouts. 
+--                          [mod-shift-space] to go back to the first layout (In this case, Full).
 ---------------------------------------------------------
 
 myLayout = avoidStruts
-        (renamed [CutWordsLeft 1] $ spacingWithEdge 8 $ smartBorders ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
+        (renamed [CutWordsLeft 1] $ spacingWithEdge 6 $ smartBorders 
+        ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
   where
      tiled = Tall nmaster delta ratio
      nmaster = 1
      delta = 3/100
      ratio = 1/2
-     threecol = ThreeCol cnmaster cdelta cratio
+     threecol = ThreeCol cnmaster cdelta cratio 
      cnmaster = 1
      cdelta = 3/100
      cratio = 1/2
 
 
 
+
 ---------------------------------------------------------
 -- Scratchpads
+-- > Spawns a floating window on the screen.
+--   Useful for when you want to quickly access an application and
+--   to leave it in the background.
 ---------------------------------------------------------
 
 myScratchpads = 
          [ NS "ScrP_alacritty" "alacritty -t scratchpad" (title =? "scratchpad") floatScratchpad
          , NS "ScrP_htop" "alacritty -t htop -e htop" (title =? "htop") floatScratchpad
          , NS "ScrP_vim" "alacritty -t vim -e vim" (title =? "vim") floatScratchpad
-         , NS "ScrP_ncdu" "alacritty -t ncdu -e bash -c \'ncdu --exclude /home/anapal/D: --exclude /home/anapal/MDrives \'" (title =? "ncdu") floatScratchpad
-         , NS "help" "alacritty -t \"list of programs\" -e bash -c \'less ~/.config/xmonad/help\'" (title =? "list of programs") floatScratchpad
+         , NS "ScrP_ncdu" "alacritty -t ncdu -e ncdu" (title =? "ncdu") floatScratchpad
+         , NS "help" "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
          , NS "ScrP_cmus" "alacritty -t cmus -e cmus" (title =? "cmus") floatScratchpad
          , NS "ScrP_spt" "alacritty -t spotify-tui -e spt" (title =? "spotify-tui") floatScratchpad
          ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
                 where
-                    h = 0.9
                     w = 0.9
-                    l = 0.95 -h
-                    t = 0.95 -w
+                    h = 0.88
+                    l = 0.94 - h
+                    t = 0.98 - w
 
 
 
 ---------------------------------------------------------
 -- Prompts
+-- > Configs for prompts used for keybindings in [Key Binds]
 ---------------------------------------------------------
 
 qalcPromptConfig :: XPConfig
@@ -251,11 +271,12 @@ configPrompt = def
 
 ---------------------------------------------------------
 -- Hooks
+-- > xmonad hooks for managing windows, applications, and workspaces.
 ---------------------------------------------------------
 
-        --Parameters for certain programs
-        -- > doFloat to open in floating mode
-        -- > doShift to open only in a specific workspace
+        -- Parameters for certain programs:
+        -- > doFloat to open in floating mode.
+        -- > doShift to open only in a specific workspace.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
@@ -265,25 +286,32 @@ myManageHook = composeAll
 
         -- ter 
         [ title     =? "alacritty"      --> doShift "<action=xdotool key super+1>\xf120</action>"
-        --dev
+        
+        -- dev
         , className =? "Subl"           --> doShift "<action=xdotool key super+2>\xf121</action>" 
         , className =? "Audacity"       --> doShift "<action=xdotool key super+2>\xf121</action>" 
         , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
-        --www
+        
+        -- www
         , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xe743</action>" 
         , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xe743</action>"
+        
         -- doc
         , resource  =? "libreoffice"    --> doShift "<action=xdotool key super+4>\xf718</action>"
         , className =? "calibre"        --> doShift "<action=xdotool key super+4>\xf718</action>"
-        --vid
+        
+        -- vid
         , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf008</action>"
         , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
         , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
-        --game
+        
+        -- game
         , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
-        --chat
+        
+        -- chat
         , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
-        --art
+        
+        -- art
         , className =? "krita"          --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
         , className =? "Gimp"           --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
 
@@ -298,10 +326,10 @@ myManageHook = composeAll
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
 spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf886</action>") --mus
 
-        --event handling
+        -- Event handling. Not quite sure how this works yet.
 myEventHook = spotifyWindowNameFix
 
-        --Executes whenever xmonad starts
+        -- Executes whenever xmonad starts once, and only once.
 myStartupHook = do
         spawnOnce "nitrogen --restore &"
         spawnOnce "picom &"
@@ -313,6 +341,8 @@ myStartupHook = do
         -- spawnOnce "~/Scripts/battery_notifs.sh &"
         setDefaultCursor myCursor
 
+        -- Outputs status information to a status bar.
+        -- Useful for status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
@@ -330,6 +360,8 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
 
 ---------------------------------------------------------
 -- XMonad Main
+-- > Here is where xmonad loads everything. 
+-- > For curiosity, ou can probably pack everything into here, but I haven't tried it yet.
 ---------------------------------------------------------
 
 main = do
@@ -356,6 +388,7 @@ main = do
 
 ---------------------------------------------------------
 -- Functions
+-- > These are used for different parts in this config. 
 ---------------------------------------------------------
 
 windowCount :: X (Maybe String)
@@ -365,7 +398,7 @@ toggleFloat :: Window -> X ()
 toggleFloat w = windows
    ( \s -> if M.member w (W.floating s)
            then W.sink w s
-           else (W.float w (W.RationalRect (0.01) (0.04) (0.55) (0.55)) s) )
+           else (W.float w toggleFloatSize) s)
 
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts
@@ -373,6 +406,9 @@ xmobarEscape = concatMap doubleLts
            doubleLts '<' = "<<"
            doubleLts x   = [x]
 
+    -- This function is special as a template for other usages 
+    -- since you can insert any program that accepts a signle line of input
+    -- and outputs another.
 qalcPrompt :: XPConfig -> String -> X () 
 qalcPrompt c ans =
     inputPrompt c (trim ans) ?+ \input -> 
