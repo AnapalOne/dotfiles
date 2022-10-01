@@ -74,7 +74,7 @@ myWorkspaceList, myWorkspaceListWords :: [String]
 myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
-    -- Size of window when it is toggled into floating mode.
+    -- Size and position of window when it is toggled into floating mode.
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 
 
@@ -148,6 +148,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                    xK_F11), spawn "pamixer -d 5")                                                                    -- decrease volume
     , ((modm,                    xK_F10), spawn "pamixer -t")                                                                      -- mute volume
 
+    -- // playerctl
+    , ((modm ,             xK_backslash), spawn "playerctl play-pause")                                                            -- play-pause player
+    , ((modm,           xK_bracketright), spawn "playerctl next")                                                                  -- next song/video/track
+    , ((modm,            xK_bracketleft), spawn "playerctl previous")                                                              -- previous song/video/track
+
     -- // programs
     , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
     , ((modm .|. shiftMask, xK_s     ), spawn "flameshot gui")                                      -- equivelent to prntscr
@@ -190,7 +195,6 @@ systemColorizer = colorRangeFromClassName
  
  
 
-
 ---------------------------------------------------------
 -- Layouts
 -- > A list of layouts, use [mod-space] to cycle layouts. 
@@ -212,12 +216,10 @@ myLayout = avoidStruts
 
 
 
-
 ---------------------------------------------------------
 -- Scratchpads
 -- > Spawns a floating window on the screen.
---   Useful for when you want to quickly access an application and
---   to leave it in the background.
+--   Useful for when you want to quickly access an application and leave it running in the background.
 ---------------------------------------------------------
 
 myScratchpads = 
@@ -241,7 +243,7 @@ myScratchpads =
 
 ---------------------------------------------------------
 -- Prompts
--- > Configs for prompts used for keybindings in [Key Binds]
+-- > Configs for prompts used for keybindings in [Key Binds].
 ---------------------------------------------------------
 
 qalcPromptConfig :: XPConfig
@@ -360,8 +362,8 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
 
 ---------------------------------------------------------
 -- XMonad Main
--- > Here is where xmonad loads everything. 
--- > For curiosity, ou can probably pack everything into here, but I haven't tried it yet.
+-- > Where xmonad loads everything. 
+-- > Hypothetically, you can probably pack everything into here, but I haven't tried it yet.
 ---------------------------------------------------------
 
 main = do
@@ -388,7 +390,7 @@ main = do
 
 ---------------------------------------------------------
 -- Functions
--- > These are used for different parts in this config. 
+-- > These are used for certain functions in some parts of this config. 
 ---------------------------------------------------------
 
 windowCount :: X (Maybe String)
