@@ -6,6 +6,8 @@ Config {
    , fgColor =      "white"
    , borderColor =  "#ffffff"
 
+
+   -- // position
    -- options: Top, TopP, TopW, TopSize, Bottom, BottomP, BottomW, BottomSize or Static
    --          examples:
    --              Static { xpos = 14 , ypos = 10, width = 1330, height = 20 }
@@ -13,18 +15,18 @@ Config {
    --              BottomP 120 0
    , position = Static { xpos = 12 , ypos = 12, width = 1341, height = 22 }
 
+
+   -- // border
    -- options: TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder 
    --     TopB, BottomB, FullB take no arguments, and request drawing a border at the top, bottom or around xmobar's window, respectively.
    --     TopBM, BottomBM, FullBM take an integer argument, which is the margin, in pixels, between the border of the window and the drawn border.
    , border = NoBorder
 
 
-
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
    , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$}{                <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
-
 
 
    -- // general behavior
@@ -36,20 +38,19 @@ Config {
    , persistent =       True    -- enable/disable hiding (True = disabled)
 
 
-
    -- // layout template
    , commands = 
-	-- uptime monitor
-	[ Run Uptime	 [ "--template", "<hours>h <minutes>m <seconds>s" ] 10
+	       -- uptime monitor
+	      [ Run Uptime	 [ "--template", "<hours>h <minutes>m <seconds>s" ] 10
 
-        -- shows pp config in xmonad.hs
+          -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
 
-        -- disk size monitor
+          -- disk size monitor
         -- , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
         ---            [] 100
 
-        -- network activity monitor (dynamic interface resolution)
+          -- network activity monitor (dynamic interface resolution)
         , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
@@ -58,7 +59,7 @@ Config {
                              , "--high"     , "darkred" --darkred
                              ] 20
 
-        -- cpu activity monitor
+          -- cpu activity monitor
         , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"
                              , "--Low"      , "50"         -- units: %
                              , "--High"     , "85"         -- units: %
@@ -67,7 +68,7 @@ Config {
                              , "--high"     , "darkred"
                              ] 50
 
-        -- cpu core temperature monitor
+          -- cpu core temperature monitor
         , Run CoreTemp       [ "--template" , "<core0>°C"
         --                      -- , "--Low"      , "60"        -- units: °C
         --                      -- , "--High"     , "80"        -- units: °C
@@ -78,7 +79,7 @@ Config {
 
         -- , Run Com "sh" ["-c", "sensors | grep -m 1 temp1 | sed 's/temp1:        +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
                           
-        -- memory usage monitor
+          -- memory usage monitor
         , Run Memory         [ "--template" ,"<fc=#f44336>\xf2db</fc> <usedratio>%"
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
@@ -87,7 +88,7 @@ Config {
                              , "--high"     , "darkred"
                              ] 60
 
-        -- battery monitor (<timeleft> in discharging status for battery time left)
+          -- battery monitor (<timeleft> in discharging status for battery time left)
         , Run Battery        [ "--template" , "<leftbar> <acstatus>"
                              , "--Low"      , "15"        -- units: %
                              , "--High"     , "40"        -- units: %
@@ -107,7 +108,7 @@ Config {
                                        , "-i" , "Charged!"    
                              ] 10
 
-        -- time and date indicator 
+          -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = 24-hour format/%r = 12-hour format)
         , Run Date           "%F (%a) %r" "date" 10
 
@@ -122,7 +123,7 @@ Config {
                                               , "-o", "<fc=#a0a0a0>\xf655</fc>"
                                         ] 10
 
-        -- keyboard layout indicator
+          -- keyboard layout indicator
         -- , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
         --                     , ("us"         , "<fc=#4682B4>KeyB: </fc", "<fc=#8B0000>US</fc>")
         --                     ]
