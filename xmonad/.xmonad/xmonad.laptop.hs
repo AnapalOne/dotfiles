@@ -110,7 +110,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,            xK_BackSpace), kill)                               -- close focused window
     , ((modm,               xK_space ), sendMessage NextLayout)             -- rotate layout
     , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
-    , ((mod1Mask,           xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
+    , ((mod1Mask,           xK_Tab   ), windows W.focusDown   )             -- rotate focus between windows
     , ((modm,               xK_Return), windows W.swapMaster  )             -- swap focus master and window
     , ((modm .|. shiftMask, xK_comma ), sendMessage Shrink    )             -- decreases master window size
     , ((modm .|. shiftMask, xK_period), sendMessage Expand    )             -- increases master window size
@@ -177,6 +177,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                 xK_v     ), namedScratchpadAction myScratchpads "ScrP_vim")
     , ((modm,                 xK_m     ), namedScratchpadAction myScratchpads "ScrP_cmus")
     , ((modm .|. shiftMask,   xK_m     ), namedScratchpadAction myScratchpads "ScrP_spt")
+    , ((modm .|. shiftMask,   xK_b     ), namedScratchpadAction myScratchpads "ScrP_blueman")
 
     -- // grid
     , ((modm,                 xK_Tab   ), goToSelected $ gridSystemColor systemColorizer)
@@ -238,6 +239,7 @@ myScratchpads =
          , NS "help" "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
          , NS "ScrP_cmus" "alacritty -t cmus -e cmus" (title =? "cmus") floatScratchpad
          , NS "ScrP_spt" "alacritty -t spotify-tui -e spt" (title =? "spotify-tui") floatScratchpad
+         , NS "ScrP_blueman" "blueman-manager" (resource =? "blueman-manager") floatScratchpad
          ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
