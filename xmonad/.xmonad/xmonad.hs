@@ -31,6 +31,7 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
 import XMonad.Layout.Circle
 import XMonad.Layout.Renamed
+import XMonad.Layout.Hidden
 
 import XMonad.ManageHook
 import XMonad.Hooks.StatusBar
@@ -86,7 +87,7 @@ toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 --   messaging apps (discord, messenger, etc), music, and art.
 ---------------------------------------------------------
 
-myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList 
+myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
     where
           clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
                         (i,ws) <- zip [1..9] l,
@@ -107,15 +108,21 @@ altMask = mod1Mask
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
-    [ ((modm,            xK_BackSpace), kill)                               -- close focused window
-    , ((modm,               xK_space ), sendMessage NextLayout)             -- rotate layout
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
-    , ((mod1Mask,           xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
-    , ((modm,               xK_Return), windows W.swapMaster  )             -- swap focus master and window
-    , ((modm .|. shiftMask, xK_comma ), sendMessage Shrink    )             -- decreases master window size
-    , ((modm .|. shiftMask, xK_period), sendMessage Expand    )             -- increases master window size
-    , ((modm,               xK_comma ), windows W.swapUp      )             -- move tiled window
-    , ((modm,               xK_period), windows W.swapDown    )             --
+    [ ((modm,               xK_BackSpace), kill)                               -- close focused window
+    , ((modm,                  xK_space ), sendMessage NextLayout)             -- rotate layout
+    , ((modm .|. shiftMask  ,  xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
+    , ((mod1Mask,              xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
+    , ((modm,                  xK_Return), windows W.swapMaster  )             -- swap focus master and window
+    , ((modm .|. shiftMask,    xK_comma ), sendMessage Shrink    )             -- decreases master window size
+    , ((modm .|. shiftMask,    xK_period), sendMessage Expand    )             -- increases master window size
+    , ((modm,                  xK_comma ), windows W.swapUp      )             -- move tiled window
+    , ((modm,                  xK_period), windows W.swapDown    )             --
+    , ((modm,               xK_backslash), withFocused hideWindow)             -- hide window
+    , ((modm .|. shiftMask, xK_backslash), popOldestHiddenWindow)              -- restore the last hidden window
+
+    -- // workspaces
+    , ((modm,           xK_Home), prevWS)                   -- switch workspace to the left
+    , ((modm,            xK_End), nextWS)                   -- switch workspace to the right
 
     -- // floating windows
     , ((modm .|. shiftMask, xK_Tab    ), withFocused toggleFloat)                      -- toggle between tiled and floating window
@@ -149,7 +156,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                    xK_F10), spawn "pamixer -t")                                                                      -- mute volume
 
     -- // playerctl
-    , ((modm ,             xK_backslash), spawn "playerctl play-pause")                                                            -- play-pause player
+    , ((modm ,            xK_apostrophe), spawn "playerctl play-pause")                                                            -- play-pause player
     , ((modm,           xK_bracketright), spawn "playerctl next")                                                                  -- next song/video/track
     , ((modm,            xK_bracketleft), spawn "playerctl previous")                                                              -- previous song/video/track
 
@@ -183,7 +190,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // grid color
     -- At this moment, I can't figure out how to apply color to spawnSelected.
-    -- It could be a bug, but I'll figure something out.
+    -- Its probably a bug, but I'll figure something out later.
 gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
     
 systemColorizer = colorRangeFromClassName
@@ -198,21 +205,32 @@ systemColorizer = colorRangeFromClassName
 ---------------------------------------------------------
 -- Layouts
 -- > A list of layouts, use [mod-space] to cycle layouts. 
---                          [mod-shift-space] to go back to the first layout (In this case, Full).
+--                          [mod-shift-space] to go back to the first layout (In this case, full).
 ---------------------------------------------------------
 
-myLayout = avoidStruts
-        (renamed [CutWordsLeft 1] $ spacingWithEdge 6 $ smartBorders 
-        ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
-  where
-     tiled = Tall nmaster delta ratio
-     nmaster = 1
-     delta = 3/100
-     ratio = 1/2
-     threecol = ThreeCol cnmaster cdelta cratio 
-     cnmaster = 1
-     cdelta = 3/100
-     cratio = 1/2
+myLayout = avoidStruts $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ smartBorders $ hiddenWindows
+        ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ||| circle ) 
+        
+    where
+        full = renamed [Replace "full"] $ Full
+        
+        htiled = renamed [Replace "tiled"] $ Tall nmaster delta ratio        
+        vtiled = renamed [Replace "mirror tiled"] $ Mirror $ Tall nmaster delta ratio
+        nmaster = 1
+        delta = 3/100
+        ratio = 1/2
+        
+        hthreecol = renamed [Replace "threecol"] $ ThreeCol cnmaster cdelta cratio 
+        vthreecol = renamed [Replace "mirror threecol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        cnmaster = 1
+        cdelta = 3/100
+        cratio = 1/2
+        
+        grid = renamed [Replace "grid"] $ Grid
+        
+        lspiral = renamed [Replace "spiral"] $ spiral (6/7)
+
+        circle = renamed [Replace "circle"] $ Circle
 
 
 
@@ -276,15 +294,15 @@ configPrompt = def
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ---------------------------------------------------------
 
-        -- Parameters for certain programs:
-        -- > doFloat to open in floating mode.
-        -- > doShift to open only in a specific workspace.
+        -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
-        -- Opens the program only on a specific workspace.
-        -- NOTE: It will not work when the workspaces in myWorkspace does not match the doShift command here. 
-        --       To fix this, replace the workspace inside doShift with your renamed workspace.
+        -- > doFloat to open in floating mode.
+        -- > doShift to open only in a specific workspace.
+
+        -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
+        --       Whenever you rename those workspaces, be sure to also rename the workspaces inside doShift.
 
         -- ter 
         [ title     =? "alacritty"      --> doShift "<action=xdotool key super+1>\xf120</action>"
@@ -324,12 +342,14 @@ myManageHook = composeAll
         , className =? "XTerm"          --> doCenterFloat
         , className =? "Sxiv"           --> doFloat
         ]
-
+        
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
 spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf886</action>") --mus
 
-        -- Event handling. Not quite sure how this works yet.
+
+        -- This controls all events that are handled by xmonad.
 myEventHook = spotifyWindowNameFix
+
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
@@ -343,8 +363,9 @@ myStartupHook = do
         -- spawnOnce "~/Scripts/battery_notifs.sh &"
         setDefaultCursor myCursor
 
-        -- Outputs status information to a status bar.
-        -- Useful for status bars like xmobar or dzen.
+
+        -- When the stack of windows managed by xmonad has been changed.
+        -- Useful for displaying information to status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
