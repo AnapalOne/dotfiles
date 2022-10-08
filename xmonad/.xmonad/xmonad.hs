@@ -428,7 +428,7 @@ qalcPrompt c ans =
         trim  = f . f
             where f = reverse . dropWhile isSpace
 
-    -- grid color used in [Key Binds]
+    -- Grid color used in [Key Binds].
     -- At this moment, I can't figure out how to apply color to spawnSelected.
     -- Its probably a bug, but I'll figure something out later.
 gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
