@@ -208,29 +208,29 @@ systemColorizer = colorRangeFromClassName
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ---------------------------------------------------------
 
-myLayout = avoidStruts $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ smartBorders $ hiddenWindows
-        ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ||| circle ) 
+myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+         ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
         
     where
-        full = renamed [Replace "full"] $ Full
+        full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
         
-        htiled = renamed [Replace "tiled"] $ Tall nmaster delta ratio        
-        vtiled = renamed [Replace "mirror tiled"] $ Mirror $ Tall nmaster delta ratio
+        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio        
+        vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "threecol"] $ ThreeCol cnmaster cdelta cratio 
-        vthreecol = renamed [Replace "mirror threecol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
+        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
         
-        grid = renamed [Replace "grid"] $ Grid
+        grid = renamed [Replace "<fc=#909090>\xfc56</fc> Grid"] $ Grid
         
-        lspiral = renamed [Replace "spiral"] $ spiral (6/7)
+        lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
 
-        circle = renamed [Replace "circle"] $ Circle
+        circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ Circle
 
 
 
