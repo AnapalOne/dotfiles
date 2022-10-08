@@ -11,6 +11,7 @@ import Data.Monoid
 import Data.Char (isSpace)
 import System.Exit
 import System.IO
+import XMonad.ManageHook
 -- import Graphics.X11.ExtraTypes.XF86
 
 import XMonad.Prompt
@@ -31,8 +32,8 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
 import XMonad.Layout.Circle
 import XMonad.Layout.Renamed
+import XMonad.Layout.Hidden
 
-import XMonad.ManageHook
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
@@ -86,7 +87,7 @@ toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 --   messaging apps (discord, messenger, etc), music, and art.
 ---------------------------------------------------------
 
-myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList 
+myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
     where
           clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
                         (i,ws) <- zip [1..9] l,
@@ -107,15 +108,21 @@ altMask = mod1Mask
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
-    [ ((modm,            xK_BackSpace), kill)                               -- close focused window
-    , ((modm,               xK_space ), sendMessage NextLayout)             -- rotate layout
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
-    , ((mod1Mask,           xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
-    , ((modm,               xK_Return), windows W.swapMaster  )             -- swap focus master and window
-    , ((modm .|. shiftMask, xK_comma ), sendMessage Shrink    )             -- decreases master window size
-    , ((modm .|. shiftMask, xK_period), sendMessage Expand    )             -- increases master window size
-    , ((modm,               xK_comma ), windows W.swapUp      )             -- move tiled window
-    , ((modm,               xK_period), windows W.swapDown    )             --
+    [ ((modm,               xK_BackSpace), kill)                               -- close focused window
+    , ((modm,                  xK_space ), sendMessage NextLayout)             -- rotate layout
+    , ((modm .|. shiftMask  ,  xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
+    , ((mod1Mask,              xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
+    , ((modm,                  xK_Return), windows W.swapMaster  )             -- swap focus master and window
+    , ((modm .|. shiftMask,    xK_comma ), sendMessage Shrink    )             -- decreases master window size
+    , ((modm .|. shiftMask,    xK_period), sendMessage Expand    )             -- increases master window size
+    , ((modm,                  xK_comma ), windows W.swapUp      )             -- move tiled window
+    , ((modm,                  xK_period), windows W.swapDown    )             --
+    , ((modm,               xK_backslash), withFocused hideWindow)             -- hide window
+    , ((modm .|. shiftMask, xK_backslash), popOldestHiddenWindow)              -- restore the last hidden window
+
+    -- // workspaces
+    , ((modm,           xK_Home), prevWS)                   -- switch workspace to the left
+    , ((modm,            xK_End), nextWS)                   -- switch workspace to the right
 
     -- // floating windows
     , ((modm .|. shiftMask, xK_Tab    ), withFocused toggleFloat)                      -- toggle between tiled and floating window
@@ -149,7 +156,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                    xK_F10), spawn "pamixer -t")                                                                      -- mute volume
 
     -- // playerctl
-    , ((modm ,             xK_backslash), spawn "playerctl play-pause")                                                            -- play-pause player
+    , ((modm ,            xK_apostrophe), spawn "playerctl play-pause")                                                            -- play-pause player
     , ((modm,           xK_bracketright), spawn "playerctl next")                                                                  -- next song/video/track
     , ((modm,            xK_bracketleft), spawn "playerctl previous")                                                              -- previous song/video/track
 
@@ -180,39 +187,38 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
-
-    -- // grid color
-    -- At this moment, I can't figure out how to apply color to spawnSelected.
-    -- It could be a bug, but I'll figure something out.
-gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
-    
-systemColorizer = colorRangeFromClassName
-                     minBound            -- lowest inactive bg
-                     minBound            -- highest inactive bg
-                     (0x2a,0x50,0x9a)    -- active bg
-                     maxBound            -- inactive fg
-                     maxBound            -- active fg
  
  
 
 ---------------------------------------------------------
 -- Layouts
 -- > A list of layouts, use [mod-space] to cycle layouts. 
---                          [mod-shift-space] to go back to the first layout (In this case, Full).
+--                          [mod-shift-space] to go back to the first layout (In this case, full).
 ---------------------------------------------------------
 
-myLayout = avoidStruts
-        (renamed [CutWordsLeft 1] $ spacingWithEdge 6 $ smartBorders 
-        ( Full ||| tiled ||| Mirror tiled ||| threecol ||| Mirror threecol ||| Grid ||| spiral (6/7)) ||| Circle )
-  where
-     tiled = Tall nmaster delta ratio
-     nmaster = 1
-     delta = 3/100
-     ratio = 1/2
-     threecol = ThreeCol cnmaster cdelta cratio 
-     cnmaster = 1
-     cdelta = 3/100
-     cratio = 1/2
+myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+         ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
+        
+    where
+        full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
+        
+        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio        
+        vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
+        nmaster = 1
+        delta = 3/100
+        ratio = 1/2
+        
+        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
+        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        cnmaster = 1
+        cdelta = 3/100
+        cratio = 1/2
+        
+        grid = renamed [Replace "<fc=#909090>\xfc56</fc> Grid"] $ Grid
+        
+        lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
+
+        circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ Circle
 
 
 
@@ -276,15 +282,15 @@ configPrompt = def
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ---------------------------------------------------------
 
-        -- Parameters for certain programs:
-        -- > doFloat to open in floating mode.
-        -- > doShift to open only in a specific workspace.
+        -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
-        -- Opens the program only on a specific workspace.
-        -- NOTE: It will not work when the workspaces in myWorkspace does not match the doShift command here. 
-        --       To fix this, replace the workspace inside doShift with your renamed workspace.
+        -- > doFloat to open in floating mode.
+        -- > doShift to open only in a specific workspace.
+
+        -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
+        --       Whenever you rename those workspaces, be sure to also rename the workspaces inside doShift.
 
         -- ter 
         [ title     =? "alacritty"      --> doShift "<action=xdotool key super+1>\xf120</action>"
@@ -324,12 +330,14 @@ myManageHook = composeAll
         , className =? "XTerm"          --> doCenterFloat
         , className =? "Sxiv"           --> doFloat
         ]
-
+        
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
 spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf886</action>") --mus
 
-        -- Event handling. Not quite sure how this works yet.
+
+        -- This controls all events that are handled by xmonad.
 myEventHook = spotifyWindowNameFix
+
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
@@ -343,9 +351,10 @@ myStartupHook = do
         -- spawnOnce "~/Scripts/battery_notifs.sh &"
         setDefaultCursor myCursor
 
-        -- Outputs status information to a status bar.
-        -- Useful for status bars like xmobar or dzen.
-myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
+
+        -- When the stack of windows managed by xmonad has been changed.
+        -- Useful for displaying information to status bars like xmobar or dzen.
+myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppVisible = xmobarColor "#4381fb" ""
@@ -354,7 +363,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
                                    , ppTitle = xmobarColor "#ffffff" "" . shorten 60
                                    , ppSep = "<fc=#ffffff> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
-                                   , ppExtras = [windowCount]
+                                   , ppExtras = [windowCount] 
                                    , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
                                    }
 
@@ -418,3 +427,15 @@ qalcPrompt c ans =
     where
         trim  = f . f
             where f = reverse . dropWhile isSpace
+
+    -- Grid color used in [Key Binds].
+    -- At this moment, I can't figure out how to apply color to spawnSelected.
+    -- Its probably a bug, but I'll figure something out later.
+gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
+    
+systemColorizer = colorRangeFromClassName
+                     minBound            -- lowest inactive bg
+                     minBound            -- highest inactive bg
+                     (0x2a,0x50,0x9a)    -- active bg
+                     maxBound            -- inactive fg
+                     maxBound            -- active fg
