@@ -124,7 +124,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,           xK_Home), prevWS)                   -- switch workspace to the left
     , ((modm,            xK_End), nextWS)                   -- switch workspace to the right
 
-
     -- // floating windows
     , ((modm .|. shiftMask, xK_Tab    ), withFocused toggleFloat)                      -- toggle between tiled and floating window
     , ((modm,               xK_Up     ), withFocused (keysMoveWindow (0,-35)))         -- move floating window 
