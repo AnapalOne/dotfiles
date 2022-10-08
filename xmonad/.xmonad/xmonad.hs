@@ -11,6 +11,7 @@ import Data.Monoid
 import Data.Char (isSpace)
 import System.Exit
 import System.IO
+import XMonad.ManageHook
 -- import Graphics.X11.ExtraTypes.XF86
 
 import XMonad.Prompt
@@ -33,7 +34,6 @@ import XMonad.Layout.Circle
 import XMonad.Layout.Renamed
 import XMonad.Layout.Hidden
 
-import XMonad.ManageHook
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
@@ -187,18 +187,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
-
-    -- // grid color
-    -- At this moment, I can't figure out how to apply color to spawnSelected.
-    -- Its probably a bug, but I'll figure something out later.
-gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
-    
-systemColorizer = colorRangeFromClassName
-                     minBound            -- lowest inactive bg
-                     minBound            -- highest inactive bg
-                     (0x2a,0x50,0x9a)    -- active bg
-                     maxBound            -- inactive fg
-                     maxBound            -- active fg
  
  
 
@@ -366,7 +354,7 @@ myStartupHook = do
 
         -- When the stack of windows managed by xmonad has been changed.
         -- Useful for displaying information to status bars like xmobar or dzen.
-myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
+myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppVisible = xmobarColor "#4381fb" ""
@@ -375,7 +363,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
                                    , ppTitle = xmobarColor "#ffffff" "" . shorten 60
                                    , ppSep = "<fc=#ffffff> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
-                                   , ppExtras = [windowCount]
+                                   , ppExtras = [windowCount] 
                                    , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
                                    }
 
@@ -439,3 +427,15 @@ qalcPrompt c ans =
     where
         trim  = f . f
             where f = reverse . dropWhile isSpace
+
+    -- grid color used in [Key Binds]
+    -- At this moment, I can't figure out how to apply color to spawnSelected.
+    -- Its probably a bug, but I'll figure something out later.
+gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
+    
+systemColorizer = colorRangeFromClassName
+                     minBound            -- lowest inactive bg
+                     minBound            -- highest inactive bg
+                     (0x2a,0x50,0x9a)    -- active bg
+                     maxBound            -- inactive fg
+                     maxBound            -- active fg
