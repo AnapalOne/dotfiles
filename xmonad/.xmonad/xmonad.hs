@@ -212,25 +212,25 @@ myLayout = avoidStruts $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ smartBor
         ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ||| circle ) 
         
     where
-        full = renamed [Replace "\xeb4c Full"] $ Full
+        full = renamed [Replace "full"] $ Full
         
-        htiled = renamed [Replace "\xf03a Tiled"] $ Tall nmaster delta ratio        
-        vtiled = renamed [Replace "\xf0c9 Tiled"] $ Mirror $ Tall nmaster delta ratio
+        htiled = renamed [Replace "tiled"] $ Tall nmaster delta ratio        
+        vtiled = renamed [Replace "mirror tiled"] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "\xfa6c ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
-        vthreecol = renamed [Replace "\xfd33 ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Replace "threecol"] $ ThreeCol cnmaster cdelta cratio 
+        vthreecol = renamed [Replace "mirror threecol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
         
-        grid = renamed [Replace "\xfc56 Grid"] $ Grid
+        grid = renamed [Replace "grid"] $ Grid
         
-        lspiral = renamed [Replace "\xe206 Spiral"] $ spiral (6/7)
+        lspiral = renamed [Replace "spiral"] $ spiral (6/7)
 
-        circle = renamed [Replace "\xeabc Circle"] $ Circle
+        circle = renamed [Replace "circle"] $ Circle
 
 
 
