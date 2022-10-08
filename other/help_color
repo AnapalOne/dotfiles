@@ -1,0 +1,53 @@
+                                                                                           \033[36;1m-------------------------------------------------\033[0m 
+                                                                                           \033[36;1m==\033[0m              List of programs:              \033[36;1m==\033[0m 
+                                                                                           \033[36;1m-------------------------------------------------\033[0m 
+
+      \033[34;1m//\033[0m \033[37;1mterminal\033[0m:                                                                            \033[34;1m//\033[0m \033[37;1mgames\033[0m:
+          \033[36;1mhtop\033[0m                   -- program manager                                              \033[36;1mosu-stable\033[0m          -- rhythm game where you click the circles
+          \033[36;1mranger\033[0m                 -- file manager                                                 \033[36;1mnethack\033[0m             -- terminal-based dungeon game
+          \033[36;1mncdu\033[0m                   -- disk analyzer                                                \033[36;1mpcsx2\033[0m               -- Playstation 2 emulator
+          \033[36;1mdf\033[0m                     -- system filesize                                              \033[36;1mchocolate-doom\033[0m      -- doom DOS emulator (see ~/.local/share/games to play a game)
+          \033[36;1miwctl\033[0m                  -- internet manager                                             \033[36;1mretroarch\033[0m           -- front-end retro video game console emulator
+          \033[36;1mpacman, yay\033[0m            -- package manager (yay for AUR)                                \033[36;1mpychess\033[0m             -- chess emulator
+          \033[36;1msubl, vim\033[0m              -- text editor                                                  \033[36;1mminecraft-launcher\033[0m  -- minecraft
+          \033[36;1mxprop\033[0m                  -- shows information about a window
+          \033[36;1mflameshot\033[0m              -- equivilent to prntscr in Windows
+          \033[36;1mani-cli\033[0m                -- anime                                                     \033[34;1m//\033[0m \033[37;1mcode compilers\033[0m:
+          \033[36;1mespeak\033[0m                 -- text-to-speech                                               \033[36;1mgcc\033[0m               -- C compiler
+          \033[36;1myoutube-dl\033[0m             -- youtube video downloader                                     \033[36;1mg++\033[0m               -- C++ compiler
+          \033[36;1mcmus\033[0m                   -- music                                                        \033[36;1mpython\033[0m            -- Python compiler
+          \033[36;1mspt\033[0m                    -- spotify in terminal
+          \033[36;1malsamixer\033[0m              -- sound system
+          \033[36;1mbc, qalc\033[0m               -- calculator
+          \033[36;1mbashmount\033[0m		 -- removable media manager
+          \033[36;1mtrackma\033[0m		 -- myanimelist in terminal
+          \033[36;1mgpg\033[0m 			 -- encryption
+          \033[36;1mcava\033[0m			 -- audio visualizer
+          \033[36;1masciiquarium\033[0m           -- aquarium in ascii
+          \033[36;1m7z\033[0m                     -- extracting/archiving files
+          \033[36;1mlp\033[0m                     -- print file
+	  \033[36;1mescputil\033[0m		 -- maintenance tasks for Epson Stylus Inkjet printers  
+     
+      \033[34;1m//\033[0m \033[37;1mprograms\033[0m:
+          \033[36;1mnitrogen\033[0m                -- wallpaper                                      \033[36;1msteam\033[0m                   -- game launcher and distribution program    
+          \033[36;1mfirefox\033[0m                 -- browser                                        \033[36;1msystem-config-printer\033[0m   -- printer configuration tool and status applet     
+          \033[36;1mkrita\033[0m                   -- drawing software                               \033[36;1mbalena-etcher-electron\033[0m  -- image flasher to removable media
+          \033[36;1mgimp\033[0m                    -- image editor/drawing software                  \033[36;1mdeepin-calculator\033[0m       -- calculator
+          \033[36;1mmpv, vlc\033[0m                -- video software                                 \033[36;1mkdenlive\033[0m             -- video editor
+          \033[36;1maudacity\033[0m                -- audio software
+          \033[36;1mmirage\033[0m                  -- image viewer
+          \033[36;1mspotify\033[0m                 -- music
+          \033[36;1mdiscord\033[0m                 -- text and voice app
+          \033[36;1mgithub-desktop\033[0m          -- github
+          \033[36;1mlibreoffice\033[0m             -- office suite
+          \033[36;1mnemo\033[0m                    -- file manager
+          \033[36;1mqbittorrent\033[0m             -- torrenting
+          \033[36;1mcalibre\033[0m                 -- e-book reader
+          \033[36;1mobs-studio\033[0m              -- recorder
+
+
+
+                                                                                                Do \033[31;1mpacman -Qe\033[0m to list all installed packages.
+                                                                                        SSee \033[31;1m~/.xmonad/xmonad.hs\033[0m under \033[35;1m[Key Binds]\033[0m for key combinations.
+                                                                                        
+                                                                                                             Press \033[33;1menter\033[0m to exit.
