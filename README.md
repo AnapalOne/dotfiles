@@ -1,11 +1,7 @@
-## dotfiles
- Scripts and configuration files for programs I use for safe keepings.
+# my dotfiles
+ scripts and configuration files for programs I use for safe keepings.
 
-## TODO <sub>(may be empty once i've exhausted ideas!)</sub>
-
-- Revamp help file in .xmonad
-
-## Includes
+## includes
 
 - alacritty - terminal
 - cmus - music player
@@ -31,3 +27,28 @@
     - *Miscellaneous stuff.
     - scripts 
         - *Script files.*
+
+## preview
+
+<div align="center">
+   <img src="2022-10-09_08-32.png" title="xmonad config" alt="xmonad pc pic"/>
+   <sub><p>xmonad.hs config</p></sub>
+</div>
+
+<br>
+<hr>
+<br>
+
+<div align="center">
+   <img src="2022-10-09_07-30.png" title="xmonad laptop config" alt="xmonad laptop pic"/>
+   <sub><p>xmonad.laptop.hs config</p></sub>
+</div>
+
+<br>
+<hr>
+<br>
+
+<div align="center">
+   <img src="eww.gif" title="eww music notifications" alt="eww music notifs pic" style="width: 215px; height: 121px;">
+   <sub><p>eww widget music notifications</p></sub>
+</div>
