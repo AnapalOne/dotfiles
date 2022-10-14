@@ -108,78 +108,78 @@ altMask = mod1Mask
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
-    [ ((modm,               xK_BackSpace), kill)                               -- close focused window
-    , ((modm,                  xK_space ), sendMessage NextLayout)             -- rotate layout
-    , ((modm .|. shiftMask  ,  xK_space ), setLayout $ XMonad.layoutHook conf) -- reset layout order
-    , ((mod1Mask,              xK_Tab   ), windows W.focusUp     )             -- rotate focus between windows
-    , ((modm,                  xK_Return), windows W.swapMaster  )             -- swap focus master and window
-    , ((modm .|. shiftMask,    xK_comma ), sendMessage Shrink    )             -- decreases master window size
-    , ((modm .|. shiftMask,    xK_period), sendMessage Expand    )             -- increases master window size
-    , ((modm,                  xK_comma ), windows W.swapUp      )             -- move tiled window
-    , ((modm,                  xK_period), windows W.swapDown    )             --
-    , ((modm,               xK_backslash), withFocused hideWindow)             -- hide window
-    , ((modm .|. shiftMask, xK_backslash), popOldestHiddenWindow)              -- restore the last hidden window
+    [ ((modm,               xK_BackSpace ), kill)                               -- close focused window
+    , ((modm,                  xK_space  ), sendMessage NextLayout)             -- rotate layout
+    , ((modm .|. shiftMask,    xK_space  ), setLayout $ XMonad.layoutHook conf) -- reset layout order
+    , ((mod1Mask,              xK_Tab    ), windows W.focusUp     )             -- rotate focus between windows
+    , ((modm,                  xK_Return ), windows W.swapMaster  )             -- swap focus master and window
+    , ((modm .|. shiftMask,    xK_comma  ), sendMessage Shrink    )             -- decreases master window size
+    , ((modm .|. shiftMask,    xK_period ), sendMessage Expand    )             -- increases master window size
+    , ((modm,                  xK_comma  ), windows W.swapUp      )             -- move tiled window
+    , ((modm,                  xK_period ), windows W.swapDown    )             --
+    , ((modm,               xK_backslash ), withFocused hideWindow)             -- hide window
+    , ((modm .|. shiftMask, xK_backslash ), popOldestHiddenWindow)              -- restore the last hidden window
 
     -- // workspaces
-    , ((modm,           xK_Home), prevWS)                   -- switch workspace to the left
-    , ((modm,            xK_End), nextWS)                   -- switch workspace to the right
+    , ((modm,           xK_Home ), prevWS)                   -- switch workspace to the left
+    , ((modm,            xK_End ), nextWS)                   -- switch workspace to the right
 
     -- // floating windows
-    , ((modm .|. shiftMask, xK_Tab    ), withFocused toggleFloat)                      -- toggle between tiled and floating window
-    , ((modm,               xK_Up     ), withFocused (keysMoveWindow (0,-35)))         -- move floating window 
-    , ((modm,               xK_Down   ), withFocused (keysMoveWindow (0,35)))          -- 
-    , ((modm,               xK_Left   ), withFocused (keysMoveWindow (-35,0)))         --
-    , ((modm,               xK_Right  ), withFocused (keysMoveWindow (35,0)))          --
-    , ((modm .|. shiftMask, xK_Up     ), withFocused (keysResizeWindow (0,-30) (0,0))) -- resize floating window
-    , ((modm .|. shiftMask, xK_Down   ), withFocused (keysResizeWindow (0,30) (0,0)))  --
-    , ((modm .|. shiftMask, xK_Left   ), withFocused (keysResizeWindow (-30,0) (0,0))) --
-    , ((modm .|. shiftMask, xK_Right  ), withFocused (keysResizeWindow (30,0) (0,0)))  --
-    , ((modm .|. controlMask, xK_Left ), withFocused $ snapMove L Nothing)             -- snap window relative to window or desktop
-    , ((modm .|. controlMask, xK_Right), withFocused $ snapMove R Nothing)             --
-    , ((modm .|. controlMask, xK_Up   ), withFocused $ snapMove U Nothing)             --
-    , ((modm .|. controlMask, xK_Down ), withFocused $ snapMove D Nothing)             --
-    , ((modm .|. altMask, xK_Left     ), withFocused $ snapGrow L Nothing)             -- snap window size to relative to other windows or desktop
-    , ((modm .|. altMask, xK_Right    ), withFocused $ snapGrow R Nothing)             --
-    , ((modm .|. altMask, xK_Up       ), withFocused $ snapGrow U Nothing)             --
-    , ((modm .|. altMask, xK_Down     ), withFocused $ snapGrow D Nothing)             --
+    , ((modm .|. shiftMask,   xK_Tab   ), withFocused toggleFloat)                      -- toggle between tiled and floating window
+    , ((modm,                 xK_Up    ), withFocused (keysMoveWindow (0,-35)))         -- move floating window 
+    , ((modm,                 xK_Down  ), withFocused (keysMoveWindow (0,35)))          -- 
+    , ((modm,                 xK_Left  ), withFocused (keysMoveWindow (-35,0)))         --
+    , ((modm,                 xK_Right ), withFocused (keysMoveWindow (35,0)))          --
+    , ((modm .|. shiftMask,   xK_Up    ), withFocused (keysResizeWindow (0,-30) (0,0))) -- resize floating window
+    , ((modm .|. shiftMask,   xK_Down  ), withFocused (keysResizeWindow (0,30) (0,0)))  --
+    , ((modm .|. shiftMask,   xK_Left  ), withFocused (keysResizeWindow (-30,0) (0,0))) --
+    , ((modm .|. shiftMask,   xK_Right ), withFocused (keysResizeWindow (30,0) (0,0)))  --
+    , ((modm .|. controlMask, xK_Left  ), withFocused $ snapMove L Nothing)             -- snap window relative to window or desktop
+    , ((modm .|. controlMask, xK_Right ), withFocused $ snapMove R Nothing)             --
+    , ((modm .|. controlMask, xK_Up    ), withFocused $ snapMove U Nothing)             --
+    , ((modm .|. controlMask, xK_Down  ), withFocused $ snapMove D Nothing)             --
+    , ((modm .|. altMask,     xK_Left  ), withFocused $ snapGrow L Nothing)             -- snap window size to relative to other windows or desktop
+    , ((modm .|. altMask,     xK_Right ), withFocused $ snapGrow R Nothing)             --
+    , ((modm .|. altMask,     xK_Up    ), withFocused $ snapGrow U Nothing)             --
+    , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)             --
 
     -- // system commands
-    , ((modm,                   xK_b   ), sendMessage ToggleStruts)                                                                -- toggle xmobar visibility
-    , ((modm,                   xK_q   ), confirmPrompt configPrompt "recompile?" $ spawn "xmonad --recompile; xmonad --restart")  -- recompiles xmonad
-    , ((modm,                 xK_Escape), confirmPrompt configPrompt "logout?" $ io (exitWith ExitSuccess))                        -- logout from xmonad
-    , ((modm .|. controlMask, xK_Escape), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
-    , ((modm .|. shiftMask,   xK_Escape), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
-    , ((modm .|. altMask  ,   xK_Escape), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
-    , ((modm,                     xK_F7), spawn "xset dpms force suspend")                                                         -- suspend screen
-    , ((modm,                    xK_F12), spawn "pamixer -i 5")                                                                    -- increase volume
-    , ((modm,                    xK_F11), spawn "pamixer -d 5")                                                                    -- decrease volume
-    , ((modm,                    xK_F10), spawn "pamixer -t")                                                                      -- mute volume
+    , ((modm,                      xK_b ), sendMessage ToggleStruts)                                                                -- toggle xmobar visibility
+    , ((modm,                      xK_q ), confirmPrompt configPrompt "recompile?" $ spawn "xmonad --recompile; xmonad --restart")  -- recompiles xmonad
+    , ((modm,                 xK_Escape ), confirmPrompt configPrompt "logout?" $ io (exitWith ExitSuccess))                        -- logout from xmonad
+    , ((modm .|. controlMask, xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
+    , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
+    , ((modm .|. altMask,     xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
+    , ((modm,                     xK_F7 ), spawn "xset dpms force suspend")                                                         -- suspend screen
+    , ((modm,                    xK_F12 ), spawn "pamixer -i 5")                                                                    -- increase volume
+    , ((modm,                    xK_F11 ), spawn "pamixer -d 5")                                                                    -- decrease volume
+    , ((modm,                    xK_F10 ), spawn "pamixer -t")                                                                      -- mute volume
 
     -- // playerctl
-    , ((modm ,            xK_apostrophe), spawn "playerctl play-pause")                                                            -- play-pause player
-    , ((modm,           xK_bracketright), spawn "playerctl next")                                                                  -- next song/video/track
-    , ((modm,            xK_bracketleft), spawn "playerctl previous")                                                              -- previous song/video/track
+    , ((modm ,            xK_apostrophe ), spawn "playerctl play-pause")                                                            -- play-pause player
+    , ((modm,           xK_bracketright ), spawn "playerctl next")                                                                  -- next song/video/track
+    , ((modm,            xK_bracketleft ), spawn "playerctl previous")                                                              -- previous song/video/track
 
     -- // programs
-    , ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)                               -- open terminal
-    , ((modm .|. shiftMask, xK_s     ), spawn "flameshot gui")                                      -- equivelent to prntscr
-    , ((modm,               xK_r     ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
-    , ((modm .|. shiftMask, xK_v     ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
-    , ((modm .|. shiftMask, xK_k     ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
-    , ((modm .|. shiftMask, xK_c     ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
+    , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
+    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- equivelent to prntscr
+    , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
+    , ((modm .|. shiftMask,      xK_v ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
+    , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
+    , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     
     -- // scratchpad
-    , ((modm .|. controlMask, xK_Return), namedScratchpadAction myScratchpads "ScrP_alacritty")
-    , ((modm .|. shiftMask,   xK_slash ), namedScratchpadAction myScratchpads "help")
-    , ((modm,                 xK_grave ), namedScratchpadAction myScratchpads "ScrP_htop")
-    , ((modm .|. shiftMask,   xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")
-    , ((modm,                 xK_v     ), namedScratchpadAction myScratchpads "ScrP_vim")
-    , ((modm,                 xK_m     ), namedScratchpadAction myScratchpads "ScrP_cmus")
-    , ((modm .|. shiftMask,   xK_m     ), namedScratchpadAction myScratchpads "ScrP_spt")
+    , ((modm .|. controlMask, xK_Return ), namedScratchpadAction myScratchpads "ScrP_alacritty")
+    , ((modm .|. shiftMask,    xK_slash ), namedScratchpadAction myScratchpads "help")
+    , ((modm,                  xK_grave ), namedScratchpadAction myScratchpads "ScrP_htop")
+    , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")
+    , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")
+    , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")
+    , ((modm .|. shiftMask,        xK_m ), namedScratchpadAction myScratchpads "ScrP_spt")
 
     -- // grid
-    , ((modm,                 xK_Tab   ), goToSelected $ gridSystemColor systemColorizer)
-    , ((0,                    xK_Menu  ), spawnSelected def myGridSpawn)
+    , ((modm,                  xK_Tab ), goToSelected $ gridSystemColor systemColorizer)
+    , ((0,                    xK_Menu ), spawnSelected def myGridSpawn)
     ]
     ++
     -- mod-[1..9] = Switch to workspace 
@@ -358,7 +358,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ x
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppVisible = xmobarColor "#4381fb" ""
-                                   , ppHidden = xmobarColor "#d1426e" "" . wrap "*" ""
+                                   , ppHidden = xmobarColor "#d1426e" "" . wrap "" ""
                                    , ppHiddenNoWindows = xmobarColor "#061d8e" ""
                                    , ppTitle = xmobarColor "#ffffff" "" . shorten 60
                                    , ppSep = "<fc=#ffffff> | </fc>"
