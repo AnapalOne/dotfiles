@@ -3,30 +3,29 @@
 
 ## includes
 
-- alacritty - terminal
-- cmus - music player
-- dunst - notification daemon
-- eww - widgets
-- htop - task manager
-- lightdm - display manager 
-- neofetch - system information tool
-- pacman - package manager
-- picom - X11 compositor
-- ranger - file manager 
-- screenkey - displays keystrokes
-- spotifyd - Spotify client as a daemon
-- xmonad - window manager
-- xmobar - status bar
-- system configs
-    - systemd
+- **alacritty** - terminal
+- **cmus** - music player
+- **dunst** - notification daemon
+- **eww** - widgets
+- **htop** - task manager
+- **lightdm** - display manager 
+- **neofetch** - system information tool
+- **pacman** - package manager
+- **picom** - X11 compositor
+- **ranger** - file manager 
+- **screenkey** - displays keystrokes
+- **spotifyd** - Spotify client as a daemon
+- **xmonad** - window manager
+- **xmobar** - status bar
+- **other**
+    - Miscellaneous stuff.
+    - **apps**
+        - *App files.*
+    - **scripts** 
+        - *Script files.*
+    - **systemd**
         - user
             - *Includes service files.*
-- other
-    - apps
-        - *App files.*
-    - *Miscellaneous stuff.
-    - scripts 
-        - *Script files.*
 
 ## preview
 
