@@ -358,8 +358,7 @@ myStartupHook = do
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
-        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
+        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ ; ~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "spotifyd --no-daemon &"
         setDefaultCursor myCursor
 
