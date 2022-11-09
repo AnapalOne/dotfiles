@@ -39,7 +39,7 @@
 ## preview
 
 <p align="center">
-   <img src="2022-10-09_08-32.png" title="xmonad config" alt="xmonad pc pic">
+   <img src="images/2022-10-09_08-32.png" title="xmonad config" alt="xmonad pc pic">
    <br>
    xmonad.hs config
 </p>
@@ -49,7 +49,7 @@
 <br>
 
 <p align="center">
-   <img src="2022-10-09_07-30.png" title="xmonad laptop config" alt="xmonad laptop pic">
+   <img src="images/2022-10-09_07-30.png" title="xmonad laptop config" alt="xmonad laptop pic">
    <br>
    xmonad.laptop.hs config
 </p>
@@ -59,13 +59,13 @@
 <br>
 
 <p align="center">
-   <img src="2022-11-09_20-31.png" title="spawnSelected" alt="spawnSelected pic">
+   <img src="images/2022-11-09_20-31.png" title="spawnSelected" alt="spawnSelected pic">
    <br>
    spawnSelected in xmonad
 </p>
 
 <p align="center">
-   <img src="2022-11-09_20-33.png" title="goToSelected" alt="goToSelected pic">
+   <img src="images/2022-11-09_20-33.png" title="goToSelected" alt="goToSelected pic">
    <br>
    goToSelected in xmonad
 </p>
@@ -75,7 +75,7 @@
 <br>
 
 <p align="center">
-   <img src="eww.gif" title="eww music notifications" alt="eww music notifs pic">
+   <img src="images/eww.gif" title="eww music notifications" alt="eww music notifs pic">
    <br>
    eww widget music notifications
 </p>
