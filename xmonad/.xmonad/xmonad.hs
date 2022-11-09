@@ -74,7 +74,7 @@ toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
 myGridSpawn = [ ("\xf121 Subl",           "subl"), 
-                ("\xf269 Firefox",        "Firefox"), 
+                ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf718 LibreOffice",    "libreoffice"), 
                 ("\xf07b Nemo",           "nemo"), 
