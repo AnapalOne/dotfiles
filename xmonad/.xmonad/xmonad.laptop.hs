@@ -65,18 +65,28 @@ myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
-    -- Grid applications (menu key).
-myGridSpawn = [ "subl","firefox","github-desktop",
-                "libreoffice","nemo","kdenlive",
-                "discord","spotify","gimp","krita","obs",
-                "audacity","steam"]
-
 myWorkspaceList, myWorkspaceListWords :: [String]
 myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
+
+    -- Applications in spawnSelected. (Home or modm + f)
+myGridSpawn = [ ("\xf121 Subl",           "subl"), 
+                ("\xf269 Firefox",        "Firefox"), 
+                ("\xea84 Github Desktop", "github-desktop"),
+                ("\xf718 LibreOffice",    "libreoffice"), 
+                ("\xf07b Nemo",           "nemo"), 
+                ("\xf008 Kdenlive" ,      "kdenlive"),
+                ("\xfb6e Discord",        "discord"),
+                ("\xf1bc Spotify",        "spotify"), 
+                ("\xf7ea GIMP",           "gimp"), 
+                ("\xf1fc Krita",          "krita"), 
+                ("\xf03d OBS",            "obs"),
+                ("\xf028 Audacity",       "audacity"), 
+                ("\xf11b Steam",          "steam")
+            ]
 
 
 
@@ -159,13 +169,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,             xF86XK_AudioMute ), spawn "pamixer -t")                                                                      --
 
     -- // playerctl
-    , ((modm,             xK_apostrophe ), spawn "playerctl play-pause")                                                            -- play-pause player
-    , ((0,             xF86XK_AudioPlay ), spawn "playerctl play")                                                                  -- play player
-    , ((0,            xF86XK_AudioPause ), spawn "playerctl pause")                                                                 -- pause player
-    , ((0,             xF86XK_AudioNext ), spawn "playerctl next")                                                                  -- next song/video/track
-    , ((modm,           xK_bracketright ), spawn "playerctl next")                                                                  --
-    , ((0,             xF86XK_AudioPrev ), spawn "playerctl previous")                                                              -- previous song/video/track
-    , ((modm,            xK_bracketleft ), spawn "playerctl previous")                                                              --
+    , ((modm,             xK_apostrophe ), spawn $ "playerctl play-pause " ++ playerctlPlayers)     -- play-pause player
+    , ((0,             xF86XK_AudioPlay ), spawn $ "playerctl play " ++ playerctlPlayers)           -- play player
+    , ((0,            xF86XK_AudioPause ), spawn $ "playerctl pause " ++ playerctlPlayers)          -- pause player
+    , ((0,             xF86XK_AudioNext ), spawn $ "playerctl next " ++ playerctlPlayers)           -- next song/video/track
+    , ((modm,           xK_bracketright ), spawn $ "playerctl next " ++ playerctlPlayers)           --
+    , ((0,             xF86XK_AudioPrev ), spawn $ "playerctl previous " ++ playerctlPlayers)       -- previous song/video/track
+    , ((modm,            xK_bracketleft ), spawn $ "playerctl previous " ++ playerctlPlayers)       --
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
@@ -188,7 +198,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // grid
     , ((modm,                  xK_Tab ), goToSelected $ gridSystemColor systemColorizer)
-    , ((0,                    xK_Menu ), spawnSelected def myGridSpawn)
+    , ((0,                    xK_Menu ), spawnSelected' myGridSpawn)
     ]
     ++
     -- mod-[1..9] = Switch to workspace 
@@ -358,7 +368,7 @@ myStartupHook = do
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ ; ~/Scripts/eww-fg-workaround.sh &"
+        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "spotifyd --no-daemon &"
         setDefaultCursor myCursor
 
@@ -415,17 +425,20 @@ main = do
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
+
 toggleFloat :: Window -> X ()
 toggleFloat w = windows
    ( \s -> if M.member w (W.floating s)
            then W.sink w s
            else (W.float w toggleFloatSize) s)
 
+
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts
    where
            doubleLts '<' = "<<"
            doubleLts x   = [x]
+
 
     -- This function is special as a template for other usages 
     -- since you can insert any program that accepts a signle line of input
@@ -438,14 +451,27 @@ qalcPrompt c ans =
         trim  = f . f
             where f = reverse . dropWhile isSpace
 
-    -- Grid color used in [Key Binds].
-    -- At this moment, I can't figure out how to apply color to spawnSelected.
-    -- Its probably a bug, but I'll figure something out later.
-gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
-    
+
+gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
+                                                               gs_cellwidth = 130,
+                                                               gs_font = "xft:Iosevka Regular:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
+
+    -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
                      minBound            -- lowest inactive bg
                      minBound            -- highest inactive bg
                      (0x2a,0x50,0x9a)    -- active bg
                      maxBound            -- inactive fg
                      maxBound            -- active fg
+
+    -- Grid color for spawnSelected used in [Key Binds].
+stringColorizer' :: String -> Bool -> X (String, String)
+stringColorizer' s active = if active then 
+                                pure ("#2A509A", "white")
+                             else
+                                pure ("black", "white")
+
+
+spawnSelected' :: [(String, String)] -> X ()
+spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
+                    where conf = (gridSystemColor stringColorizer')

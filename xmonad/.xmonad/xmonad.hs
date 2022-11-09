@@ -65,18 +65,28 @@ myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
-    -- grid applications (menu key)
-myGridSpawn = [ "subl","firefox","github-desktop",
-                "libreoffice","nemo","kdenlive",
-                "discord","spotify","gimp","krita","obs",
-                "audacity","steam"]
-
 myWorkspaceList, myWorkspaceListWords :: [String]
 myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
+
+    -- Applications in spawnSelected. (Home or modm + f)
+myGridSpawn = [ ("\xf121 Subl",           "subl"), 
+                ("\xf269 Firefox",        "Firefox"), 
+                ("\xea84 Github Desktop", "github-desktop"),
+                ("\xf718 LibreOffice",    "libreoffice"), 
+                ("\xf07b Nemo",           "nemo"), 
+                ("\xf008 Kdenlive" ,      "kdenlive"),
+                ("\xfb6e Discord",        "discord"),
+                ("\xf1bc Spotify",        "spotify"), 
+                ("\xf7ea GIMP",           "gimp"), 
+                ("\xf1fc Krita",          "krita"), 
+                ("\xf03d OBS",            "obs"),
+                ("\xf028 Audacity",       "audacity"), 
+                ("\xf11b Steam",          "steam")
+            ]
 
 
 
@@ -103,7 +113,10 @@ myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
 -- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
 ---------------------------------------------------------
 
+altMask :: KeyMask
 altMask = mod1Mask
+
+playerctlPlayers = "--player=spotify,cmus,spotifyd"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
@@ -144,21 +157,21 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)             --
 
     -- // system commands
-    , ((modm,                      xK_b ), sendMessage ToggleStruts)                                                                -- toggle xmobar visibility
-    , ((modm,                      xK_q ), confirmPrompt configPrompt "recompile?" $ spawn "xmonad --recompile; xmonad --restart")  -- recompiles xmonad
-    , ((modm,                 xK_Escape ), confirmPrompt configPrompt "logout?" $ io (exitWith ExitSuccess))                        -- logout from xmonad
-    , ((modm .|. controlMask, xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
-    , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
-    , ((modm .|. altMask,     xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
-    , ((modm,                     xK_F7 ), spawn "xset dpms force suspend")                                                         -- suspend screen
-    , ((modm,                    xK_F12 ), spawn "pamixer -i 5")                                                                    -- increase volume
-    , ((modm,                    xK_F11 ), spawn "pamixer -d 5")                                                                    -- decrease volume
-    , ((modm,                    xK_F10 ), spawn "pamixer -t")                                                                      -- mute volume
+    , ((modm,                      xK_b ), sendMessage ToggleStruts)                                                                 -- toggle xmobar visibility
+    , ((modm,                      xK_q ), confirmPrompt configPrompt "recompile?" $ spawn "xmonad --recompile && xmonad --restart") -- recompiles xmonad
+    , ((modm,                 xK_Escape ), confirmPrompt configPrompt "logout?" $ io (exitWith ExitSuccess))                         -- logout from xmonad
+    , ((modm .|. controlMask, xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                      -- shutdown computer
+    , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
+    , ((modm .|. altMask,     xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
+    , ((modm,                     xK_F7 ), spawn "xset dpms force suspend")                                                          -- suspend screen
+    , ((modm,                    xK_F12 ), spawn "pamixer -i 5")                                                                     -- increase volume
+    , ((modm,                    xK_F11 ), spawn "pamixer -d 5")                                                                     -- decrease volume
+    , ((modm,                    xK_F10 ), spawn "pamixer -t")                                                                       -- mute volume
 
     -- // playerctl
-    , ((modm ,            xK_apostrophe ), spawn "playerctl play-pause")                                                            -- play-pause player
-    , ((modm,           xK_bracketright ), spawn "playerctl next")                                                                  -- next song/video/track
-    , ((modm,            xK_bracketleft ), spawn "playerctl previous")                                                              -- previous song/video/track
+    , ((modm ,            xK_apostrophe ), spawn $ "playerctl play-pause " ++ playerctlPlayers)  -- play-pause player
+    , ((modm,           xK_bracketright ), spawn $ "playerctl next " ++ playerctlPlayers)        -- next song/video/track
+    , ((modm,            xK_bracketleft ), spawn $ "playerctl previous " ++ playerctlPlayers)    -- previous song/video/track
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
@@ -179,7 +192,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // grid
     , ((modm,                  xK_Tab ), goToSelected $ gridSystemColor systemColorizer)
-    , ((0,                    xK_Menu ), spawnSelected def myGridSpawn)
+    , ((0,                    xK_Menu ), spawnSelected' myGridSpawn)
     ]
     ++
     -- mod-[1..9] = Switch to workspace 
@@ -187,8 +200,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
- 
- 
+
+
 
 ---------------------------------------------------------
 -- Layouts
@@ -345,10 +358,8 @@ myStartupHook = do
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
-        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
+        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "~/Scripts/eww-fg-workaround.sh &"
-        spawnOnce "spotifyd --no-daemon &"
-        -- spawnOnce "~/Scripts/battery_notifs.sh &"
         setDefaultCursor myCursor
 
 
@@ -405,17 +416,20 @@ main = do
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
+
 toggleFloat :: Window -> X ()
 toggleFloat w = windows
    ( \s -> if M.member w (W.floating s)
            then W.sink w s
            else (W.float w toggleFloatSize) s)
 
+
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts
    where
            doubleLts '<' = "<<"
            doubleLts x   = [x]
+
 
     -- This function is special as a template for other usages 
     -- since you can insert any program that accepts a signle line of input
@@ -428,14 +442,27 @@ qalcPrompt c ans =
         trim  = f . f
             where f = reverse . dropWhile isSpace
 
-    -- Grid color used in [Key Binds].
-    -- At this moment, I can't figure out how to apply color to spawnSelected.
-    -- Its probably a bug, but I'll figure something out later.
-gridSystemColor colorizer = (buildDefaultGSConfig systemColorizer) { gs_cellheight = 50, gs_cellwidth = 130 }
-    
+
+gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
+                                                               gs_cellwidth = 130,
+                                                               gs_font = "xft:Iosevka Regular:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
+
+    -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
                      minBound            -- lowest inactive bg
                      minBound            -- highest inactive bg
                      (0x2a,0x50,0x9a)    -- active bg
                      maxBound            -- inactive fg
                      maxBound            -- active fg
+
+    -- Grid color for spawnSelected used in [Key Binds].
+stringColorizer' :: String -> Bool -> X (String, String)
+stringColorizer' s active = if active then 
+                                pure ("#2A509A", "white")
+                             else
+                                pure ("black", "white")
+
+
+spawnSelected' :: [(String, String)] -> X ()
+spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
+                    where conf = (gridSystemColor stringColorizer')
