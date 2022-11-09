@@ -1,5 +1,18 @@
-# my dotfiles
- scripts and configuration files for programs, window managers, and other stuff I use, kept here for safe keepings.
+<div align="center"> 
+   <h1>
+      my dotfiles <br>
+      <img src="https://img.shields.io/badge/-xmonad-blueviolet">
+      <img src="https://img.shields.io/badge/-xmobar-purple">
+      <img src="https://img.shields.io/badge/-eww-red">
+      <img src="https://img.shields.io/badge/-dunst-blue">
+      <img src="https://img.shields.io/badge/-cmus-crimson">
+      <img src="https://img.shields.io/badge/-ranger-darkblue">
+      <img src="https://img.shields.io/badge/-neofetch-lightblue">
+   </h1> 
+   scripts and configuration files for programs, window managers, and other stuff I use, kept here for safe keepings.
+
+</div>
+<br>
 
 ## includes
 
@@ -14,7 +27,7 @@
 - [**lightdm**](https://github.com/canonical/lightdm) - display manager 
 
 ### compositors
-- [**picom**](https://github.com/jonaburg/picom) - X11 compositor
+- [**picom** (jonaburg fork)](https://github.com/jonaburg/picom) - X11 compositor
 
 ### applications
 - [**alacritty**](https://github.com/alacritty/alacritty) - terminal
