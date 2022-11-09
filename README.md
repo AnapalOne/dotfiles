@@ -2,20 +2,22 @@
    <h1>
       my dotfiles <br>
       <kbd>
-         <img src="https://img.shields.io/badge/-xmonad-blueviolet">
-         <img src="https://img.shields.io/badge/-xmobar-purple">
-         <img src="https://img.shields.io/badge/-eww-red">
-         <img src="https://img.shields.io/badge/-dunst-blue">
-         <img src="https://img.shields.io/badge/-cmus-crimson">
-         <img src="https://img.shields.io/badge/-ranger-darkblue">
-         <img src="https://img.shields.io/badge/-neofetch-lightblue">
+         <a href="#window-managers"><img src="https://img.shields.io/badge/-xmonad-blueviolet"></a>
+         <a href="#status-bars"><img src="https://img.shields.io/badge/-xmobar-purple"></a>
+         <a href="#status-bars"><img src="https://img.shields.io/badge/-eww-red"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-dunst-blue"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-cmus-crimson"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-ranger-darkblue"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-neofetch-lightblue"></a>
       </kbd>
    </h1> 
    scripts and configuration files for programs, window managers, and other stuff I use, kept here for safe keepings.
 </div>
 <br>
 
-## includes
+<div align="center"> 
+   <h2>includes</h2>
+</div>
 
 ### window managers
 - [**xmonad**](https://xmonad.org/) - window manager
@@ -50,7 +52,9 @@
     - user
         - *Includes service files.*
 
-## preview
+<div align="center"> 
+   <h2>preview</h2>
+</div>
 
 <p align="center">
    <img src="images/2022-10-09_08-32.png" title="xmonad config" alt="xmonad pc pic">
