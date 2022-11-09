@@ -113,7 +113,11 @@ myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
 -- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
 ---------------------------------------------------------
 
+altMask :: KeyMask
 altMask = mod1Mask
+
+playerctlPlayers = "--player=spotify,cmus,spotifyd"
+
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
