@@ -1,7 +1,23 @@
-# my dotfiles
- scripts and configuration files for programs, window managers, and other stuff I use, kept here for safe keepings.
+<div align="center"> 
+   <h1>
+      my dotfiles <br>
+      <kbd>
+         <a href="#window-managers"><img src="https://img.shields.io/badge/-xmonad-blueviolet"></a>
+         <a href="#status-bars"><img src="https://img.shields.io/badge/-xmobar-purple"></a>
+         <a href="#status-bars"><img src="https://img.shields.io/badge/-eww-red"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-dunst-blue"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-cmus-crimson"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-ranger-darkblue"></a>
+         <a href="#applications"><img src="https://img.shields.io/badge/-neofetch-lightblue"></a>
+      </kbd>
+   </h1> 
+   scripts and configuration files for programs, window managers, and other stuff I use, kept here for safe keepings.
+</div>
+<br>
 
-## includes
+<div align="center"> 
+   <h2>includes</h2>
+</div>
 
 ### window managers
 - [**xmonad**](https://xmonad.org/) - window manager
@@ -14,7 +30,7 @@
 - [**lightdm**](https://github.com/canonical/lightdm) - display manager 
 
 ### compositors
-- [**picom**](https://github.com/jonaburg/picom) - X11 compositor
+- [**picom** (jonaburg fork)](https://github.com/jonaburg/picom) - X11 compositor
 
 ### applications
 - [**alacritty**](https://github.com/alacritty/alacritty) - terminal
@@ -36,7 +52,9 @@
     - user
         - *Includes service files.*
 
-## preview
+<div align="center"> 
+   <h2>preview</h2>
+</div>
 
 <p align="center">
    <img src="images/2022-10-09_08-32.png" title="xmonad config" alt="xmonad pc pic">
