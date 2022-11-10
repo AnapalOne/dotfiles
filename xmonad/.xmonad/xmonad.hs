@@ -359,7 +359,6 @@ myStartupHook = do
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
-        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
         setDefaultCursor myCursor
 
 
