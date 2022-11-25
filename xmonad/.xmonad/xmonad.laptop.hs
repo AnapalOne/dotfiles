@@ -37,7 +37,7 @@ import XMonad.Layout.Hidden
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers (doCenterFloat)
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicProperty (dynamicPropertyChange)
 
@@ -73,7 +73,7 @@ myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"]
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf121 Subl",           "subl"), 
+myGridSpawn = [ ("\xf121 Sublime Text",   "subl"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf718 LibreOffice",    "libreoffice"), 
@@ -118,7 +118,6 @@ altMask = mod1Mask
 
 playerctlPlayers = "--player=spotify,cmus,spotifyd"
 
-
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
@@ -158,37 +157,33 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)             --
 
     -- // system commands
-    , ((modm,                      xK_b ), sendMessage ToggleStruts)                                                                -- toggle xmobar to front of screen
-    , ((modm,                      xK_q ), confirmPrompt logoutPrompt "recompile?" $ spawn "xmonad --recompile; xmonad --restart")  -- recompiles xmonad
-    , ((modm,                 xK_Escape ), confirmPrompt logoutPrompt "logout?" $ io (exitWith ExitSuccess))                        -- logout from xmonad
-    , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                         -- sleep mode
-    , ((modm .|. altMask,     xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                         -- reboot computer
-    , ((modm .|. controlMask, xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                     -- shutdown computer
-    , ((0,                 xF86XK_Sleep ), spawn "systemctl suspend")                                                               -- sleep mode
-    , ((0,           xF86XK_ScreenSaver ), spawn "xset dpms force suspend")                                                         -- suspend screen
-    , ((0,       xF86XK_MonBrightnessUp ), spawn "lux -a 5% -M 936")                                                                -- change brightness
-    , ((0,     xF86XK_MonBrightnessDown ), spawn "lux -s 5% -m 50")                                                                 --
-    , ((0,      xF86XK_AudioRaiseVolume ), spawn "pamixer -i 10")                                                                   -- change volume
-    , ((0,      xF86XK_AudioLowerVolume ), spawn "pamixer -d 10")                                                                   --
-    , ((0,             xF86XK_AudioMute ), spawn "pamixer -t")                                                                      --
+    , ((modm,                      xK_b ), sendMessage ToggleStruts)                                                                  -- toggle xmobar to front of screen
+    , ((modm,                      xK_q ), confirmPrompt logoutPrompt "recompile?" $ spawn "xmonad --recompile && xmonad --restart")  -- recompiles xmonad
+    , ((modm,                 xK_Escape ), confirmPrompt logoutPrompt "logout?" $ io (exitWith ExitSuccess))                          -- logout from xmonad
+    , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                           -- sleep mode
+    , ((modm .|. altMask,     xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                           -- reboot computer
+    , ((modm .|. controlMask, xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
+    , ((0,       xF86XK_MonBrightnessUp ), spawn "lux -a 5%")                                                                         -- change brightness
+    , ((0,     xF86XK_MonBrightnessDown ), spawn "lux -s 5% -m 1000")                                                                 --
+    , ((modm,                      xK_l ), spawn "xscreensaver-command -lock")                                                        -- lock system
+    , ((0,      xF86XK_AudioRaiseVolume ), spawn "pamixer -i 10")                                                                     -- change volume
+    , ((0,      xF86XK_AudioLowerVolume ), spawn "pamixer -d 10")                                                                     --
+    , ((0,             xF86XK_AudioMute ), spawn "pamixer -t")                                                                        --
 
     -- // playerctl
-    , ((modm,             xK_apostrophe ), spawn $ "playerctl play-pause " ++ playerctlPlayers)     -- play-pause player
-    , ((0,             xF86XK_AudioPlay ), spawn $ "playerctl play " ++ playerctlPlayers)           -- play player
-    , ((0,            xF86XK_AudioPause ), spawn $ "playerctl pause " ++ playerctlPlayers)          -- pause player
-    , ((0,             xF86XK_AudioNext ), spawn $ "playerctl next " ++ playerctlPlayers)           -- next song/video/track
-    , ((modm,           xK_bracketright ), spawn $ "playerctl next " ++ playerctlPlayers)           --
-    , ((0,             xF86XK_AudioPrev ), spawn $ "playerctl previous " ++ playerctlPlayers)       -- previous song/video/track
-    , ((modm,            xK_bracketleft ), spawn $ "playerctl previous " ++ playerctlPlayers)       --
+    , ((0,             xF86XK_AudioPlay ), spawn $ "playerctl play-pause " ++ playerctlPlayers)               -- play-pause player
+    , ((0,             xF86XK_AudioStop ), spawn $ "playerctl stop " ++ playerctlPlayers)                     -- stop player
+    , ((0,             xF86XK_AudioPrev ), spawn $ "playerctl previous " ++ playerctlPlayers)                 -- previous song/video/track
+    , ((0,             xF86XK_AudioNext ), spawn $ "playerctl next " ++ playerctlPlayers)                     -- next song/video/track
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
     , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- equivelent to prntscr
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
-    , ((modm .|. shiftMask,      xK_v ), spawn "alacritty -t alsamixer -e alsamixer")                -- sound system
     , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
-    , ((0,      xF86XK_TouchpadToggle ), spawn "~/Scripts/toggle_touchpad.sh")                       -- toggle touchpad off and on
+    , ((0,          xF86XK_TouchpadOn ), spawn "~/Scripts/enable_touchpad.sh")                       -- toggle touchpad off and on
+    , ((0,         xF86XK_TouchpadOff ), spawn "~/Scripts/disable_touchpad.sh")                      -- 
     
     -- // scratchpad
     , ((modm .|. controlMask, xK_Return ), namedScratchpadAction myScratchpads "ScrP_alacritty")
@@ -197,12 +192,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")
     , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")
     , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")
-    , ((modm .|. shiftMask,        xK_m ), namedScratchpadAction myScratchpads "ScrP_spt")
     , ((modm .|. shiftMask,        xK_b ), namedScratchpadAction myScratchpads "ScrP_blueman")
+    , ((modm .|. shiftMask,        xK_v ), namedScratchpadAction myScratchpads "ScrP_alsamixer")
+    , ((modm .|. controlMask,      xK_v ), namedScratchpadAction myScratchpads "ScrP_pavucontrol")
 
     -- // grid
     , ((modm,                  xK_Tab ), goToSelected $ gridSystemColor systemColorizer)
-    , ((0,                    xK_Menu ), spawnSelected' myGridSpawn)
+    , ((modm,                    xK_f ), spawnSelected' myGridSpawn)
     ]
     ++
     -- mod-[1..9] = Switch to workspace 
@@ -252,17 +248,18 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
 ---------------------------------------------------------
 
 myScratchpads = 
-         [ NS "ScrP_alacritty" "alacritty -t scratchpad" (title =? "scratchpad") floatScratchpad
-         , NS "ScrP_htop" "alacritty -t htop -e htop" (title =? "htop") floatScratchpad
-         , NS "ScrP_vim" "alacritty -t vim -e vim" (title =? "vim") floatScratchpad
-         , NS "ScrP_ncdu" "alacritty -t ncdu -e ncdu" (title =? "ncdu") floatScratchpad
-         , NS "help" "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
-         , NS "ScrP_cmus" "alacritty -t cmus -e cmus" (title =? "cmus") floatScratchpad
-         , NS "ScrP_spt" "alacritty -t spotify-tui -e spt" (title =? "spotify-tui") floatScratchpad
-         , NS "ScrP_blueman" "blueman-manager" (resource =? "blueman-manager") floatScratchpad
+         [ NS "help"                "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
+         , NS "ScrP_alsamixer"      "alacritty -t alsamixer -e alsamixer"   (title =? "alsamixer")          floatScratchpad
+         , NS "ScrP_alacritty"      "alacritty -t scratchpad"               (title =? "scratchpad")         floatScratchpad
+         , NS "ScrP_htop"           "alacritty -t htop -e htop"             (title =? "htop")               floatScratchpad
+         , NS "ScrP_vim"            "alacritty -t vim -e vim"               (title =? "vim")                floatScratchpad
+         , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu"             (title =? "ncdu")               floatScratchpad
+         , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"             (title =? "cmus")               floatScratchpad
+         , NS "ScrP_blueman"        "blueman-manager"                       (resource =? "blueman-manager") floatScratchpad
+         , NS "ScrP_pavucontrol"    "pavucontrol"                           (resource =? "pavucontrol")     floatScratchpad
          ]
     where 
-       floatScratchpad = customFloating $ W.RationalRect l t w h
+        floatScratchpad = customFloating $ W.RationalRect l t w h
                 where
                     w = 0.9
                     h = 0.88
@@ -278,18 +275,19 @@ myScratchpads =
 
 qalcPromptConfig :: XPConfig
 qalcPromptConfig = def
-       { font = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
+       { font = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
        , bgColor = "black"
        , fgColor = "white"
        , bgHLight = "white"
        , fgHLight = "black"
        , borderColor = "#646464"
        , position = Bottom 
+       , height = 30
        }
 
 logoutPrompt :: XPConfig
 logoutPrompt = def 
-       { font = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
+       { font = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
        , bgColor = "black"
        , fgColor = "white"
        , bgHLight = "white"
@@ -354,8 +352,9 @@ myManageHook = composeAll
         , className =? "Sxiv"           --> doFloat
         , className =? "Nemo"           --> doCenterFloat
         , className =? "XTerm"          --> doCenterFloat
+        , className =? "Pavucontrol"    --> doCenterFloat
         , title     =? "alsamixer"      --> doCenterFloat
-        , title     =? "welcome"        --> doCenterFloat
+        , title     =? "welcome"        --> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
         ]
 
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
@@ -366,14 +365,15 @@ myEventHook = spotifyWindowNameFix
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
-        spawnOnce "nitrogen --restore &"
+        -- spawnOnce "nitrogen --restore &"
+        spawnOnce "~/Scripts/kyu-kurarin.sh"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
-        spawnOnce "spotifyd --no-daemon &"
+        spawnOnce "xscreensaver --no-splash"
         setDefaultCursor myCursor
 
         -- Outputs status information to a status bar.
@@ -456,9 +456,9 @@ qalcPrompt c ans =
             where f = reverse . dropWhile isSpace
 
 
-gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
-                                                               gs_cellwidth = 130,
-                                                               gs_font = "xft:Iosevka Regular:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
+gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
+                                                               gs_cellwidth = 150,
+                                                               gs_font = "xft:Iosevka Regular:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11" }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName

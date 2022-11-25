@@ -1,7 +1,14 @@
+---------------------------------------------------------
+--            xmobar Config by Anapal                  --
+--     My personal config for my (or your) needs.      --
+--                                                     --
+--      > https://github.com/AnapalOne/dotfiles        --
+---------------------------------------------------------
+
 Config { 
 
    -- // appearance
-     font =         "xft:Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10, Source Han Sans JP Normal:size=8"
+     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11, Source Han Sans JP Normal:size=9"
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
@@ -13,7 +20,8 @@ Config {
    --              Static { xpos = 14 , ypos = 10, width = 1330, height = 20 }
    --              BottomW C 75
    --              BottomP 120 0
-   , position = Static { xpos = 12 , ypos = 12, width = 1341, height = 22 }
+   -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
+   , position = Static { xpos = 16, ypos = 16, width = 1888, height = 28 } -- for 1980x1080 screens
 
 
    -- // border
@@ -26,7 +34,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$}{                <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$}{                <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$</fc> | $disku$ [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -88,6 +96,10 @@ Config {
                              , "--high"     , "darkred"
                              ] 60
 
+          -- disk size monitor
+        , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+                    [] 100
+
           -- battery monitor (<timeleft> in discharging status for battery time left)
         , Run Battery        [ "--template" , "<leftbar> <acstatus>"
                              , "--Low"      , "15"        -- units: %
@@ -105,7 +117,7 @@ Config {
                                        -- ac "on" status
                                        , "-O" , "<left>% \xe315"
                                        -- ac "idle" status
-                                       , "-i" , "Charged!"    
+                                       , "-i" , "Idle.."    
                              ] 10
 
           -- time and date indicator 
