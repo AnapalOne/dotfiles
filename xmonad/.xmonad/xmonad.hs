@@ -73,7 +73,7 @@ myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"]
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf121 Subl",           "subl"), 
+myGridSpawn = [ ("\xf121 Sublime Text",           "subl"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf718 LibreOffice",    "libreoffice"), 
@@ -163,7 +163,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask, xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                      -- shutdown computer
     , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
     , ((modm .|. altMask,     xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
-    , ((modm,                     xK_F7 ), spawn "xset dpms force suspend")                                                          -- suspend screen
     , ((modm,                    xK_F12 ), spawn "pamixer -i 5")                                                                     -- increase volume
     , ((modm,                    xK_F11 ), spawn "pamixer -d 5")                                                                     -- decrease volume
     , ((modm,                    xK_F10 ), spawn "pamixer -t")                                                                       -- mute volume
@@ -245,7 +244,7 @@ myScratchpads =
          [ NS "ScrP_alacritty" "alacritty -t scratchpad" (title =? "scratchpad") floatScratchpad
          , NS "ScrP_htop" "alacritty -t htop -e htop" (title =? "htop") floatScratchpad
          , NS "ScrP_vim" "alacritty -t vim -e vim" (title =? "vim") floatScratchpad
-         , NS "ScrP_ncdu" "alacritty -t ncdu -e ncdu" (title =? "ncdu") floatScratchpad
+         , NS "ScrP_ncdu" "alacritty -t ncdu -e ncdu --exclude /home/anapal/D:/" (title =? "ncdu") floatScratchpad
          , NS "help" "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
          , NS "ScrP_cmus" "alacritty -t cmus -e cmus" (title =? "cmus") floatScratchpad
          , NS "ScrP_spt" "alacritty -t spotify-tui -e spt" (title =? "spotify-tui") floatScratchpad
@@ -359,6 +358,7 @@ myStartupHook = do
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
+        spawnOnce "flameshot &"
         setDefaultCursor myCursor
 
 
