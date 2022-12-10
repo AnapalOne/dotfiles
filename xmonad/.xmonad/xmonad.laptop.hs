@@ -21,7 +21,7 @@ import XMonad.Prompt.ConfirmPrompt
 import XMonad.Config.Desktop
 
 import XMonad.Actions.GridSelect
-import XMonad.Actions.CycleWS
+import XMonad.Actions.CycleWS (prevWS, nextWS)
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
 
@@ -86,7 +86,7 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
                 ("\xf03d OBS",            "obs"),
                 ("\xf028 Audacity",       "audacity"), 
                 ("\xf11b Steam",          "steam")
-            ]
+              ]
 
 
 
@@ -171,10 +171,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,             xF86XK_AudioMute ), spawn "pamixer -t")                                                                        --
 
     -- // playerctl
-    , ((0,             xF86XK_AudioPlay ), spawn $ "playerctl play-pause " ++ playerctlPlayers)               -- play-pause player
-    , ((0,             xF86XK_AudioStop ), spawn $ "playerctl stop " ++ playerctlPlayers)                     -- stop player
-    , ((0,             xF86XK_AudioPrev ), spawn $ "playerctl previous " ++ playerctlPlayers)                 -- previous song/video/track
-    , ((0,             xF86XK_AudioNext ), spawn $ "playerctl next " ++ playerctlPlayers)                     -- next song/video/track
+    , ((0,             xF86XK_AudioPlay  ), spawn $ "playerctl play-pause " ++ playerctlPlayers)               -- play-pause player
+    , ((0,             xF86XK_AudioPause ), spawn $ "playerctl pause " ++ playerctlPlayers)                    -- pause player
+    , ((0,             xF86XK_AudioStop  ), spawn $ "playerctl stop " ++ playerctlPlayers)                     -- stop player
+    , ((0,             xF86XK_AudioPrev  ), spawn $ "playerctl previous " ++ playerctlPlayers)                 -- previous song/video/track
+    , ((0,             xF86XK_AudioNext  ), spawn $ "playerctl next " ++ playerctlPlayers)                     -- next song/video/track
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
@@ -309,6 +310,8 @@ myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
         -- > doFloat to open in floating mode.
+        -- > doCenterFloat to open in flating mode, centered
+        -- > doRectFloat to open in floating mode with custom parameters for width, height, x, and y.
         -- > doShift to open only in a specific workspace.
 
         -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
@@ -319,7 +322,6 @@ myManageHook = composeAll
         
         -- dev
         , className =? "Subl"           --> doShift "<action=xdotool key super+2>\xf121</action>" 
-        , className =? "Audacity"       --> doShift "<action=xdotool key super+2>\xf121</action>" 
         , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
         
         -- www
@@ -334,6 +336,7 @@ myManageHook = composeAll
         , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf008</action>"
         , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
         , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
+        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
         
         -- game
         , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>"
@@ -372,7 +375,8 @@ myStartupHook = do
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
+        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
+        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "xscreensaver --no-splash"
         setDefaultCursor myCursor
 
@@ -444,8 +448,8 @@ xmobarEscape = concatMap doubleLts
            doubleLts x   = [x]
 
 
-    -- This function is special as a template for other usages 
-    -- since you can insert any program that accepts a signle line of input
+    -- This function is special as a template for other programs
+    -- since you can insert any program here that accepts a single line of input
     -- and outputs another.
 qalcPrompt :: XPConfig -> String -> X () 
 qalcPrompt c ans =
@@ -471,7 +475,7 @@ systemColorizer = colorRangeFromClassName
     -- Grid color for spawnSelected used in [Key Binds].
 stringColorizer' :: String -> Bool -> X (String, String)
 stringColorizer' s active = if active then 
-                                pure ("#2A509A", "white")
+                                pure ("#2a509a", "white")
                              else
                                 pure ("black", "white")
 

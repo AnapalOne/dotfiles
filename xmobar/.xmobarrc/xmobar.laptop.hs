@@ -21,7 +21,7 @@ Config {
    --              BottomW C 75
    --              BottomP 120 0
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
-   , position = Static { xpos = 16, ypos = 16, width = 1888, height = 28 } -- for 1980x1080 screens
+   , position = Static { xpos = 16, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
 
 
    -- // border
@@ -34,7 +34,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$}{                <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$</fc> | $disku$ [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -54,17 +54,13 @@ Config {
           -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
 
-          -- disk size monitor
-        -- , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
-        ---            [] 100
-
           -- network activity monitor (dynamic interface resolution)
         , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
-                             , "--normal"   , "darkorange" --darkorange
-                             , "--high"     , "darkred" --darkred
+                             , "--normal"   , "darkorange" 
+                             , "--high"     , "darkred" 
                              ] 20
 
           -- cpu activity monitor
