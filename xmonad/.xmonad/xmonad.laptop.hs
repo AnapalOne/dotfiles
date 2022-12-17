@@ -222,14 +222,14 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
     where
         full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
         
-        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio        
+        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio
         vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
-        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio
+        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
@@ -368,8 +368,8 @@ myEventHook = spotifyWindowNameFix
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
-        -- spawnOnce "nitrogen --restore &"
-        spawnOnce "~/Scripts/kyu-kurarin.sh"
+        spawnOnce "nitrogen --restore &"
+        -- spawnOnce "~/Scripts/kyu-kurarin.sh"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "~/Scripts/battery_notifs.sh &"
@@ -383,12 +383,12 @@ myStartupHook = do
         -- Outputs status information to a status bar.
         -- Useful for status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
-                                   { ppOutput = hPutStrLn xmproc 
-       	                           , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+                                   { ppOutput = hPutStrLn xmproc
+                                   , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppVisible = xmobarColor "#4381fb" ""
                                    , ppHidden = xmobarColor "#d1426e" "" . wrap "" ""
                                    , ppHiddenNoWindows = xmobarColor "#061d8e" ""
-                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 60
+                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 50
                                    , ppSep = "<fc=#666666> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
                                    , ppExtras = [windowCount]
@@ -462,7 +462,7 @@ qalcPrompt c ans =
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
                                                                gs_cellwidth = 150,
-                                                               gs_font = "xft:Iosevka Regular:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11" }
+                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11" }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName

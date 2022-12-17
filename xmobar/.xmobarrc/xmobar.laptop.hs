@@ -34,7 +34,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -63,6 +63,11 @@ Config {
                              , "--high"     , "darkred" 
                              ] 20
 
+          -- mpris2 activity monitor for spotify
+        , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
+                               , "--nastring", ""
+                               ] 10
+
           -- cpu activity monitor
         , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"
                              , "--Low"      , "50"         -- units: %
@@ -90,11 +95,11 @@ Config {
                              , "--low"      , "#1bc800"
                              , "--normal"   , "darkorange"
                              , "--high"     , "darkred"
-                             ] 60
+                             ] 50
 
           -- disk size monitor
         , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
-                    [] 100
+                    [] 50
 
           -- battery monitor (<timeleft> in discharging status for battery time left)
         , Run Battery        [ "--template" , "<leftbar> <acstatus>"
