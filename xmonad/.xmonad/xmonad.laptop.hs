@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---            XMonad Config by Anapal                  --
+--           xmonad laptop config by Anapal            --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -380,8 +380,8 @@ myStartupHook = do
         spawnOnce "xscreensaver --no-splash"
         setDefaultCursor myCursor
 
-        -- Outputs status information to a status bar.
-        -- Useful for status bars like xmobar or dzen.
+        -- When the stack of windows managed by xmonad has been changed.
+        -- Useful for displaying information to status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
                                    { ppOutput = hPutStrLn xmproc
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"

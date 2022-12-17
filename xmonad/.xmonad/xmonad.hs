@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---            XMonad Config by Anapal                  --
+--            xmonad config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -37,7 +37,7 @@ import XMonad.Layout.Hidden
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers (doCenterFloat)
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicProperty (dynamicPropertyChange)
 
@@ -73,7 +73,7 @@ myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"]
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf121 Sublime Text",           "subl"), 
+myGridSpawn = [ ("\xf121 Sublime Text",   "subl"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf718 LibreOffice",    "libreoffice"), 
@@ -86,7 +86,7 @@ myGridSpawn = [ ("\xf121 Sublime Text",           "subl"),
                 ("\xf03d OBS",            "obs"),
                 ("\xf028 Audacity",       "audacity"), 
                 ("\xf11b Steam",          "steam")
-            ]
+              ]
 
 
 
@@ -241,13 +241,13 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
 ---------------------------------------------------------
 
 myScratchpads = 
-         [ NS "ScrP_alacritty" "alacritty -t scratchpad" (title =? "scratchpad") floatScratchpad
-         , NS "ScrP_htop" "alacritty -t htop -e htop" (title =? "htop") floatScratchpad
-         , NS "ScrP_vim" "alacritty -t vim -e vim" (title =? "vim") floatScratchpad
-         , NS "ScrP_ncdu" "alacritty -t ncdu -e ncdu --exclude /home/anapal/D:/" (title =? "ncdu") floatScratchpad
-         , NS "help" "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
-         , NS "ScrP_cmus" "alacritty -t cmus -e cmus" (title =? "cmus") floatScratchpad
-         , NS "ScrP_spt" "alacritty -t spotify-tui -e spt" (title =? "spotify-tui") floatScratchpad
+         [ NS "help"                "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
+         , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/D:/" (title =? "ncdu") floatScratchpad
+         , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
+         , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
+         , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
+         , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
+         , NS "ScrP_spt"            "alacritty -t spotify-tui -e spt"   (title =? "spotify-tui")    floatScratchpad
          ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
@@ -299,6 +299,8 @@ myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
         -- > doFloat to open in floating mode.
+        -- > doCenterFloat to open in flating mode, centered
+        -- > doRectFloat to open in floating mode with custom parameters for width, height, x, and y.
         -- > doShift to open only in a specific workspace.
 
         -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
@@ -309,7 +311,6 @@ myManageHook = composeAll
         
         -- dev
         , className =? "Subl"           --> doShift "<action=xdotool key super+2>\xf121</action>" 
-        , className =? "Audacity"       --> doShift "<action=xdotool key super+2>\xf121</action>" 
         , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
         
         -- www
@@ -324,6 +325,7 @@ myManageHook = composeAll
         , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf008</action>"
         , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
         , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
+        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
         
         -- game
         , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
@@ -444,7 +446,7 @@ qalcPrompt c ans =
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
                                                                gs_cellwidth = 130,
-                                                               gs_font = "xft:Iosevka Regular:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
+                                                               gs_font = "xft:Iosevka:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName

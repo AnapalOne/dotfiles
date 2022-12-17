@@ -1,3 +1,10 @@
+---------------------------------------------------------
+--            xmobar config by Anapal                  --
+--     My personal config for my (or your) needs.      --
+--                                                     --
+--      > https://github.com/AnapalOne/dotfiles        --
+---------------------------------------------------------
+
 Config { 
 
    -- // appearance
@@ -13,7 +20,7 @@ Config {
    --              Static { xpos = 16 , ypos = 16, width = 1888, height = 25 }
    --              BottomW C 75
    --              BottomP 120 0
-   , position = Static { xpos = 16 , ypos = 16, width = 1888, height = 25 }
+   , position = Static { xpos = 12 , ypos = 16, width = 1892, height = 25 }
 
 
    -- options: TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder 
@@ -25,7 +32,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
-   , template = "  $default:Master$  | $UnsafeStdinReader$}{<fc=#909090>$cpu$</fc> / <fc=#818181>$coretemp$</fc> | <fc=#909090>$memory$</fc> | <fc=#909090>$dynnetwork$</fc> | $disku$ [ $uptime$ | $date$ ]  "
+   , template = "  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -40,7 +47,7 @@ Config {
    -- // layout template
    , commands = 
             -- uptime monitor
-        [ Run Uptime	 [ "--template", "<fc=#ABABAB><hours>h <minutes>m <seconds>s</fc>" ] 10
+        [ Run Uptime	 [ "--template", "<hours>h <minutes>m <seconds>s" ] 10
 
             -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
@@ -53,6 +60,11 @@ Config {
                              , "--normal"   , "darkorange" --darkorange
                              , "--high"     , "darkred" --darkred
                              ] 20
+
+          -- mpris2 activity monitor for spotify
+        , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
+                               , "--nastring", ""
+                               ] 10
 
             -- cpu activity monitor
         , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"

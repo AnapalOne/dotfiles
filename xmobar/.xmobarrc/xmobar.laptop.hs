@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---            xmobar Config by Anapal                  --
+--           xmobar laptop config by Anapal            --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -34,7 +34,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
