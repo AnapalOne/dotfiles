@@ -8,7 +8,7 @@
 Config { 
 
    -- // appearance
-     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11, Source Han Sans JP Normal:size=9"
+     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11, Source Han Sans JP Normal:size=9, WenQuanYi Zen Hei Mono:size=9"
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
@@ -21,7 +21,7 @@ Config {
    --              BottomW C 75
    --              BottomP 120 0
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
-   , position = Static { xpos = 16, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
+   , position = Static { xpos = 12, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
 
 
    -- // border
@@ -66,6 +66,7 @@ Config {
           -- mpris2 activity monitor for spotify
         , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
                                , "--nastring", ""
+                               , "--maxwidth", "40"
                                ] 10
 
           -- cpu activity monitor
@@ -84,9 +85,9 @@ Config {
         --                      -- , "--low"      , "#1bc800"
         --                      -- , "--normal"   , "darkorange"
         --                      -- , "--high"     , "darkred"
-                             ] 50
+                            ] 50
 
-        -- , Run Com "sh" ["-c", "sensors | grep -m 1 temp1 | sed 's/temp1:        +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
+        -- , Run Com "sh" ["-c", "sensors | grep 'Package id 0' | sed 's/Package id 0:  +//' | sed 's/C.*$/C/'" ] "coretemp" 50
                           
           -- memory usage monitor
         , Run Memory         [ "--template" ,"<fc=#f44336>\xf2db</fc> <usedratio>%"
@@ -127,7 +128,7 @@ Config {
 
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><volumebar><status></fc>"
+        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><volumebar> <status></fc>"
                                         , "-f", "\xfa7e\xfa7e\xfa7e\xfa7f\xfa7f\xfa7f\xfa7f\xfa7d\xfa7d\xfa7d"
                                         , "-W", "0"
 

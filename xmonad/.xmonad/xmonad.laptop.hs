@@ -80,7 +80,7 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
                 ("\xf07b Nemo",           "nemo"), 
                 ("\xf008 Kdenlive" ,      "kdenlive"),
                 ("\xfb6e Discord",        "discord"),
-                ("\xf1bc Spotify",        "spotify"), 
+                ("\xf1bc Spotify",        "spotify-launcher"), 
                 ("\xf7ea GIMP",           "gimp"), 
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
@@ -166,8 +166,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,       xF86XK_MonBrightnessUp ), spawn "lux -a 5%")                                                                         -- change brightness
     , ((0,     xF86XK_MonBrightnessDown ), spawn "lux -s 5% -m 1000")                                                                 --
     , ((modm,                      xK_l ), spawn "xscreensaver-command -lock")                                                        -- lock system
-    , ((0,      xF86XK_AudioRaiseVolume ), spawn "pamixer -i 10")                                                                     -- change volume
-    , ((0,      xF86XK_AudioLowerVolume ), spawn "pamixer -d 10")                                                                     --
+    , ((0,      xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5")                                                                      -- change volume
+    , ((0,      xF86XK_AudioLowerVolume ), spawn "pamixer -d 5")                                                                      --
     , ((0,             xF86XK_AudioMute ), spawn "pamixer -t")                                                                        --
 
     -- // playerctl
@@ -356,6 +356,7 @@ myManageHook = composeAll
         , className =? "Nemo"           --> doCenterFloat
         , className =? "XTerm"          --> doCenterFloat
         , className =? "Pavucontrol"    --> doCenterFloat
+        , className =? "Qalculate-gtk"  --> doCenterFloat
         , title     =? "alsamixer"      --> doCenterFloat
         , title     =? "welcome"        --> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
         ]
@@ -370,6 +371,7 @@ myEventHook = spotifyWindowNameFix
 myStartupHook = do
         spawnOnce "nitrogen --restore &"
         -- spawnOnce "~/Scripts/kyu-kurarin.sh"
+        -- spawnOnce "/home/anapal/GitHub/linux-wallpaperengine/build/wallengine --silent --fps 20 --screen-root eDP-1 2516038638"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "~/Scripts/battery_notifs.sh &"
