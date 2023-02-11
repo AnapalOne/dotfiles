@@ -80,7 +80,7 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
                 ("\xf07b Nemo",           "nemo"), 
                 ("\xf008 Kdenlive" ,      "kdenlive"),
                 ("\xfb6e Discord",        "discord"),
-                ("\xf1bc Spotify",        "spotify"), 
+                ("\xf1bc Spotify",        "spotify-launcher"), 
                 ("\xf7ea GIMP",           "gimp"), 
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
@@ -242,7 +242,7 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
 
 myScratchpads = 
          [ NS "help"                "alacritty -t \"list of programs\" -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
-         , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/D:/" (title =? "ncdu") floatScratchpad
+         , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
          , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
          , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
          , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
@@ -273,6 +273,7 @@ qalcPromptConfig = def
        , fgHLight = "black"
        , borderColor = "#646464"
        , position = Bottom 
+       , height = 30
        }
 
 configPrompt :: XPConfig
@@ -342,6 +343,7 @@ myManageHook = composeAll
         , title     =? "alsamixer"      --> doCenterFloat
         , className =? "Nemo"           --> doCenterFloat
         , className =? "XTerm"          --> doCenterFloat
+        , className =? "KeyOverlay"     --> doCenterFloat
         , className =? "Sxiv"           --> doFloat
         ]
         
@@ -356,11 +358,13 @@ myEventHook = spotifyWindowNameFix
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "nitrogen --restore &"
+        -- spawnOnce "/home/anapal/GitHub/linux-wallpaperengine/build/wallengine --screen-root DVI-D-0 --fps 15 2516038638"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "flameshot &"
+        spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         setDefaultCursor myCursor
 
 
