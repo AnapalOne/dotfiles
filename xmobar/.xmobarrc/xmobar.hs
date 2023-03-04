@@ -8,10 +8,11 @@
 Config { 
 
    -- // appearance
-     font =         "xft:Bitstream Vera Sans Mono:size=7:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10, Source Han Sans JP Normal:size=8"
-   , bgColor =      "black"
-   , fgColor =      "white"
-   , borderColor =  "#ffffff"
+     font =            "Bitstream Vera Sans Mono, Source Han Sans JP Normal 8, Bold 8"
+   , additionalFonts = ["Symbols Nerd Font 10"]
+   , bgColor =         "black"
+   , fgColor =         "white"
+   , borderColor =     "#ffffff"
 
 
    -- // position
@@ -53,7 +54,7 @@ Config {
         , Run UnsafeStdinReader
 
             -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
@@ -62,12 +63,12 @@ Config {
                              ] 20
 
           -- mpris2 activity monitor for spotify
-        , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
+        , Run Mpris2 "spotify" [ "--template", "<fn=1><fc=darkgreen>\xf1bc</fc></fn> <artist> - <title> |"
                                , "--nastring", ""
                                ] 10
 
             -- cpu activity monitor
-        , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"
+        , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>%"
                              , "--Low"      , "50"         -- units: %
                              , "--High"     , "85"         -- units: %
                              , "--low"      , "#1bc800"
@@ -90,7 +91,7 @@ Config {
         -- , Run Com "sh" [ "-c", "nvidia-smi -a | grep Gpu | sed 's/        Gpu                               : //g' | sed 's/ //' | sed 's/%//'" ] "gpu" 50
 
             -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fc=#f44336>\xf2db</fc> <usedratio>%"
+        , Run Memory         [ "--template" ,"<fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>%"
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
                              , "--low"      , "#1bc800"
@@ -99,7 +100,7 @@ Config {
                              ] 60
 
             -- disk size monitor
-        , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf7c9</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 100
 
             -- battery monitor (<timeleft> in discharging status for battery time left)
@@ -133,13 +134,13 @@ Config {
 
             -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><volumebar><status></fc>"
-                                        , "-f", "\xfa7e\xfa7e\xfa7e\xfa7f\xfa7f\xfa7f\xfa7f\xfa7d\xfa7d\xfa7d"
+        , Run Volume "default" "Master" [ "-t", "<fn=1><fc=#a0a0a0><volumebar> <status></fc></fn>"
+                                        , "-f", "\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 
                                         , "--"
                                               , "-O", ""
-                                              , "-o", "<fc=#a0a0a0>\xf655</fc>"
+                                              , "-o", "<fc=#a0a0a0>\xea76</fc>"
                                         ] 10
 
             -- weather monitor (add %RJTT% beteen uptime and date)

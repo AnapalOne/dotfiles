@@ -66,7 +66,7 @@ myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
 myWorkspaceList, myWorkspaceListWords :: [String]
-myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
+myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf718", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
@@ -214,7 +214,7 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
     where
         full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
         
-        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio        
+        htiled = renamed [Replace "<fc=#909090>\xebc8</fc> Tiled"] $ Tall nmaster delta ratio        
         vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100

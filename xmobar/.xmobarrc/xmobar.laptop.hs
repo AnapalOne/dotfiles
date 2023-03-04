@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---           xmobar laptop config by Anapal            --
+--            xmobar Config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -8,7 +8,8 @@
 Config { 
 
    -- // appearance
-     font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11, Source Han Sans JP Normal:size=9, WenQuanYi Zen Hei Mono:size=9"
+     font =         "Bitstream Vera Sans Mono, Symbols Nerd Font 11, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
+   , additionalFonts = ["SymbolsNerdFont 11"]
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
@@ -34,7 +35,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -55,7 +56,7 @@ Config {
         , Run UnsafeStdinReader
 
           -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fc=#0192ff>\xf093</fc> <tx>kB/s / <fc=#0192ff>\xf019</fc> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
@@ -70,7 +71,7 @@ Config {
                                ] 10
 
           -- cpu activity monitor
-        , Run Cpu            [ "--template" , "<fc=#3cfb05>\xf108</fc> <total>%"
+        , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>%"
                              , "--Low"      , "50"         -- units: %
                              , "--High"     , "85"         -- units: %
                              , "--low"      , "#1bc800"
@@ -90,7 +91,7 @@ Config {
         -- , Run Com "sh" ["-c", "sensors | grep 'Package id 0' | sed 's/Package id 0:  +//' | sed 's/C.*$/C/'" ] "coretemp" 50
                           
           -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fc=#f44336>\xf2db</fc> <usedratio>%"
+        , Run Memory         [ "--template" ,"<fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>%"
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
                              , "--low"      , "#1bc800"
@@ -99,11 +100,11 @@ Config {
                              ] 50
 
           -- disk size monitor
-        , Run DiskU [("/", "<fc=#f7a60e>\xf7c9</fc> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf7c9</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 50
 
           -- battery monitor (<timeleft> in discharging status for battery time left)
-        , Run Battery        [ "--template" , "<leftbar> <acstatus>"
+        , Run Battery        [ "--template" , "<fn=1><leftbar></fn> <acstatus>"
                              , "--Low"      , "15"        -- units: %
                              , "--High"     , "40"        -- units: %
                              , "--low"      , "darkred"
@@ -128,7 +129,7 @@ Config {
 
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><volumebar> <status></fc>"
+        , Run Volume "default" "Master" [ "-t", "<fn=1><fc=#a0a0a0><volumebar> <status></fc></fn>"
                                         , "-f", "\xfa7e\xfa7e\xfa7e\xfa7f\xfa7f\xfa7f\xfa7f\xfa7d\xfa7d\xfa7d"
                                         , "-W", "0"
 

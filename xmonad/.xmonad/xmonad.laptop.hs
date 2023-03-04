@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---           xmonad laptop config by Anapal            --
+--            XMonad Config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -40,6 +40,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicProperty (dynamicPropertyChange)
+import XMonad.Hooks.SetWMName
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -66,7 +67,7 @@ myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
 myWorkspaceList, myWorkspaceListWords :: [String]
-myWorkspaceList = ["\xf120", "\xf121", "\xe743", "\xf718", "\xf008", "\xf11b", "\xf1d7", "\xf886", "\xf1fc"] -- Icons.
+myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf718", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
@@ -222,7 +223,7 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
     where
         full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
         
-        htiled = renamed [Replace "<fc=#909090>\xf03a</fc> Tiled"] $ Tall nmaster delta ratio
+        htiled = renamed [Replace "<fc=#909090>\xebc8</fc> Tiled"] $ Tall nmaster delta ratio
         vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100
@@ -323,6 +324,7 @@ myManageHook = composeAll
         -- dev
         , className =? "Subl"           --> doShift "<action=xdotool key super+2>\xf121</action>" 
         , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
+        , className =? "Arduino IDE"    --> doShift "<action=xdotool key super+2>\xf121</action>"
         
         -- www
         , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xe743</action>" 
@@ -371,19 +373,19 @@ myEventHook = spotifyWindowNameFix
 myStartupHook = do
         spawnOnce "nitrogen --restore &"
         -- spawnOnce "~/Scripts/kyu-kurarin.sh"
-        -- spawnOnce "/home/anapal/GitHub/linux-wallpaperengine/build/wallengine --silent --fps 20 --screen-root eDP-1 2516038638"
+        -- spawnOnce "cd GitHub/linux-wallpaperengine/build/ && ./wallengine --silent --fps 20 --screen-root eDP-1 2516038638"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "eww open music-widget --config /home/anapal/.config/eww/"
-        spawnOnce "~/Scripts/eww-fg-workaround.sh &"
+        spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
         spawnOnce "xscreensaver --no-splash"
+        spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         setDefaultCursor myCursor
 
-        -- When the stack of windows managed by xmonad has been changed.
-        -- Useful for displaying information to status bars like xmobar or dzen.
+        -- Outputs status information to a status bar.
+        -- Useful for status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ def
                                    { ppOutput = hPutStrLn xmproc
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
@@ -395,7 +397,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
                                    , ppWsSep = "<fc=#666666> . </fc>"
                                    , ppExtras = [windowCount]
                                    , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-                                   }
+                                   } 
 
 
 
@@ -420,7 +422,7 @@ main = do
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook
-        , logHook            = myLogHook xmproc 
+        , logHook            = myLogHook xmproc >> setWMName "LG3D"
 
         , startupHook        = myStartupHook
      }
