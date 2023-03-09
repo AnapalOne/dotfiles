@@ -67,7 +67,7 @@ myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
 myWorkspaceList, myWorkspaceListWords :: [String]
-myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf718", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf718", "\xf03d", "\xf0297", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
@@ -108,8 +108,9 @@ myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
 
 ---------------------------------------------------------
 -- Key Binds
--- > These are keybindings that I use for everything in xmonad. Might add a help section for this.
--- 
+-- > These are keybindings that I use for everything in xmonad. 
+--   TODO: Might add a help section for this. 
+--
 -- > modm = myModMask
 -- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
 ---------------------------------------------------------
@@ -221,7 +222,7 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
         
     where
-        full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
+        full = renamed [Replace "<fc=#909090>\xf0e5f</fc> Full"] $ Full
         
         htiled = renamed [Replace "<fc=#909090>\xebc8</fc> Tiled"] $ Tall nmaster delta ratio
         vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
@@ -229,17 +230,17 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio
+        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio
         vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
         
-        grid = renamed [Replace "<fc=#909090>\xfc56</fc> Grid"] $ Grid
+        grid = renamed [Replace "<fc=#909090>\xf0758</fc> Grid"] $ Grid
         
-        lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
+        lspiral = renamed [Replace "<fc=#909090>\xf0453</fc> Spiral"] $ spiral (6/7)
 
-        circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ Circle
+        circle = renamed [Replace "<fc=#909090>\xf0766</fc> Circle"] $ Circle
 
 
 
@@ -327,18 +328,18 @@ myManageHook = composeAll
         , className =? "Arduino IDE"    --> doShift "<action=xdotool key super+2>\xf121</action>"
         
         -- www
-        , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xe743</action>" 
-        , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xe743</action>"
+        , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xf0239</action>" 
+        , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xf0239</action>"
         
         -- doc
         , resource  =? "libreoffice"    --> doShift "<action=xdotool key super+4>\xf718</action>"
         , className =? "calibre"        --> doShift "<action=xdotool key super+4>\xf718</action>"
         
         -- vid
-        , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf008</action>"
-        , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
-        , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
-        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
+        , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf03d</action>"
+        , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf03d</action>" 
+        , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
+        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
         
         -- game
         , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>"
@@ -364,7 +365,7 @@ myManageHook = composeAll
         ]
 
         -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
-spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf886</action>") --mus
+spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf0388</action>") --mus
 
         -- Event handling. Not quite sure how this works yet.
 myEventHook = spotifyWindowNameFix
@@ -466,7 +467,7 @@ qalcPrompt c ans =
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
                                                                gs_cellwidth = 150,
-                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font:size=11" }
+                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font Mono:size=11" }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName

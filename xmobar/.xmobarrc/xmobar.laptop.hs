@@ -9,7 +9,7 @@ Config {
 
    -- // appearance
      font =         "Bitstream Vera Sans Mono, Symbols Nerd Font 11, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
-   , additionalFonts = ["SymbolsNerdFont 11"]
+   , additionalFonts = ["Symbols Nerd Font Mono 11"]
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
@@ -35,7 +35,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
 
 
    -- // general behavior
@@ -129,14 +129,14 @@ Config {
 
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fn=1><fc=#a0a0a0><volumebar> <status></fc></fn>"
-                                        , "-f", "\xfa7e\xfa7e\xfa7e\xfa7f\xfa7f\xfa7f\xfa7f\xfa7d\xfa7d\xfa7d"
+        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=1><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
+                                        , "-f", "\xf057e\xf057e\xf057e\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 
                                         , "--"
                                               , "-O", ""
-                                              , "-o", "<fc=#a0a0a0>\xf655</fc>"
-                                        ] 10
+                                              , "-o", "<fc=#a0a0a0>\xf0156</fc>"
+                                        ] 5
 
           -- keyboard layout indicator
         -- , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
