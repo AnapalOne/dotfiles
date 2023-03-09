@@ -8,7 +8,7 @@
 Config { 
 
    -- // appearance
-     font =         "Bitstream Vera Sans Mono, Symbols Nerd Font 11, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
+     font =         "Bitstream Vera Sans Mono, Symbols Nerd Font Mono 11, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
    , additionalFonts = ["Symbols Nerd Font Mono 11"]
    , bgColor =      "black"
    , fgColor =      "white"
@@ -68,7 +68,7 @@ Config {
         , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
                                , "--nastring", ""
                                , "--maxwidth", "40"
-                               ] 10
+                               ] 50
 
           -- cpu activity monitor
         , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>%"
@@ -121,7 +121,7 @@ Config {
                                        , "-O" , "<left>% \xe315"
                                        -- ac "idle" status
                                        , "-i" , "Idle.."    
-                             ] 10
+                             ] 25
 
           -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = 24-hour format/%r = 12-hour format)
@@ -130,7 +130,7 @@ Config {
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
         , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=1><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
-                                        , "-f", "\xf057e\xf057e\xf057e\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
+                                        , "-f", "\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 
                                         , "--"
