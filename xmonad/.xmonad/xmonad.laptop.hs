@@ -46,6 +46,7 @@ import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Cursor
+import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook)
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
@@ -181,7 +182,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // programs
     , ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
-    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- equivelent to prntscr
+    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- equivelent to snipping tool in Windows
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
     , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
@@ -342,18 +343,20 @@ myManageHook = composeAll
         , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
         
         -- game
-        , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>"
-        , className =? "Pychess"        --> doShift "<action=xdotool key super+6>\xf11b</action>"
+        , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf0297</action>"
+        , className =? "Pychess"        --> doShift "<action=xdotool key super+6>\xf0297</action>"
         
         -- chat
         , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
-        
+  
+        -- mus
+        , className =? "Spotify"        --> doShift "<action=xdotool key super+8>\xf0388</action>"
+
         -- art
         , className =? "krita"          --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
         , className =? "Gimp"           --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
 
-
-        -- Places the window in floating mode when opened.
+          -- Places the window in floating mode when opened.
         , className =? "kmix"           --> doFloat
         , className =? "Sxiv"           --> doFloat
         , className =? "Nemo"           --> doCenterFloat
@@ -364,11 +367,8 @@ myManageHook = composeAll
         , title     =? "welcome"        --> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
         ]
 
-        -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
-spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf0388</action>") --mus
-
         -- Event handling. Not quite sure how this works yet.
-myEventHook = spotifyWindowNameFix
+myEventHook = mempty
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
@@ -383,6 +383,7 @@ myStartupHook = do
         spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
         spawnOnce "xscreensaver --no-splash"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
+        spawnOnce "trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true --SetPartialStrut true --height 28 --widthtype request --padding 5 --margin 10 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3"
         setDefaultCursor myCursor
 
         -- Outputs status information to a status bar.
@@ -393,7 +394,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ d
                                    , ppVisible = xmobarColor "#4381fb" ""
                                    , ppHidden = xmobarColor "#d1426e" "" . wrap "" ""
                                    , ppHiddenNoWindows = xmobarColor "#061d8e" ""
-                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 50
+                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 45
                                    , ppSep = "<fc=#666666> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
                                    , ppExtras = [windowCount]
@@ -422,7 +423,7 @@ main = do
 
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
-        , handleEventHook    = myEventHook
+        , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook
         , logHook            = myLogHook xmproc >> setWMName "LG3D"
 
         , startupHook        = myStartupHook

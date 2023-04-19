@@ -35,7 +35,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]  "
+   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]$_XMONAD_TRAYPAD$"
 
 
    -- // general behavior
@@ -55,6 +55,8 @@ Config {
           -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
 
+        , Run XPropertyLog "_XMONAD_TRAYPAD"
+
           -- network activity monitor (dynamic interface resolution)
         , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
@@ -67,7 +69,7 @@ Config {
           -- mpris2 activity monitor for spotify
         , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
                                , "--nastring", ""
-                               , "--maxwidth", "40"
+                               , "--maxwidth", "35"
                                ] 50
 
           -- cpu activity monitor
