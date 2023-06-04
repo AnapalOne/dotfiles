@@ -33,7 +33,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
-   , template = "  $default:Master$  | $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ]  "
+   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$ ($diskio$)</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
 
 
    -- // general behavior
@@ -52,6 +52,8 @@ Config {
 
             -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
+
+        , Run XPropertyLog "_XMONAD_TRAYPAD"
 
             -- network activity monitor (dynamic interface resolution)
         , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
@@ -100,8 +102,15 @@ Config {
                              ] 60
 
             -- disk size monitor
-        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf7c9</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf02ca</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 100
+
+        , Run DiskIO [("sdb6", "<total>")] 
+                     [ "--Low"      , "2000000"
+                     , "--High"     , "3000000"
+                     , "--normal"   , "darkorange"
+                     , "--high"     , "darkred"
+                     ] 100
 
             -- battery monitor (<timeleft> in discharging status for battery time left)
         -- , Run Battery        [ "--template" , "<leftbar> <acstatus>"
@@ -134,7 +143,7 @@ Config {
 
             -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fn=1><fc=#a0a0a0><volumebar> <status></fc></fn>"
+        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=1><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
                                         , "-f", "\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 

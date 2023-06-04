@@ -24,6 +24,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
+import XMonad.Actions.CopyWindow
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -45,6 +46,7 @@ import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Cursor
+import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
@@ -66,7 +68,7 @@ myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
 myWorkspaceList, myWorkspaceListWords :: [String]
-myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf718", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
@@ -76,12 +78,12 @@ toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
 myGridSpawn = [ ("\xf121 Sublime Text",   "subl"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
-                ("\xf718 LibreOffice",    "libreoffice"), 
+                ("\xf0dc8 LibreOffice",   "libreoffice"), 
                 ("\xf07b Nemo",           "nemo"), 
                 ("\xf008 Kdenlive" ,      "kdenlive"),
-                ("\xfb6e Discord",        "discord"),
+                ("\xf066f Discord",       "discord"),
                 ("\xf1bc Spotify",        "spotify-launcher"), 
-                ("\xf7ea GIMP",           "gimp"), 
+                ("\xf03e GIMP",           "gimp"), 
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
                 ("\xf028 Audacity",       "audacity"), 
@@ -163,6 +165,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask, xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                      -- shutdown computer
     , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
     , ((modm .|. altMask,     xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
+    , ((modm .|. shiftMask .|. controlMask, xK_Escape ), confirmPrompt configPrompt "hibernation?" $ spawn "systemctl hibernate")                          -- reboot computer
     , ((modm,                    xK_F12 ), spawn "pamixer -i 5")                                                                     -- increase volume
     , ((modm,                    xK_F11 ), spawn "pamixer -d 5")                                                                     -- decrease volume
     , ((modm,                    xK_F10 ), spawn "pamixer -t")                                                                       -- mute volume
@@ -196,10 +199,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ++
     -- mod-[1..9] = Switch to workspace 
     -- mod-shift-[1..9] = Move window to workspace
-    [((m .|. modm, k), windows $ f i)
+    [ ((modm .|. m, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
-
+        , (f, m) <- [ (W.greedyView, 0), (W.shift, shiftMask) ]
+    ] 
+  
 
 
 ---------------------------------------------------------
@@ -315,25 +319,28 @@ myManageHook = composeAll
         , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
         
         -- www
-        , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xe743</action>" 
-        , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xe743</action>"
+        , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xf0239</action>" 
+        , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xf0239</action>"
         
         -- doc
         , resource  =? "libreoffice"    --> doShift "<action=xdotool key super+4>\xf718</action>"
         , className =? "calibre"        --> doShift "<action=xdotool key super+4>\xf718</action>"
         
         -- vid
-        , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf008</action>"
-        , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf008</action>" 
-        , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
-        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf008</action>" 
+        , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf03d</action>"
+        , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf03d</action>" 
+        , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
+        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
         
         -- game
         , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
         
         -- chat
         , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
-        
+
+        -- mus
+        , className =? "Spotify"        --> doShift "<action=xdotool key super+8>\xf0388</action>"
+
         -- art
         , className =? "krita"          --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
         , className =? "Gimp"           --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
@@ -347,12 +354,8 @@ myManageHook = composeAll
         , className =? "Sxiv"           --> doFloat
         ]
         
-        -- Spotify's WM_CLASS name is not set when first opening the window, so this is a workaround.
-spotifyWindowNameFix = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> doShift "<action=xdotool key super+8>\xf886</action>") --mus
-
-
         -- This controls all events that are handled by xmonad.
-myEventHook = spotifyWindowNameFix
+myEventHook = mempty
 
 
         -- Executes whenever xmonad starts or restarts.
@@ -365,6 +368,7 @@ myStartupHook = do
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ && ~/Scripts/eww-fg-workaround.sh &"
         spawnOnce "flameshot &"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
+        spawnOnce "trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true --SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3 -l"
         setDefaultCursor myCursor
 
 
@@ -376,8 +380,8 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ x
                                    , ppVisible = xmobarColor "#4381fb" ""
                                    , ppHidden = xmobarColor "#d1426e" "" . wrap "" ""
                                    , ppHiddenNoWindows = xmobarColor "#061d8e" ""
-                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 60
-                                   , ppSep = "<fc=#ffffff> | </fc>"
+                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 70
+                                   , ppSep = "<fc=#909090> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
                                    , ppExtras = [windowCount] 
                                    , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
@@ -405,7 +409,7 @@ main = do
 
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
-        , handleEventHook    = myEventHook
+        , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook <> Hacks.trayerAboveXmobarEventHook
         , logHook            = myLogHook xmproc 
 
         , startupHook        = myStartupHook
