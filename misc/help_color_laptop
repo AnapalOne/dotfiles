@@ -3,34 +3,34 @@
                                                                                           \033[36;1m-------------------------------------------------\033[0m
 
          \033[34;1m//\033[0m \033[37;1mterminal\033[0m:                                                                 \033[34;1m//\033[0m \033[37;1mgames\033[0m:
-            \033[36;1mhtop\033[0m                 -- program manager                                      \033[36;1mpychess\033[0m           -- chess emulator
-            \033[36;1mranger\033[0m               -- file manager                                         \033[36;1mpcsx2\033[0m             -- Playstation 2 emulator                    
-            \033[36;1mncdu\033[0m                 -- disk analyzer                                        \033[36;1mrpcs3\033[0m             -- Playstation 3 emulator
+            \033[36;1mhtop\033[0m                 -- program manager                                      \033[36;1mpychess\033[0m           -- chess emulator                                                 \033[36;1mmultimc\033[0m           -- minecraft launcher 
+            \033[36;1mranger\033[0m               -- file manager                                         \033[36;1mpcsx2\033[0m             -- Playstation 2 emulator                                         \033[36;1mcrack-attack\033[0m      -- based on the Nintendo game Tetris Attack
+            \033[36;1mncdu\033[0m                 -- disk analyzer                                        \033[36;1mrpcs3\033[0m             -- Playstation 3 emulator                                         \033[36;1mgrapejuice-gui\033[0m    -- Wine wrapper application tailored for Roblox
             \033[36;1mdf\033[0m                   -- system filesize                                      \033[36;1mretroarch\033[0m         -- front-end retro video game console emulator 
             \033[36;1miwctl\033[0m                -- internet manager                                     \033[36;1mnsnake\033[0m            -- snake in terminal
             \033[36;1maft-mtp-mount\033[0m        -- mount android device                                 \033[36;1mosu-stable\033[0m        -- free-to-play rhythm game where you click circles to the beat
             \033[36;1mvim\033[0m                  -- text editor                                          \033[36;1mchocolate-doom\033[0m    -- doom DOS emulator (see ~/.local/share/games to play a game)
-            \033[36;1mani-cli\033[0m              -- anime                                             
+            \033[36;1mani-cli\033[0m              -- anime                                                
             \033[36;1mtlp, tlpui\033[0m           -- battery manager                                   \033[34;1m//\033[0m \033[37;1mcode compilers\033[0m:
             \033[36;1myoutube-dl\033[0m           -- youtube video downloader                             \033[36;1mgcc\033[0m               -- C compiler
             \033[36;1mcmus\033[0m                 -- music                                                \033[36;1mg++\033[0m               -- C++ compiler
-            \033[36;1mspt\033[0m                  -- spotify in terminal                                  \033[36;1mpython\033[0m            -- Python compiler
-            \033[36;1malsamixer\033[0m            -- sound system
+            \033[36;1mtodo\033[0m                 -- todo list                                            \033[36;1mpython\033[0m            -- Python compiler
+            \033[36;1malsamixer\033[0m            -- sound system                                         \033[36;1mnode\033[0m              -- JavaScript runtime
             \033[36;1mbc, qalc\033[0m             -- calculator
             \033[36;1mbashmount\033[0m            -- removable media manager                           \033[34;1m//\033[0m \033[37;1mfun commands\033[0m:
             \033[36;1mgpg\033[0m                  -- encryption                                            \033[36;1mcmatrix\033[0m        -- cool code animation from matrix movie  
             \033[36;1mespeak\033[0m               -- text-to-speech                                        \033[36;1mcava\033[0m           -- audio visualizer
-            \033[36;1mtodo\033[0m                 -- todo list                                             \033[36;1masciiquarium\033[0m   -- aquarium in ascii
+                                                                                                           \033[36;1masciiquarium\033[0m   -- aquarium in ascii
                                              
          \033[34;1m//\033[0m \033[37;1mprograms\033[0m:
-            \033[36;1mnitrogen\033[0m               -- wallpaper                            \033[36;1mdiscord\033[0m       -- text and voice app      
-            \033[36;1mnemo\033[0m                   -- file manager                         \033[36;1msubl\033[0m          -- text editor              
-            \033[36;1mgithub-desktop\033[0m         -- github                               \033[36;1mrenpy\033[0m         -- visual novel engine         
-            \033[36;1mdeepin-calculator\033[0m      -- calculator                           \033[36;1mgeogebra\033[0m      -- geometry, algebra, statistics and calculus app
-            \033[36;1mgimp\033[0m                   -- image editor                          
-            \033[36;1mmpv\033[0m                    -- video viewer                                                           
-            \033[36;1mobs\033[0m                    -- streaming and recording software      
-            \033[36;1msteam\033[0m                  -- games and game store                
+            \033[36;1mnitrogen\033[0m               -- wallpaper                                 \033[36;1mdiscord\033[0m       -- text and voice app      
+            \033[36;1mnemo\033[0m                   -- file manager                              \033[36;1msubl\033[0m          -- text editor              
+            \033[36;1mgithub-desktop\033[0m         -- github                                    \033[36;1mrenpy\033[0m         -- visual novel engine         
+            \033[36;1mqalculate-gtk\033[0m          -- calculator                                \033[36;1mgeogebra\033[0m      -- geometry, algebra, statistics and calculus app
+            \033[36;1mgimp\033[0m                   -- image editor                              \033[36;1mvirtualbox\033[0m    -- virtual machine software   
+            \033[36;1mmpv\033[0m                    -- video viewer                              \033[36;1mkomikku\033[0m       -- online/offline manga reader and downloader
+            \033[36;1mobs\033[0m                    -- streaming and recording software          \033[36;1mkrita\033[0m         -- drawing software
+            \033[36;1msteam\033[0m                  -- games and game store                      \033[36;1marduino-ide\033[0m   -- Arduino IDE 
             \033[36;1msystem-config-printer\033[0m  -- printer coniguration tool
             \033[36;1maudacity\033[0m               -- audio software
             \033[36;1mblueman\033[0m                -- bluetooth
@@ -40,10 +40,10 @@
             \033[36;1mqbittorrent\033[0m            -- torrenting
             \033[36;1mfirefox\033[0m                -- browser                             
             \033[36;1mwinetricks\033[0m             -- wine manager       
-            \033[36;1mlibreoffice\033[0m            -- office suite                        
-            \033[36;1mkrita\033[0m                  -- drawing software
+            \033[36;1mlibreoffice\033[0m            -- office suite                         
 
                                        						                Do \033[31;1mpacman -Qe\033[0m to list all installed packages.
                                        				                       See \033[31;1m~/.xmonad/xmonad.hs\033[0m under \033[35;1m[Key Binds]\033[0m for key combinations.
                                        
                                        								            Press \033[33;1menter\033[0m to exit.
+                                                                                                       Press \033[33;1me\033[0m and then \033[33;1menter\033[0m to edit.\n

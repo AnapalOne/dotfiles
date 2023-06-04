@@ -19,7 +19,7 @@ Config {
    -- options: Top, TopP, TopW, TopSize, Bottom, BottomP, BottomW, BottomSize or Static
    --          examples:
    --              Static { xpos = 14 , ypos = 10, width = 1330, height = 20 }
-   --              BottomW C 75
+  --              BottomW C 75
    --              BottomP 120 0
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
    , position = Static { xpos = 12, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
@@ -35,7 +35,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ]$_XMONAD_TRAYPAD$"
+   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
 
 
    -- // general behavior
@@ -69,7 +69,7 @@ Config {
           -- mpris2 activity monitor for spotify
         , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"
                                , "--nastring", ""
-                               , "--maxwidth", "35"
+                               , "--maxwidth", "40"
                                ] 50
 
           -- cpu activity monitor
