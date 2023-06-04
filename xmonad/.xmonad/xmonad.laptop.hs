@@ -45,7 +45,6 @@ import XMonad.Hooks.SetWMName
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
-import XMonad.Util.Cursor
 import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook)
 
 import qualified XMonad.StackSet as W
@@ -61,7 +60,6 @@ import qualified Data.Map        as M
 
 myTerminal              = "alacritty"
 myModMask               = mod4Mask -- win key
-myCursor                = xC_left_ptr
 
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
@@ -166,6 +164,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_Escape ), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                           -- sleep mode
     , ((modm .|. altMask,     xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                           -- reboot computer
     , ((modm .|. controlMask, xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
+    , ((modm .|. controlMask .|. shiftMask, xK_Escape), confirmPrompt logoutPrompt "hibernate?" $ spawn "systemctl hibernate")        -- hibernate computer
     , ((0,       xF86XK_MonBrightnessUp ), spawn "lux -a 5%")                                                                         -- change brightness
     , ((0,     xF86XK_MonBrightnessDown ), spawn "lux -s 5% -m 1000")                                                                 --
     , ((modm,                      xK_l ), spawn "xscreensaver-command -lock")                                                        -- lock system
@@ -380,11 +379,15 @@ myStartupHook = do
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
+
+        -- TODO: redo eww widget and fg workaround if need be
+        -- spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
+        
+        spawnOnce "eww --config /home/anapal/.config/eww/ open music-widget &"
         spawnOnce "xscreensaver --no-splash"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
-        spawnOnce "trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true --SetPartialStrut true --height 28 --widthtype request --padding 5 --margin 10 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3"
-        setDefaultCursor myCursor
+        spawnOnce "trayer --edge top --align right --distancefrom top --distance 18 --SetDockType true --SetPartialStrut true --height 22 --widthtype request --padding 3 --margin 20 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3"
+        spawn "xsetroot -cursor_name left_ptr"
 
         -- Outputs status information to a status bar.
         -- Useful for status bars like xmobar or dzen.
