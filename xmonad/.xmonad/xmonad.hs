@@ -24,7 +24,6 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import XMonad.Actions.CopyWindow
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -46,8 +45,9 @@ import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Cursor
-import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
+import XMonad.Util.NamedActions
 
+import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -199,11 +199,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ++
     -- mod-[1..9] = Switch to workspace 
     -- mod-shift-[1..9] = Move window to workspace
+    -- mod-control-[1..9] = Move window to workspace and switch to that workspace
     [ ((modm .|. m, k), windows $ f i)
-        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-        , (f, m) <- [ (W.greedyView, 0), (W.shift, shiftMask) ]
-    ] 
-  
+        | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
+        , (f, m) <- [ (W.greedyView, 0), 
+                      (W.shift, shiftMask), 
+                      (\i -> W.greedyView i . W.shift i, controlMask) ]
+    ]  
 
 
 ---------------------------------------------------------
