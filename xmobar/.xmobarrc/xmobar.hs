@@ -67,7 +67,6 @@ Config {
           -- mpris2 activity monitor for spotify
         , Run Mpris2 "spotify" [ "--template", "<fn=1><fc=darkgreen>\xf1bc</fc></fn> <artist> - <title> |"
                                , "--nastring", ""
-                               , "--maxwidth", "30"
                                ] 10
 
             -- cpu activity monitor
