@@ -24,6 +24,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
+import qualified XMonad.Actions.FlexibleResize as Flex
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -60,7 +61,6 @@ import qualified Data.Map        as M
 
 myTerminal              = "alacritty"
 myModMask               = mod4Mask -- win key
-myCursor                = xC_left_ptr
 
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
@@ -119,7 +119,7 @@ altMask = mod1Mask
 
 playerctlPlayers = "--player=spotify,cmus,spotifyd"
 
-myKeys conf@(XConfig {XMonad.modMask = modm})  = M.fromList $
+myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
     [ ((modm,               xK_BackSpace ), kill)                               -- close focused window
@@ -168,9 +168,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm})  = M.fromList $
     , ((modm .|. shiftMask,                 xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
     , ((modm .|. shiftMask .|. controlMask, xK_Escape ), confirmPrompt configPrompt "hibernation?" $ spawn "systemctl hibernate")                  -- hibernate computer
-    , ((modm,                               xK_F12    ), spawn "pamixer -i 5")                                                                     -- increase volume
-    , ((modm,                               xK_F11    ), spawn "pamixer -d 5")                                                                     -- decrease volume
-    , ((modm,                               xK_F10    ), spawn "pamixer -t")                                                                       -- mute volume
+    , ((modm,                               xK_equal  ), spawn "pamixer -i 5")                                                                     -- increase volume
+    , ((modm,                               xK_minus  ), spawn "pamixer -d 5")                                                                     -- decrease volume
+    , ((modm,                               xK_0      ), spawn "pamixer -t")                                                                       -- mute volume
     ] ++
 
     -- // playerctl
@@ -214,6 +214,14 @@ myKeys conf@(XConfig {XMonad.modMask = modm})  = M.fromList $
                       (W.shift, shiftMask), 
                       (\i -> W.greedyView i . W.shift i, controlMask) ]
     ]  
+
+
+myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+
+    -- // mouse bindings
+    [ ((modm,   button1), (\w -> focus w >> mouseMoveWindow w >> windows W.swapMaster)) -- move window and send to top of stack
+    , ((modm,   button3), (\w -> focus w >> Flex.mouseResizeEdgeWindow (0.5) w))        -- resize window with right mouse button at window edge
+    ]
         
 
 
@@ -352,7 +360,7 @@ myManageHook = composeAll
         , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
         
         -- game
-        , className =? "Steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
+        , className =? "steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
         
         -- chat
         , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
@@ -395,7 +403,7 @@ myStartupHook = do
         spawnOnce "flameshot &"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         spawnOnce "trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true --SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3 -l"
-        setDefaultCursor myCursor
+        spawn "xsetroot -cursor_name left_ptr"
 
 
         -- When the stack of windows managed by xmonad has been changed.
@@ -432,6 +440,7 @@ main = do
         , focusedBorderColor = myFocusedBorderColor
 
         , keys               = myKeys
+        , mouseBindings      = myMouseBinds
 
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
