@@ -9,9 +9,10 @@ import XMonad
 
 import Data.Monoid
 import Data.Char (isSpace)
-import System.Exit
-import System.IO
-import XMonad.ManageHook
+import Control.Monad (when)
+import System.Exit (exitWith, ExitCode(ExitSuccess))
+import System.Process (readProcess)
+import Data.Maybe (isJust)
 -- import Graphics.X11.ExtraTypes.XF86
 
 import XMonad.Prompt
@@ -41,6 +42,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicProperty (dynamicPropertyChange)
+-- TODO: import XMonad.Hooks.ScreenCorners
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -98,6 +100,7 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
 --   messaging apps (discord, messenger, etc), music, and art.
 ---------------------------------------------------------
 
+-- TODO: use functions other than this, as it changes workspace names to include the <action> action.
 myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
     where
           clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
@@ -208,12 +211,28 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- mod-[1..9]         = Switch to workspace 
     -- mod-shift-[1..9]   = Move window to workspace
     -- mod-control-[1..9] = Move window to workspace and switch to that workspace
-    [ ((modm .|. m, k), windows $ f i)
+    [ ((modm .|. m, k), changeWorkspaces f i z)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
-        , (f, m) <- [ (W.greedyView, 0), 
-                      (W.shift, shiftMask), 
-                      (\i -> W.greedyView i . W.shift i, controlMask) ]
-    ]  
+        , (f, m, z) <- [ (W.greedyView, 0, False), -- [ (Action, Mask, WithNotifications) ]
+                         (W.shift, shiftMask, True), 
+                         (\i -> W.greedyView i . W.shift i, controlMask, True) ]
+    ] 
+        where 
+            changeWorkspaces f i z = do
+                stackset <- gets windowset
+                when (z && currentWSHasWindow stackset) $ notifyWS
+                windows $ f i
+                    where 
+                        notifyWS = do
+                            wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+                            let wnShort = shorten 40 (wn)
+                            spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to workspace..'")
+
+                        notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
+
+                        windowsPresent, currentWSHasWindow :: WindowSet -> Bool
+                        windowsPresent = null . W.index . W.view i
+                        currentWSHasWindow = isJust . W.peek
 
 
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -335,9 +354,6 @@ myManageHook = composeAll
         -- > doRectFloat to open in floating mode with custom parameters for width, height, x, and y.
         -- > doShift to open only in a specific workspace.
 
-        -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
-        --       Whenever you rename those workspaces, be sure to also rename the workspaces inside doShift.
-
         -- ter 
         [ title     =? "alacritty"      --> doShift "<action=xdotool key super+1>\xf120</action>"
         
@@ -429,6 +445,7 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ x
 -- > Hypothetically, you can probably pack everything into here, but I haven't tried it yet.
 ---------------------------------------------------------
 
+main :: IO()
 main = do
    xmproc <- spawnPipe "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
    xmonad $ docks $ ewmhFullscreen . ewmh $ desktopConfig

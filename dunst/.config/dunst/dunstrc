@@ -36,7 +36,7 @@
     offset = 20x50
 
     # Scale factor. It is auto-detected if value is 0.
-    scale = 1
+    scale = 0
 
     # Maximum number of notification (0 means no limit)
     notification_limit = 5s
@@ -317,7 +317,7 @@
     background = "#000000"
     foreground = "#ffffff"
     frame_color = "#0daaf3"
-    timeout = 10
+    timeout = 2
     # Icon for notifications with low urgency, uncomment to enable
     #default_icon = /path/to/icon
 
