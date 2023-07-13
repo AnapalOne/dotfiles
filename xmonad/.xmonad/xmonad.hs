@@ -12,7 +12,7 @@ import Data.Char (isSpace)
 import Control.Monad (when)
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 import System.Process (readProcess)
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, fromMaybe, fromJust)
 -- import Graphics.X11.ExtraTypes.XF86
 
 import XMonad.Prompt
@@ -25,7 +25,6 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import qualified XMonad.Actions.FlexibleResize as Flex
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -49,9 +48,11 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Cursor
 
-import qualified XMonad.Util.Hacks as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
-import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
+import qualified XMonad.Actions.FlexibleResize as Flex
+import qualified XMonad.Util.Hacks             as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
+import qualified XMonad.StackSet               as W
+import qualified Data.Map                      as M
+import qualified Data.Map.Strict               as Map
 
 
 
@@ -67,10 +68,6 @@ myModMask               = mod4Mask -- win key
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
-
-myWorkspaceList, myWorkspaceListWords :: [String]
-myWorkspaceList = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
-myWorkspaceListWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
     -- Size and position of window when it is toggled into floating mode.
 toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
@@ -100,12 +97,9 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
 --   messaging apps (discord, messenger, etc), music, and art.
 ---------------------------------------------------------
 
--- TODO: use functions other than this, as it changes workspace names to include the <action> action.
-myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
-    where
-          clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
-                        (i,ws) <- zip [1..9] l,
-                        let n = i ]
+myWorkspaces, myWorkspacesWords :: [String]
+myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspacesWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
 
 
 
@@ -211,22 +205,25 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- mod-[1..9]         = Switch to workspace 
     -- mod-shift-[1..9]   = Move window to workspace
     -- mod-control-[1..9] = Move window to workspace and switch to that workspace
-    [ ((modm .|. m, k), changeWorkspaces f i z)
+    [ ((modm .|. m, k), changeWorkspaces f i z t)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
-        , (f, m, z) <- [ (W.greedyView, 0, False), -- [ (Action, Mask, WithNotifications) ]
-                         (W.shift, shiftMask, True), 
-                         (\i -> W.greedyView i . W.shift i, controlMask, True) ]
+        , (f, m, z, t) <- [ (W.greedyView, 0, False, 0), -- [ (Action, Mask, WithNotifications) ]
+                            (W.shift, shiftMask, True, 1), 
+                            (\i -> W.greedyView i . W.shift i, controlMask, True, 2) ]
     ] 
         where 
-            changeWorkspaces f i z = do
+            changeWorkspaces f i z t = do
                 stackset <- gets windowset
                 when (z && currentWSHasWindow stackset) $ notifyWS
                 windows $ f i
                     where 
                         notifyWS = do
                             wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
-                            let wnShort = shorten 40 (wn)
-                            spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to workspace..'")
+                            let rstrip = reverse . dropWhile isSpace . reverse
+                            let wnShort = rstrip $ shorten 40 (wn)
+                            case t of 
+                                1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to '" ++ i)
+                                2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] and shifting to '" ++ i)
 
                         notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
 
@@ -427,9 +424,8 @@ myStartupHook = do
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
                                    { ppOutput = hPutStrLn xmproc 
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
-                                   , ppVisible = xmobarColor "#4381fb" ""
-                                   , ppHidden = xmobarColor "#d1426e" "" . wrap "" ""
-                                   , ppHiddenNoWindows = xmobarColor "#061d8e" ""
+                                   , ppHidden = xmobarColor "#d1426e" "" . clickableWS
+                                   , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
                                    , ppTitle = xmobarColor "#ffffff" "" . shorten 50
                                    , ppSep = "<fc=#909090> | </fc>"
                                    , ppWsSep = "<fc=#666666> . </fc>"
@@ -527,3 +523,9 @@ stringColorizer' s active = if active then
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
+
+clickableWS ws = "<action=xdotool key super+" ++ show i ++ ">" ++ ws ++ "</action>"
+    where
+        workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
+        i = fromJust $ Map.lookup ws workspaceIndices
+
