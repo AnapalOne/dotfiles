@@ -7,13 +7,15 @@
 
 import XMonad
 
+import Control.Monad (when)
+-- import Graphics.X11.ExtraTypes.XF86
+
 import Data.Monoid
 import Data.Char (isSpace)
-import Control.Monad (when)
+import Data.Maybe (isJust, fromMaybe, fromJust)
+
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 import System.Process (readProcess)
-import Data.Maybe (isJust, fromMaybe, fromJust)
--- import Graphics.X11.ExtraTypes.XF86
 
 import XMonad.Prompt
 import XMonad.Prompt.Input
@@ -219,8 +221,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
                     where 
                         notifyWS = do
                             wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+                            
                             let rstrip = reverse . dropWhile isSpace . reverse
-                            let wnShort = rstrip $ shorten 40 (wn)
+                            let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
+                            let wnShort = parseSlash . rstrip $ shorten 40 (wn)
+
                             case t of 
                                 1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to '" ++ i)
                                 2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] and shifting to '" ++ i)
@@ -352,38 +357,38 @@ myManageHook = composeAll
         -- > doShift to open only in a specific workspace.
 
         -- ter 
-        [ title     =? "alacritty"      --> doShift "<action=xdotool key super+1>\xf120</action>"
+        [ title     =? "alacritty"      --> doShift "\xf120"
         
         -- dev
-        , className =? "Subl"           --> doShift "<action=xdotool key super+2>\xf121</action>" 
-        , className =? "GitHub Desktop" --> doShift "<action=xdotool key super+2>\xf121</action>"  
+        , className =? "Subl"           --> doShift "\xf121" 
+        , className =? "GitHub Desktop" --> doShift "\xf121"  
         
         -- www
-        , className =? "firefox"        --> doShift "<action=xdotool key super+3>\xf0239</action>" 
-        , className =? "Chromium"       --> doShift "<action=xdotool key super+3>\xf0239</action>"
+        , className =? "firefox"        --> doShift "\xf0239" 
+        , className =? "Chromium"       --> doShift "\xf0239"
         
         -- doc
-        , resource  =? "libreoffice"    --> doShift "<action=xdotool key super+4>\xf718</action>"
-        , className =? "calibre"        --> doShift "<action=xdotool key super+4>\xf718</action>"
+        , resource  =? "libreoffice"    --> doShift "\xf718"
+        , className =? "calibre"        --> doShift "\xf718"
         
         -- vid
-        , className =? "obs"            --> doShift "<action=xdotool key super+5>\xf03d</action>"
-        , className =? "vlc"            --> doShift "<action=xdotool key super+5>\xf03d</action>" 
-        , className =? "kdenlive"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
-        , className =? "Audacity"       --> doShift "<action=xdotool key super+5>\xf03d</action>" 
+        , className =? "obs"            --> doShift "\xf03d"
+        , className =? "vlc"            --> doShift "\xf03d" 
+        , className =? "kdenlive"       --> doShift "\xf03d" 
+        , className =? "Audacity"       --> doShift "\xf03d" 
         
         -- game
-        , className =? "steam"          --> doShift "<action=xdotool key super+6>\xf11b</action>" 
+        , className =? "steam"          --> doShift "\xf11b" 
         
         -- chat
-        , className =? "discord"        --> doShift "<action=xdotool key super+7>\xf1d7</action>" 
+        , className =? "discord"        --> doShift "\xf1d7" 
 
         -- mus
-        , className =? "Spotify"        --> doShift "<action=xdotool key super+8>\xf0388</action>"
+        , className =? "Spotify"        --> doShift "\xf0388"
 
         -- art
-        , className =? "krita"          --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
-        , className =? "Gimp"           --> doShift "<action=xdotool key super+9>\xf1fc</action>" 
+        , className =? "krita"          --> doShift "\xf1fc" 
+        , className =? "Gimp"           --> doShift "\xf1fc" 
 
         -- Places the window in floating mode.
         , title     =? "welcome"        --> doCenterFloat
