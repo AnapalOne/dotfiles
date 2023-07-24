@@ -58,11 +58,10 @@ import qualified Data.Map.Strict               as Map
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Configs
 -- > For quick configuration without scrolling the entire config file. 
---   (it's a little tiring for me to find some parts that I want to configure) 
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 myTerminal              = "alacritty"
 myModMask               = mod4Mask -- win key
@@ -92,26 +91,26 @@ myGridSpawn = [ ("\xf121 Sublime Text",   "subl"),
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Workspaces
--- > 9 workspaces for the terminal application, development tools/software, 
+-- > 9 workspaces for the terminal, development tools/software, 
 --   browsers, documents (libreoffice or msoffice), videos, gaming, 
 --   messaging apps (discord, messenger, etc), music, and art.
----------------------------------------------------------
+----------------------------------------------------------------------------
 
-myWorkspaces, myWorkspacesWords :: [String]
+myWorkspaces :: [String]
 myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
-myWorkspacesWords = ["ter","dev","www","doc","vid","game","chat","mus","art"] -- Words.
+-- myWorkspaces = ["ter", "dev", "www", "doc", "vid", "game", "chat", "mus", "art"] -- Words.
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Key Binds
--- > These are keybindings that I use for everything in xmonad. Might add a help section for this.
+-- > These are keybindings that I use for navigating in xmonad. 
 -- 
--- > modm = myModMask
--- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
----------------------------------------------------------
+-- > [mod-ctrl-slash] to display key bindings. 
+-- > Do "xev | sed -ne '/^KeyPress/,/^$/p'" for key mappings.
+----------------------------------------------------------------------------
 
 altMask :: KeyMask
 altMask = mod1Mask
@@ -153,7 +152,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask, xK_Right ), withFocused $ snapMove R Nothing)             --
     , ((modm .|. controlMask, xK_Up    ), withFocused $ snapMove U Nothing)             --
     , ((modm .|. controlMask, xK_Down  ), withFocused $ snapMove D Nothing)             --
-    , ((modm .|. altMask,     xK_Left  ), withFocused $ snapGrow L Nothing)             -- snap window size to relative to other windows or desktop
+    , ((modm .|. altMask,     xK_Left  ), withFocused $ snapGrow L Nothing)             -- snap window size relative to other windows or the desktop
     , ((modm .|. altMask,     xK_Right ), withFocused $ snapGrow R Nothing)             --
     , ((modm .|. altMask,     xK_Up    ), withFocused $ snapGrow U Nothing)             --
     , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)             --
@@ -185,6 +184,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,      xK_v ), spawn "alacritty -t alsamixer -e alsamixer")             -- sound system
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                   -- toggle screenkey off and on
     , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" ) -- quick calculator
+    , ((modm,                    xK_n ), spawn "~/Scripts/toggle_oneko.sh -neko")                 -- nyeko
+    , ((modm .|. shiftMask,      xK_n ), spawn "~/Scripts/toggle_oneko.sh -dog")                  -- doggo
+    , ((modm .|. controlMask,    xK_n ), spawn "~/Scripts/toggle_oneko.sh -sakura")               -- amine
     ] ++
     
     -- // scratchpad
@@ -225,12 +227,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
                             let rstrip = reverse . dropWhile isSpace . reverse
                             let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
                             let wnShort = parseSlash . rstrip $ shorten 40 (wn)
-
+                            let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
+                            
                             case t of 
                                 1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to '" ++ i)
                                 2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] and shifting to '" ++ i)
-
-                        notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
 
                         windowsPresent, currentWSHasWindow :: WindowSet -> Bool
                         windowsPresent = null . W.index . W.view i
@@ -246,11 +247,11 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Layouts
 -- > A list of layouts, use [mod-space] to cycle layouts. 
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
@@ -278,11 +279,11 @@ myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWin
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Scratchpads
 -- > Spawns a floating window on the screen.
 --   Useful for when you want to quickly access an application and leave it running in the background.
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 myScratchpads = 
          [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
@@ -311,10 +312,10 @@ myScratchpads =
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Prompts
 -- > Configs for prompts used for keybindings in [Key Binds].
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 qalcPromptConfig :: XPConfig
 qalcPromptConfig = def
@@ -342,10 +343,10 @@ configPrompt = def
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Hooks
 -- > xmonad hooks for managing windows, applications, and workspaces.
----------------------------------------------------------
+----------------------------------------------------------------------------
 
         -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
@@ -357,38 +358,38 @@ myManageHook = composeAll
         -- > doShift to open only in a specific workspace.
 
         -- ter 
-        [ title     =? "alacritty"      --> doShift "\xf120"
+        [ title     =? "alacritty"      --> doShift ( myWorkspaces !! 0 )
         
         -- dev
-        , className =? "Subl"           --> doShift "\xf121" 
-        , className =? "GitHub Desktop" --> doShift "\xf121"  
+        , className =? "Subl"           --> doShift ( myWorkspaces !! 1 )
+        , className =? "GitHub Desktop" --> doShift ( myWorkspaces !! 1 )
         
         -- www
-        , className =? "firefox"        --> doShift "\xf0239" 
-        , className =? "Chromium"       --> doShift "\xf0239"
+        , className =? "firefox"        --> doShift ( myWorkspaces !! 2 )
+        , className =? "Chromium"       --> doShift ( myWorkspaces !! 2 )
         
         -- doc
-        , resource  =? "libreoffice"    --> doShift "\xf718"
-        , className =? "calibre"        --> doShift "\xf718"
+        , resource  =? "libreoffice"    --> doShift ( myWorkspaces !! 3 )
+        , className =? "calibre"        --> doShift ( myWorkspaces !! 3 )
         
         -- vid
-        , className =? "obs"            --> doShift "\xf03d"
-        , className =? "vlc"            --> doShift "\xf03d" 
-        , className =? "kdenlive"       --> doShift "\xf03d" 
-        , className =? "Audacity"       --> doShift "\xf03d" 
+        , className =? "obs"            --> doShift ( myWorkspaces !! 4 )
+        , className =? "vlc"            --> doShift ( myWorkspaces !! 4 )
+        , className =? "kdenlive"       --> doShift ( myWorkspaces !! 4 )
+        , className =? "Audacity"       --> doShift ( myWorkspaces !! 4 )
         
         -- game
-        , className =? "steam"          --> doShift "\xf11b" 
+        , className =? "steam"          --> doShift ( myWorkspaces !! 5 )
         
         -- chat
-        , className =? "discord"        --> doShift "\xf1d7" 
+        , className =? "discord"        --> doShift ( myWorkspaces !! 6 )
 
         -- mus
-        , className =? "Spotify"        --> doShift "\xf0388"
+        , className =? "Spotify"        --> doShift ( myWorkspaces !! 7 )
 
         -- art
-        , className =? "krita"          --> doShift "\xf1fc" 
-        , className =? "Gimp"           --> doShift "\xf1fc" 
+        , className =? "krita"          --> doShift ( myWorkspaces !! 8 )
+        , className =? "Gimp"           --> doShift ( myWorkspaces !! 8 )
 
         -- Places the window in floating mode.
         , title     =? "welcome"        --> doCenterFloat
@@ -440,11 +441,11 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ x
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- XMonad Main
 -- > Where xmonad loads everything. 
 -- > Hypothetically, you can probably pack everything into here, but I haven't tried it yet.
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 main :: IO()
 main = do
@@ -470,10 +471,10 @@ main = do
 
 
 
----------------------------------------------------------
+----------------------------------------------------------------------------
 -- Functions
 -- > These are used for certain functions in some parts of this config. 
----------------------------------------------------------
+----------------------------------------------------------------------------
 
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
@@ -529,8 +530,8 @@ spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
 
+
 clickableWS ws = "<action=xdotool key super+" ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = fromJust $ Map.lookup ws workspaceIndices
-
