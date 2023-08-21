@@ -1,6 +1,9 @@
-#
-# ~/.bashrc
-#
+# ---------------------------------------------------------
+# --               bash config by Anapal                 --
+# --     My personal config for my (or your) needs.      --
+# --                                                     --
+# --      > https://github.com/AnapalOne/dotfiles        --
+# ---------------------------------------------------------
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

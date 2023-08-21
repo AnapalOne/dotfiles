@@ -5,6 +5,8 @@
 --      > https://github.com/AnapalOne/dotfiles        --
 ---------------------------------------------------------
 
+-- TODO: reimplement changes from desktop config to laptop config
+
 import XMonad
 
 import Data.Monoid
@@ -108,7 +110,6 @@ myWorkspaces = clickable . (map xmobarEscape) $ myWorkspaceList
 ---------------------------------------------------------
 -- Key Binds
 -- > These are keybindings that I use for everything in xmonad. 
---   TODO: Might add a help section for this. 
 --
 -- > modm = myModMask
 -- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
@@ -185,6 +186,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
     , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
+
+    -- TODO: combine into toggle_touchpad.sh and use arguments 
+    --       instead of two separate scripts.
     , ((0,          xF86XK_TouchpadOn ), spawn "~/Scripts/enable_touchpad.sh")                       -- toggle touchpad off and on
     , ((0,         xF86XK_TouchpadOff ), spawn "~/Scripts/disable_touchpad.sh")                      -- 
     

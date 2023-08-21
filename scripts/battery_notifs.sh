@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # When battery reaches 10% or 5%, notify the user.
 # Special thanks to KamilCuk on StackOverflow for helping with issues

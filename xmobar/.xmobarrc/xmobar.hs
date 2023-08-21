@@ -33,8 +33,10 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
-   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeStdinReader$ }{ <fc=#909090>$mpris2$ $cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$ ($diskio$)</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
-
+   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeStdinReader$ } $mpris2$ { <fc=#909090> $cpu$ / $coretemp$ | $gpu$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
+  
+    -- TODO: <box type=Bottom width=1 color=blue>$checkupdates$</box> in different xmobar instance, most likely at the bottom
+    --       $uptime$
 
    -- // general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
@@ -65,7 +67,7 @@ Config {
                              ] 20
 
           -- mpris2 activity monitor for spotify
-        , Run Mpris2 "spotify" [ "--template", "<fn=1><fc=darkgreen>\xf1bc</fc></fn> <artist> - <title> |"
+        , Run Mpris2 "spotify" [ "--template", "<fc=#909090><fn=1><fc=darkgreen>\xf1bc</fc></fn> <artist> - <title></fc>"
                                , "--nastring", ""
                                , "--maxwidth", "30"
                                ] 10
@@ -81,7 +83,6 @@ Config {
 
             -- cpu core temperature monitor
         , Run Com "sh" ["-c", "sensors | grep Tctl | sed 's/Tctl:         +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
-
         -- , Run CoreTemp       [ "--template" , "<core0>°C"
         --                      , "--Low"      , "60"        -- units: °C
         --                      , "--High"     , "80"        -- units: °C
@@ -91,7 +92,7 @@ Config {
         --                      ] 50
                           
             -- gpu activity monitor (alias gpu) (<fc=#a9a9a9>$gpu$</fc><fc=#909090>%</fc>)
-        -- , Run Com "sh" [ "-c", "nvidia-smi -a | grep Gpu | sed 's/        Gpu                               : //g' | sed 's/ //' | sed 's/%//'" ] "gpu" 50
+        , Run Com "/home/anapal/.config/xmonad/scripts/gpu_monitor.sh" [] "gpu" 50
 
             -- memory usage monitor
         , Run Memory         [ "--template" ,"<fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>%"
@@ -106,41 +107,16 @@ Config {
         , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf02ca</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 100
 
-        , Run DiskIO [("sdb6", "<total>")] 
-                     [ "--Low"      , "2000000"
-                     , "--High"     , "3000000"
-                     , "--normal"   , "darkorange"
-                     , "--high"     , "darkred"
-                     ] 100
-
-            -- battery monitor (<timeleft> in discharging status for battery time left)
-        -- , Run Battery        [ "--template" , "<leftbar> <acstatus>"
-        --                      , "--Low"      , "15"        -- units: %
-        --                      , "--High"     , "40"        -- units: %
-        --                      , "--low"      , "darkred"
-        --                      , "--normal"   , "darkorange"
-        --                      , "--high"     , "#1bc800"
-        --                      , "-f", "\xf244\xf243\xf243\xf243\xf242\xf242\xf241\xf241\xf241\xf240" -- horizontal
-        --                      -- , "-f", "\xf579\xf57a\xf57b\xf57c\xf57d\xf57e\xf57f\xf580\xf581\xf578" -- vertical
-        --                      , "-W", "0"
-
-        --                      , "--"
-        --                                -- discharging status
-        --                                , "-o" , "<left>%"
-        --                                -- AC "on" status
-        --                                , "-O" , "<fc=#dAA520>Charging..</fc>"
-        --                                -- charged status
-        --                                , "-i" , "Charged!"    
-        --                      ] 50
+        -- , Run DiskIO [("sdb6", "<total>")] 
+        --              [ "--Low"      , "2000000"
+        --              , "--High"     , "3000000"
+        --              , "--normal"   , "darkorange"
+        --              , "--high"     , "darkred"
+        --              ] 100
 
             -- time and date indicator 
         --   (%F = y-m-d date, %a = day of week, %T = 24-hour format/%r = 12-hour format)
         , Run Date           "<fc=#ABABAB>%F (%a) %r</fc>" "date" 10
-
-            -- keyboard layout indicator
-        -- , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
-        --                     , ("us"         , "<fc=#4682B4>KeyB: </fc", "<fc=#8B0000>US</fc>")
-        --                     ]
 
             -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
@@ -153,8 +129,7 @@ Config {
                                               , "-o", "<fc=#a0a0a0>\xea76</fc>"
                                         ] 10
 
-            -- weather monitor (add %RJTT% beteen uptime and date)
-        -- , Run Weather "RJTT" [ "--template", "<skyCondition> | <fc=#4682B4><tempC></fc>°C | <fc=#4682B4><rh></fc>% | <fc=#4682B4><pressure></fc>hPa"
-        --                     ] 36000
+            -- checks for system and application updates (alias checkupdates) 
+        , Run Com "/home/anapal/.config/xmonad/scripts/checkupdate.sh" [] "checkupdates" 3000
         ]
    }

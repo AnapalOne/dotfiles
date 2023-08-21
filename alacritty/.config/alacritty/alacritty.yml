@@ -50,7 +50,7 @@ window:
     y: 15
 
   # Spread additional padding evenly around the terminal content.
-  #dynamic_padding: false
+  dynamic_padding: false
 
   # Window decorations
   #
@@ -170,7 +170,7 @@ colors:
   # Default colors
   primary:
     background: '#2d2a2e'
-    foreground: '#fcfcfa'
+    foreground: '#ffffff'
 
     # Bright and dim foreground colors
     #
@@ -205,14 +205,14 @@ colors:
   #
   # Colors used for the search bar and match highlighting.
   #search:
-    # Allowed values are CellForeground/CellBackground, which reference the
-    # affected cell, or hexadecimal colors like #ff00ff.
-    #matches:
-    #  foreground: '#000000'
-    #  background: '#ffffff'
-    #focused_match:
-    #  foreground: '#ffffff'
-    #  background: '#000000'
+  #  # Allowed values are CellForeground/CellBackground, which reference the
+  #  # affected cell, or hexadecimal colors like #ff00ff.
+  #  matches:
+  #    foreground: '#000000'
+  #    background: '#ffffff'
+  #  focused_match:
+  #    foreground: '#ffffff'
+  #    background: '#000000'
 
     #bar:
     #  background: '#c5c8c6'

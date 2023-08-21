@@ -1,0 +1,10 @@
+Sxiv.background: #9c9c9c
+Sxiv.foreground: #000000
+Sxiv.font: Hack-9
+
+xterm*background: #282923
+xterm*foreground: white
+XTerm*faceName: Bitstream Vera Sans Mono
+xterm*faceSize: 9
+
+Xcursor.theme: Bibata-Modern-Classic

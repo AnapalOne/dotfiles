@@ -1,17 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 # Extracts and displays only the keybindings in my xmonad conifg. (~/.xmonad/xmonad.hs)
-
-# P.S.
-# Will only work on this specific config, as sed and awk specifically filters my xmonad format.
-# Will break if even one character is added, thus this script is very fragile.
+# P.S. Only works on my config, as sed and awk specifically filters my xmonad format.
 
 column_separator="$(printf "\033[34;1m%.s─\033[0m" $(seq 1 100))"
 
 cat ~/.xmonad/xmonad.hs | 
 	sed '/^\s*[-][-] [/][/] windows$/,$!d' |  # filter everything before [Key Binds] 
-	awk '/^[-].+/{exit} {print}' | 			   # filter everything after [Key Binds]
-	head -n -4 |  							   # delete last 3 lines
+	awk '/^[-].+/{exit} {print}' | 			  # filter everything after [Key Binds]
+	head -n -4 |  							  # delete last 3 lines
 
 	# filter out parenthesis, brackets, commas, and dashes from keybinds
 	sed -e 's/^\s*//g' \

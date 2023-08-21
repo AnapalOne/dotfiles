@@ -24,9 +24,10 @@ import XMonad.Prompt.ConfirmPrompt
 import XMonad.Config.Desktop
 
 import XMonad.Actions.GridSelect
-import XMonad.Actions.CycleWS
+import XMonad.Actions.CycleWS (nextWS, prevWS)
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
+import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy)
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -35,26 +36,25 @@ import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
 import XMonad.Layout.Circle
 import XMonad.Layout.Renamed
-import XMonad.Layout.Hidden
+import XMonad.Layout.Hidden (hideWindow, popOldestHiddenWindow, hiddenWindows)
+import XMonad.Layout.TrackFloating (trackFloating)
 
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.DynamicProperty (dynamicPropertyChange)
 -- TODO: import XMonad.Hooks.ScreenCorners
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
-import XMonad.Util.Cursor
 
-import qualified XMonad.Actions.FlexibleResize as Flex
-import qualified XMonad.Util.Hacks             as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
-import qualified XMonad.StackSet               as W
-import qualified Data.Map                      as M
-import qualified Data.Map.Strict               as Map
+import qualified XMonad.Actions.FlexibleManipulate as Flex
+import qualified XMonad.Util.Hacks                 as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
+import qualified XMonad.StackSet                   as W
+import qualified Data.Map                          as M
+import qualified Data.Map.Strict                   as Map
 
 
 
@@ -63,18 +63,18 @@ import qualified Data.Map.Strict               as Map
 -- > For quick configuration without scrolling the entire config file. 
 ----------------------------------------------------------------------------
 
-myTerminal              = "alacritty"
-myModMask               = mod4Mask -- win key
+myTerminal           = "alacritty"
+myModMask            = mod4Mask -- win key
 
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
     -- Size and position of window when it is toggled into floating mode.
-toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
+toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf121 Sublime Text",   "subl"), 
+myGridSpawn = [ ("\xf0a1e VSCode",        "code"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf0dc8 LibreOffice",   "libreoffice"), 
@@ -120,22 +120,19 @@ playerctlPlayers = "--player=spotify,cmus,spotifyd"
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
  
     -- // windows
-    [ ((modm,               xK_BackSpace ), kill)                               -- close focused window
-    , ((modm,               xK_space     ), sendMessage NextLayout)             -- rotate layout
-    , ((modm .|. shiftMask, xK_space     ), setLayout $ XMonad.layoutHook conf) -- reset layout order
-    , ((altMask,            xK_Tab       ), windows W.focusUp)                  -- rotate focus between windows
-    , ((modm,               xK_Return    ), windows W.swapMaster)               -- swap focus master and window
-    , ((modm .|. shiftMask, xK_comma     ), sendMessage Shrink)                 -- decreases master window size
-    , ((modm .|. shiftMask, xK_period    ), sendMessage Expand)                 -- increases master window size
-    , ((modm,               xK_comma     ), windows W.swapUp)                   -- move tiled window
-    , ((modm,               xK_period    ), windows W.swapDown)                 --
-    , ((modm,               xK_backslash ), withFocused hideWindow)             -- hide window
-    , ((modm .|. shiftMask, xK_backslash ), popOldestHiddenWindow)              -- restore the last hidden window
-    ] ++
-
-    -- // workspaces
-    [ ((modm,            xK_Home ), prevWS)                    -- switch workspace to the left
-    , ((modm,            xK_End  ), nextWS )                   -- switch workspace to the right
+    [ ((modm,                 xK_BackSpace ), kill1)                              -- close focused window
+    , ((modm,                 xK_space     ), sendMessage NextLayout)             -- rotate layout
+    , ((modm .|. shiftMask,   xK_space     ), setLayout $ XMonad.layoutHook conf) -- reset layout order
+    , ((altMask,              xK_Tab       ), windows W.focusUp)                  -- rotate focus between windows
+    , ((modm,                 xK_Return    ), windows W.swapMaster)               -- swap focus master and window
+    , ((modm .|. shiftMask,   xK_comma     ), sendMessage Shrink)                 -- decreases master window size
+    , ((modm .|. shiftMask,   xK_period    ), sendMessage Expand)                 -- increases master window size
+    , ((modm,                 xK_comma     ), windows W.swapUp)                   -- move tiled window
+    , ((modm,                 xK_period    ), windows W.swapDown)                 --
+    , ((modm,                 xK_backslash ), toggleNotifications "hide")         -- hide window
+    , ((modm .|. shiftMask,   xK_backslash ), toggleNotifications "unhide")       -- restore the last hidden window
+    , ((modm,                 xK_c         ), toggleNotifications "copyAll")      -- copy window to all workspaces
+    , ((modm .|. controlMask, xK_c         ), toggleNotifications "copiesKill")   -- delete all window copies
     ] ++
 
     -- // floating windows
@@ -179,7 +176,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // programs
     [ ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                            -- open terminal
-    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                   -- equivelent to prntscr
+    , ((0,                   xK_Print ), spawn "flameshot gui")                                   -- equivelent to prntscr
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                -- run program
     , ((modm .|. shiftMask,      xK_v ), spawn "alacritty -t alsamixer -e alsamixer")             -- sound system
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                   -- toggle screenkey off and on
@@ -211,9 +208,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- mod-control-[1..9] = Move window to workspace and switch to that workspace
     [ ((modm .|. m, k), changeWorkspaces f i z t)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
-        , (f, m, z, t) <- [ (W.greedyView, 0, False, 0), -- [ (Action, Mask, WithNotifications) ]
-                            (W.shift, shiftMask, True, 1), 
-                            (\i -> W.greedyView i . W.shift i, controlMask, True, 2) ]
+        , (f, m, z, t) <- [ (W.greedyView,                     0,           False, 0) -- [ (Action, Mask, WithNotifications) ]
+                          , (W.shift,                          shiftMask,   True,  1) 
+                          , (\i -> W.greedyView i . W.shift i, controlMask, True,  2)
+                          , (copy,               shiftMask .|. controlMask, True,  3) ]
     ] 
         where 
             changeWorkspaces f i z t = do
@@ -224,25 +222,41 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
                         notifyWS = do
                             wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
                             
+                            let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
                             let rstrip = reverse . dropWhile isSpace . reverse
                             let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
-                            let wnShort = parseSlash . rstrip $ shorten 40 (wn)
-                            let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
+                            let windowName = parseSlash . rstrip . shorten 40 $ wn
                             
                             case t of 
-                                1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] to '" ++ i)
-                                2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wnShort ++ "] and shifting to '" ++ i)
+                                1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
+                                2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ i)
+                                3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ i)
 
                         windowsPresent, currentWSHasWindow :: WindowSet -> Bool
                         windowsPresent = null . W.index . W.view i
                         currentWSHasWindow = isJust . W.peek
+
+                
+            toggleNotifications x = do
+                let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
+                let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
+                case x of
+                    -- The functions of XMonad.Layout.Hidden, but with notifications.
+                    "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
+                    "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
+                    
+                    -- The functions of XMonad.Actions.CopyWindow, but with notifications.
+                    "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
+                    "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
 
 
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // mouse bindings
     [ ((modm,   button1), (\w -> focus w >> mouseMoveWindow w >> windows W.swapMaster)) -- move window and send to top of stack
-    , ((modm,   button3), (\w -> focus w >> Flex.mouseResizeEdgeWindow (0.5) w))        -- resize window with right mouse button at window edge
+    , ((modm,   button3), (\w -> focus w >> Flex.mouseWindow Flex.resize w))            -- resize window with right mouse button at window edge
+    , ((modm,   button4), (\w -> prevWS))                                               -- switch workspace to the left
+    , ((modm,   button5), (\w -> nextWS))                                               -- switch workspace to the right
     ]
         
 
@@ -253,7 +267,7 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ----------------------------------------------------------------------------
 
-myLayout = avoidStruts (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
         
     where
@@ -357,11 +371,13 @@ myManageHook = composeAll
         -- > doRectFloat to open in floating mode with custom parameters for width, height, x, and y.
         -- > doShift to open only in a specific workspace.
 
+        -- // Programs that will open in specific workspaces.
         -- ter 
         [ title     =? "alacritty"      --> doShift ( myWorkspaces !! 0 )
         
         -- dev
         , className =? "Subl"           --> doShift ( myWorkspaces !! 1 )
+        , className =? "Code"           --> doShift ( myWorkspaces !! 1 )
         , className =? "GitHub Desktop" --> doShift ( myWorkspaces !! 1 )
         
         -- www
@@ -391,16 +407,18 @@ myManageHook = composeAll
         , className =? "krita"          --> doShift ( myWorkspaces !! 8 )
         , className =? "Gimp"           --> doShift ( myWorkspaces !! 8 )
 
-        -- Places the window in floating mode.
-        , title     =? "welcome"        --> doCenterFloat
-        , title     =? "alsamixer"      --> doCenterFloat
-        , className =? "Nemo"           --> doCenterFloat
-        , className =? "XTerm"          --> doCenterFloat
-        , className =? "KeyOverlay"     --> doCenterFloat
-        , className =? "Sxiv"           --> doFloat
-
-        , title =? "Eww - music-widget" --> doIgnore
+        -- // Programs that will open as floating windows.
+        , title     =? "welcome"                --> doCenterFloat
+        , title     =? "alsamixer"              --> doCenterFloat
+        , className =? "Nemo"                   --> doCenterFloat
+        , className =? "XTerm"                  --> doCenterFloat
+        , className =? "KeyOverlay"             --> doCenterFloat
+        , className =? "Sxiv"                   --> doFloat
+        , title     =? "dragon"                 --> doCenterFloat
+        , role      =? "GtkFileChooserDialog"   --> doCenterFloat
         ]
+            where
+                role = stringProperty "WM_WINDOW_ROLE"
         
         -- This controls all events that are handled by xmonad.
 myEventHook = mempty
@@ -408,8 +426,8 @@ myEventHook = mempty
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
-        spawnOnce "nitrogen --restore &"
-        -- spawnOnce "/home/anapal/GitHub/linux-wallpaperengine/build/wallengine --screen-root DVI-D-0 --fps 15 2516038638"
+        spawnOnce "xdotool mousemove 960 540"
+        spawnOnce "~/.fehbg &"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
@@ -421,7 +439,9 @@ myStartupHook = do
 
         spawnOnce "flameshot &"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
-        spawnOnce "trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true --SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true --alpha 0 --tint 0x000000 --iconspacing 3 -l"
+        spawnOnce ("trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true " ++
+                   "--SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true " ++
+                   "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
         spawn "xsetroot -cursor_name left_ptr"
 
 
@@ -464,7 +484,7 @@ main = do
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook <> Hacks.trayerAboveXmobarEventHook
-        , logHook            = myLogHook xmproc 
+        , logHook            = myLogHook xmproc
 
         , startupHook        = myStartupHook
      }
@@ -531,7 +551,7 @@ spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
 
 
-clickableWS ws = "<action=xdotool key super+" ++ show i ++ ">" ++ ws ++ "</action>"
+clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
-        i = fromJust $ Map.lookup ws workspaceIndices
+        i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)

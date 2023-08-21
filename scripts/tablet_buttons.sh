@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Keybindings for HUION H610 PRO V2 Tablet
 
 xsetwacom set "HUION Huion Tablet Pad pad" button 1 "key +ctrl z -ctrl"
