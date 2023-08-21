@@ -42,15 +42,24 @@
 - [**ranger**](https://github.com/ranger/ranger) - file manager 
 - [**screenkey**](https://gitlab.com/screenkey/screenkey) - displays keystrokes
 - [**spotifyd**](https://github.com/Spotifyd/spotifyd) - Spotify client as a daemon
+- [**vim plugins**](https://vimawesome.com/):
+   - [nordtheme](https://github.com/nordtheme/vim) - vim color scheme
+   - [nerdtree](https://github.com/preservim/nerdtree) - vim tree explorer
+   - [vim-nerdtree-syntax-highlight](https://github.com/tiagofumo/vim-nerdtree-syntax-highlight) - nerdtree syntax highlighting (duh!)
+   - [vim-airline](https://github.com/vim-airline/vim-airline) - vim status/tabline 
+   - [vim-airline-themes](https://github.com/vim-airline/vim-airline-themes) - themes for *vim-airline* ~~i'm using deus~~
+   - [vim-devicons](https://github.com/ryanoasis/vim-devicons) - adds icons to plugins
+   - [vim-visual-multi ](https://github.com/mg979/vim-visual-multi) - sublime-like multiple cursors
 
-### miscellaneous
-- **apps**
-    - *App files.*
-- **scripts** 
-    - *Script files.*
-- **systemd**
-    - user
-        - *Includes service files.*
+### shells
+- [**bash**](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) - bourne again shell config
+- [**zsh**](https://www.zsh.org/) - extended bash shell
+
+### miscellaneous and others
+- x11 configs
+- scripts
+- personal small apps
+- and more.
 
 <div align="center"> 
    <h2>preview</h2>
