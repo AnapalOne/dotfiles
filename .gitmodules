@@ -1,0 +1,36 @@
+[submodule "vim/.vim/plugged/nerdtree"]
+	path = vim/.vim/plugged/nerdtree
+	url = https://github.com/preservim/nerdtree
+[submodule "vim/.vim/plugged/vim-nerdtree-syntax-highlight"]
+	path = vim/.vim/plugged/vim-nerdtree-syntax-highlight
+	url = https://github.com/tiagofumo/vim-nerdtree-syntax-highlight
+[submodule "vim/.vim/plugged/vim-airline"]
+	path = vim/.vim/plugged/vim-airline
+	url = https://github.com/vim-airline/vim-airline
+[submodule "vim/.vim/plugged/vim-airline-themes"]
+	path = vim/.vim/plugged/vim-airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes
+[submodule "vim/.vim/plugged/vim-devicons"]
+	path = vim/.vim/plugged/vim-devicons
+	url = https://github.com/ryanoasis/vim-devicons
+[submodule "vim/.vim/plugged/vim-visual-multi"]
+	path = vim/.vim/plugged/vim-visual-multi
+	url = https://github.com/mg979/vim-visual-multi
+[submodule "vim/.vim/plugged/zsh-autocomplete"]
+	path = vim/.vim/plugged/zsh-autocomplete
+	url = https://github.com/marlonrichert/zsh-autocomplete
+[submodule "shells/zsh/.zsh/zsh-autocomplete"]
+	path = shells/zsh/.zsh/zsh-autocomplete
+	url = https://github.com/marlonrichert/zsh-autocomplete
+[submodule "shells/zsh/.zsh/zsh-autosuggestions"]
+	path = shells/zsh/.zsh/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "shells/zsh/.zsh/zsh-history-substring-search"]
+	path = shells/zsh/.zsh/zsh-history-substring-search
+	url = https://github.com/zsh-users/zsh-history-substring-search
+[submodule "shells/zsh/.zsh/zsh-syntax-highlighting"]
+	path = shells/zsh/.zsh/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting
+[submodule "vim/.vim/plugged/vim"]
+	path = vim/.vim/plugged/vim
+	url = https://github.com/nordtheme/vim
