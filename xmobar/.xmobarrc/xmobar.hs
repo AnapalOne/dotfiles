@@ -34,9 +34,6 @@ Config {
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
    , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeStdinReader$ } $mpris2$ { <fc=#909090> $cpu$ / $coretemp$ | $gpu$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
-  
-    -- TODO: <box type=Bottom width=1 color=blue>$checkupdates$</box> in different xmobar instance, most likely at the bottom
-    --       $uptime$
 
    -- // general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
