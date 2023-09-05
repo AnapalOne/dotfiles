@@ -229,41 +229,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
                           , (\i -> W.greedyView i . W.shift i, controlMask, True,  2)
                           , (copy,               shiftMask .|. controlMask, True,  3) ]
     ] 
-        where 
-            changeWorkspaces f i z t = do
-                stackset <- gets windowset
-                when (z && currentWSHasWindow stackset) $ notifyWS
-                windows $ f i
-                    where 
-                        notifyWS = do
-                            wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
-                            
-                            let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
-                            let rstrip = reverse . dropWhile isSpace . reverse
-                            let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
-                            let windowName = parseSlash . rstrip . shorten 40 $ wn
-                            
-                            case t of 
-                                1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
-                                2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ i)
-                                3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ i)
-
-                        windowsPresent, currentWSHasWindow :: WindowSet -> Bool
-                        windowsPresent = null . W.index . W.view i
-                        currentWSHasWindow = isJust . W.peek
-
-                
-            toggleNotifications x = do
-                let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
-                let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
-                case x of
-                    -- The functions of XMonad.Layout.Hidden, but with notifications.
-                    "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
-                    "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
-                    
-                    -- The functions of XMonad.Actions.CopyWindow, but with notifications.
-                    "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
-                    "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
 
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
@@ -576,3 +541,39 @@ clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</act
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)
+
+
+changeWorkspaces f i z t = do
+    stackset <- gets windowset
+    when (z && currentWSHasWindow stackset) $ notifyWS
+    windows $ f i
+        where 
+            notifyWS = do
+                wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+                
+                let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
+                let rstrip = reverse . dropWhile isSpace . reverse
+                let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
+                let windowName = parseSlash . rstrip . shorten 40 $ wn
+                
+                case t of 
+                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
+                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ i)
+                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ i)
+
+            windowsPresent, currentWSHasWindow :: WindowSet -> Bool
+            windowsPresent = null . W.index . W.view i
+            currentWSHasWindow = isJust . W.peek
+            
+
+toggleNotifications x = do
+    let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
+    let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
+    case x of
+        -- The functions of XMonad.Layout.Hidden, but with notifications.
+        "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
+        "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
+        
+        -- The functions of XMonad.Actions.CopyWindow, but with notifications.
+        "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
+        "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
