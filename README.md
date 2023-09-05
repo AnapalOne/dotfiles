@@ -53,7 +53,7 @@
 
 ### shells
 - [**bash**](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) - bourne again shell config
-- [**zsh**](https://www.zsh.org/) - extended bash shell
+- [**zsh**](https://www.zsh.org/) - extended bash shell config
 
 ### miscellaneous and others
 - x11 configs
