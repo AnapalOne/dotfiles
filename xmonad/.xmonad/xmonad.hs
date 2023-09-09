@@ -27,7 +27,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS (nextWS, prevWS)
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy)
+import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy, wsContainingCopies)
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -447,17 +447,28 @@ myStartupHook = do
 
         -- When the stack of windows managed by xmonad has been changed.
         -- Useful for displaying information to status bars like xmobar or dzen.
-myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-                                   { ppOutput = hPutStrLn xmproc 
-                                   , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
-                                   , ppHidden = xmobarColor "#d1426e" "" . clickableWS
-                                   , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
-                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 50
-                                   , ppSep = "<fc=#909090> | </fc>"
-                                   , ppWsSep = "<fc=#666666> . </fc>"
-                                   , ppExtras = [windowCount] 
-                                   , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-                                   }
+myLogHook xmproc = do
+
+    -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
+    -- TODO: how do you this
+    isCopies <- wsContainingCopies
+    let checkTag ws | ws `elem` isCopies = xmobarColor "#d1426e" "" . clickableWS $ ws
+                    | otherwise = ws
+
+    let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
+                      | otherwise = ws
+
+    dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
+        { ppOutput = hPutStrLn xmproc 
+        , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+        , ppHidden = xmobarColor "#d1426e" "" . clickableWS
+        , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
+        , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
+        , ppSep = "<fc=#909090> | </fc>"
+        , ppWsSep = "<fc=#666666> . </fc>"
+        , ppExtras = [windowCount] 
+        , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        }
 
 
 
