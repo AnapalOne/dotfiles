@@ -20,9 +20,10 @@ set hidden
 set nocursorcolumn
 set nocursorline
 set encoding=utf-8
+set termguicolors
 
 " // Is enabled by default by plug#end()
-syntax on
+syntax enable
 filetype plugin indent on
 
 " // nerdtree plugin configs
@@ -39,8 +40,10 @@ set shiftwidth=4
 set expandtab
 
 " // color themes
-" TODO: colorscheme with system color scheme (blu)
-let g:airline_theme='deus'
+let g:airline_theme='catppuccin_frappe'
+colorscheme catppuccin_frappe
+" disable background color
+hi Normal guibg=NONE ctermbg=NONE 
 
 " // vim-airline
 let g:airline#extensions#tabline#enabled=1
@@ -72,9 +75,10 @@ call plug#begin()
     Plug 'mg979/vim-visual-multi'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    Plug 'nordtheme/vim'
     Plug 'ryanoasis/vim-devicons'
     Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+    Plug 'nordtheme/vim', { 'as' : 'nord' }
+    Plug 'catppuccin/vim', { 'as': 'catppuccin' }
 
 call plug#end()
 
