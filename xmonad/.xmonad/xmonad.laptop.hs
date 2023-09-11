@@ -378,7 +378,7 @@ myManageHook = composeOne
         , className =? "Audacity"       -?> doShift $ myWorkspaces !! 4 
         
         -- game
-        , className =? "Steam"          -?> doShift $ myWorkspaces !! 5
+        , className =? "steam"          -?> doShift $ myWorkspaces !! 5
         , className =? "Pychess"        -?> doShift $ myWorkspaces !! 5
         
         -- chat
