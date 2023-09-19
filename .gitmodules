@@ -19,18 +19,6 @@
 [submodule "vim/.vim/plugged/zsh-autocomplete"]
 	path = vim/.vim/plugged/zsh-autocomplete
 	url = https://github.com/marlonrichert/zsh-autocomplete
-[submodule "shells/zsh/.zsh/zsh-autocomplete"]
-	path = shells/zsh/.zsh/zsh-autocomplete
-	url = https://github.com/marlonrichert/zsh-autocomplete
-[submodule "shells/zsh/.zsh/zsh-autosuggestions"]
-	path = shells/zsh/.zsh/zsh-autosuggestions
-	url = https://github.com/zsh-users/zsh-autosuggestions
-[submodule "shells/zsh/.zsh/zsh-history-substring-search"]
-	path = shells/zsh/.zsh/zsh-history-substring-search
-	url = https://github.com/zsh-users/zsh-history-substring-search
-[submodule "shells/zsh/.zsh/zsh-syntax-highlighting"]
-	path = shells/zsh/.zsh/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting
 [submodule "vim/.vim/plugged/vim"]
 	path = vim/.vim/plugged/vim
 	url = https://github.com/nordtheme/vim
