@@ -22,3 +22,15 @@
 [submodule "vim/.vim/plugged/vim"]
 	path = vim/.vim/plugged/vim
 	url = https://github.com/nordtheme/vim
+[submodule "zsh/.zsh/zsh-autosuggestions"]
+	path = zsh/.zsh/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "zsh/.zsh/zsh-autocomplete"]
+	path = zsh/.zsh/zsh-autocomplete
+	url = https://github.com/marlonrichert/zsh-autocomplete
+[submodule "zsh/.zsh/zsh-history-substring-search"]
+	path = zsh/.zsh/zsh-history-substring-search
+	url = https://github.com/zsh-users/zsh-history-substring-search
+[submodule "zsh/.zsh/zsh-syntax-highlighting"]
+	path = zsh/.zsh/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting
