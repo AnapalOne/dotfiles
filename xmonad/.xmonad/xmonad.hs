@@ -66,7 +66,7 @@ import qualified Data.Map.Strict                   as Map
 myTerminal           = "alacritty"
 myModMask            = mod4Mask -- win key
 
-myBorderWidth        = 3
+myBorderWidth        = 2
 myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
