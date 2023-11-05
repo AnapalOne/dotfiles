@@ -45,7 +45,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.SetWMName (setWMName)
--- TODO: import XMonad.Hooks.ScreenCorners
+import XMonad.Hooks.ScreenCorners
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -56,7 +56,6 @@ import qualified XMonad.Util.Hacks                 as Hacks (trayerPaddingXmobar
 import qualified XMonad.StackSet                   as W
 import qualified Data.Map                          as M
 import qualified Data.Map.Strict                   as Map
-
 
 
 ---------------------------------------------------------
@@ -73,7 +72,7 @@ myNormalBorderColor  = "#849DAB"
 myFocusedBorderColor = "#24788F"
 
     -- Size and position of window when it is toggled into floating mode.
-toggleFloatSize = (W.RationalRect (0.01) (0.06) (0.50) (0.50))
+toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
 myGridSpawn = [ ("\xe70c VSCode",         "code"), 
@@ -91,7 +90,12 @@ myGridSpawn = [ ("\xe70c VSCode",         "code"),
                 ("\xf11b Steam",          "steam")
               ]
 
+wallpaperDir = "~/Pictures/Wallpapers/Anime/BocchiTR"
 
+screenCorners :: [(ScreenCorner, X ())]
+screenCorners = [ (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
+                -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
+                ]
 
 ---------------------------------------------------------
 -- Workspaces
@@ -103,7 +107,6 @@ myGridSpawn = [ ("\xe70c VSCode",         "code"),
 myWorkspaces :: [String]
 myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf0297", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 -- myWorkspaces = ["ter", "dev", "www", "doc", "vid", "game", "chat", "mus", "art"] -- Words.
-
 
 
 ---------------------------------------------------------
@@ -240,14 +243,13 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ]
 
 
-
 ---------------------------------------------------------
 -- Layouts
 -- > A list of layouts, use [mod-space] to cycle layouts. 
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ---------------------------------------------------------
 
-myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+myLayout = screenCornerLayoutHook $ avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
     where
         full = renamed [Replace "<fc=#909090>\xf0e5f</fc> Full"] $ Full
@@ -269,7 +271,6 @@ myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEd
         lspiral = renamed [Replace "<fc=#909090>\xf0453</fc> Spiral"] $ spiral (6/7)
 
         circle = renamed [Replace "<fc=#909090>\xf0766</fc> Circle"] $ Circle
-
 
 
 ---------------------------------------------------------
@@ -306,7 +307,6 @@ myScratchpads =
                     t = 0.45 -w
 
 
-
 ---------------------------------------------------------
 -- Prompts
 -- > Configs for prompts used for keybindings in [Key Binds].
@@ -337,7 +337,6 @@ logoutPrompt = def
        }
 
 
-
 ---------------------------------------------------------
 -- Hooks
 -- > xmonad hooks for managing windows, applications, and workspaces.
@@ -366,6 +365,7 @@ myManageHook = composeOne
         -- www
         , className =? "firefox"        -?> doShift $ myWorkspaces !! 2
         , className =? "Chromium"       -?> doShift $ myWorkspaces !! 2
+        , className =? "Google-chrome"  -?> doShift $ myWorkspaces !! 2
         
         -- doc
         , resource  =? "libreoffice"    -?> doShift $ myWorkspaces !! 3
@@ -407,13 +407,14 @@ myManageHook = composeOne
                 role = stringProperty "WM_WINDOW_ROLE"
 
         -- Event handling. Not quite sure how this works yet.
-myEventHook = mempty
+myEventHook e = do
+        screenCornerEventHook e
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
-        -- spawnOnce "~/Scripts/kyu-kurarin.sh"
+        -- spawnOnce "~/Scripts/kyu-kurarin.sh &"
         -- spawnOnce "cd GitHub/linux-wallpaperengine/build/ && ./wallengine --silent --fps 20 --screen-root eDP-1 2516038638"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
@@ -432,6 +433,8 @@ myStartupHook = do
                   "--alpha 0 --tint 0x000000 --iconspacing 3")
         spawn "xsetroot -cursor_name left_ptr"
 
+        addScreenCorners screenCorners
+
         -- Outputs status information to a status bar.
         -- Useful for status bars like xmobar or dzen.
 myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
@@ -445,7 +448,6 @@ myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ x
                                    , ppExtras = [windowCount]
                                    , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
                                    } 
-
 
 
 ---------------------------------------------------------
@@ -467,14 +469,12 @@ main = do
         , keys               = myKeys
         , mouseBindings      = myMouseBinds
 
+        , startupHook        = myStartupHook
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook
         , logHook            = myLogHook xmproc >> setWMName "LG3D"
-
-        , startupHook        = myStartupHook
      }
-
 
 
 ---------------------------------------------------------
