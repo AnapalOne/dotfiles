@@ -90,12 +90,8 @@ myGridSpawn = [ ("\xe70c VSCode",         "code"),
                 ("\xf11b Steam",          "steam")
               ]
 
-wallpaperDir = "~/Pictures/Wallpapers/Anime/BocchiTR"
+wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
 
-screenCorners :: [(ScreenCorner, X ())]
-screenCorners = [ (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
-                -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
-                ]
 
 ---------------------------------------------------------
 -- Workspaces
@@ -553,8 +549,8 @@ changeWorkspaces f i z t = do
                 
                 let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
                 let rstrip = reverse . dropWhile isSpace . reverse
-                let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
-                let windowName = parseSlash . rstrip . shorten 40 $ wn
+                let sterilize = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', sterilize with a backtick
+                let windowName = sterilize . rstrip . shorten 40 $ wn
                 
                 case t of 
                     1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
@@ -577,3 +573,10 @@ toggleNotifications x = do
         -- The functions of XMonad.Actions.CopyWindow, but with notifications.
         "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
+
+
+screenCorners :: [(ScreenCorner, X ())]
+screenCorners = [ (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
+                -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
+                ]
+
