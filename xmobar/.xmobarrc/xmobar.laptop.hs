@@ -8,7 +8,7 @@
 Config { 
 
    -- // appearance
-     font =         "Bitstream Vera Sans Mono, Symbols Nerd Font Mono 11, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
+     font =         "Bitstream Vera Sans Mono, Symbols Nerd Font 12, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
    , additionalFonts = ["Symbols Nerd Font Mono 11"]
    , bgColor =      "black"
    , fgColor =      "white"
@@ -50,7 +50,9 @@ Config {
    -- // layout template
    , commands = 
 	       -- uptime monitor
-	      [ Run Uptime	 [ "--template", "<hours>h <minutes>m <seconds>s" ] 10
+	      [ Run Uptime	 [ "--template", "<days> <hours> <minutes> <seconds>"
+                       , "-S"        , "true"  
+                       ] 10
 
           -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
@@ -102,7 +104,7 @@ Config {
                              ] 50
 
           -- disk size monitor
-        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf7c9</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf0a0</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 50
 
           -- battery monitor (<timeleft> in discharging status for battery time left)
@@ -131,13 +133,13 @@ Config {
 
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=1><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
-                                        , "-f", "\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
+        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=2><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
+                                        , "-f", "\xf057f\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 
                                         , "--"
                                               , "-O", ""
-                                              , "-o", "<fc=#a0a0a0>\xf0156</fc>"
+                                              , "-o", "<fc=#a0a0a0>\xf467</fc>"
                                         ] 5
 
           -- keyboard layout indicator

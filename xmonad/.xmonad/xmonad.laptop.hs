@@ -27,7 +27,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS (nextWS, prevWS)
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy)
+import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy, wsContainingCopies)
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -78,19 +78,19 @@ toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 myGridSpawn = [ ("\xe70c VSCode",         "code"), 
                 ("\xf269 Firefox",        "firefox"), 
                 ("\xea84 Github Desktop", "github-desktop"),
-                ("\xf718 LibreOffice",    "libreoffice"), 
+                ("\xf082e LibreOffice",   "libreoffice"), 
                 ("\xf07b Nemo",           "nemo"), 
                 ("\xf008 Kdenlive" ,      "kdenlive"),
-                ("\xfb6e Discord",        "discord"),
+                ("\xf066f Discord",       "discord"),
                 ("\xf1bc Spotify",        "spotify-launcher"), 
-                ("\xf7ea GIMP",           "gimp"), 
+                ("\xf338 GIMP",           "gimp"), 
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
-                ("\xf028 Audacity",       "audacity"), 
-                ("\xf11b Steam",          "steam")
+                ("\xf02cb Audacity",      "audacity"), 
+                ("\xf04d3 Steam",         "steam")
               ]
 
-wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
+wallpaperDir = "~/Pictures/Wallpapers/Anime/BocchiTR"
 
 
 ---------------------------------------------------------
@@ -101,7 +101,7 @@ wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
 ---------------------------------------------------------
 
 myWorkspaces :: [String]
-myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf0297", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
 -- myWorkspaces = ["ter", "dev", "www", "doc", "vid", "game", "chat", "mus", "art"] -- Words.
 
 
@@ -433,7 +433,18 @@ myStartupHook = do
 
         -- Outputs status information to a status bar.
         -- Useful for status bars like xmobar or dzen.
-myLogHook xmproc = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
+myLogHook xmproc = do
+    
+    -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
+    -- TODO: how do you this
+    isCopies <- wsContainingCopies
+    let checkTag ws | ws `elem` isCopies = xmobarColor "#d1426e" "" . clickableWS $ ws
+                    | otherwise = ws
+
+    let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
+                      | otherwise = ws
+    
+    dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
                                    { ppOutput = hPutStrLn xmproc
                                    , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
                                    , ppHidden = xmobarColor "#d1426e" "" . wrap "" "". clickableWS
@@ -510,7 +521,7 @@ qalcPrompt c ans =
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
                                                                gs_cellwidth = 150,
-                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font Mono:size=11" }
+                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font Mono:size=12" }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
