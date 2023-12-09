@@ -47,7 +47,9 @@ Config {
    -- // layout template
    , commands = 
             -- uptime monitor
-        [ Run Uptime	 [ "--template", "<hours>h <minutes>m <seconds>s" ] 10
+        [ Run Uptime	 [ "--template" , "<days> <hours> <minutes> <seconds>"
+                         , "-S"         , "True" -- add unit to time measure (d, h, m, s)
+                         ] 10
 
             -- shows pp config in xmonad.hs
         , Run UnsafeStdinReader
