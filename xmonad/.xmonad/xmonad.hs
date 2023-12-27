@@ -44,6 +44,7 @@ import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.FadeWindows
 -- TODO: import XMonad.Hooks.ScreenCorners
 
 import XMonad.Util.Run
@@ -386,7 +387,7 @@ myManageHook = composeAll
                 role = stringProperty "WM_WINDOW_ROLE"
         
         -- This controls all events that are handled by xmonad.
-myEventHook = mempty
+myEventHook = fadeWindowsEventHook
 
 
         -- Executes whenever xmonad starts or restarts.
@@ -424,6 +425,8 @@ myLogHook xmproc = do
     let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
                       | otherwise = ws
 
+    fadeWindowsLogHook myFadeHook
+
     dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
         { ppOutput = hPutStrLn xmproc 
         , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
@@ -435,6 +438,14 @@ myLogHook xmproc = do
         , ppExtras = [windowCount] 
         , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         }
+
+
+myFadeHook = composeAll
+    [
+        opaque,
+        isUnfocused --> transparency 0.10,
+        isFullscreen --> opaque
+    ]
 
 
 
