@@ -266,15 +266,15 @@ myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEd
 ----------------------------------------------------------------------------
 
 myScratchpads = 
-         [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
-         , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
-         , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
-         , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
-         , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
-         , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
-         , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
-         , NS "ScrP_spt"            "alacritty -t spotify-tui -e spt"   (title =? "spotify-tui")    floatScratchpad
-         ]
+        [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
+        , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
+        , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
+        , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
+        , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
+        , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
+        , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
+        , NS "ScrP_spt"            "alacritty -t spotify-tui -e spt"   (title =? "spotify-tui")    floatScratchpad
+        ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
                 where
@@ -299,27 +299,27 @@ myScratchpads =
 
 qalcPromptConfig :: XPConfig
 qalcPromptConfig = def
-       { font = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
-       , bgColor = "black"
-       , fgColor = "white"
-       , bgHLight = "white"
-       , fgHLight = "black"
-       , borderColor = "#646464"
-       , position = Bottom 
-       , height = 30
-       }
+        { font        = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
+        , bgColor     = "black"
+        , fgColor     = "white"
+        , bgHLight    = "white"
+        , fgHLight    = "black"
+        , borderColor = "#646464"
+        , position    = Bottom 
+        , height      = 30
+        }
 
 configPrompt :: XPConfig
 configPrompt = def 
-       { font = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
-       , bgColor = "black"
-       , fgColor = "white"
-       , bgHLight = "white"
-       , fgHLight = "black"
-       , borderColor = "white"
-       , height = 50
-       , position = CenteredAt (0.5) (0.5)
-       }
+        { font        = "xft: Bitstream Vera Sans Mono:size=8:bold:antialias=true:hinting=true"
+        , bgColor     = "black"
+        , fgColor     = "white"
+        , bgHLight    = "white"
+        , fgHLight    = "black"
+        , borderColor = "white"
+        , height      = 50
+        , position    = CenteredAt (0.5) (0.5)
+        }
 
 
 
@@ -440,11 +440,10 @@ myLogHook xmproc = do
         }
 
 
-myFadeHook = composeAll
-    [
-        opaque,
-        isUnfocused --> transparency 0.10,
-        isFullscreen --> opaque
+myFadeHook = composeAll 
+    [ opaque
+    , isUnfocused --> transparency 0.10
+    , isFullscreen --> opaque
     ]
 
 
@@ -475,7 +474,7 @@ main = do
         , logHook            = myLogHook xmproc
 
         , startupHook        = myStartupHook
-     }
+        }
 
 
 
@@ -487,20 +486,17 @@ main = do
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
-
 toggleFloat :: Window -> X ()
 toggleFloat w = windows
    ( \s -> if M.member w (W.floating s)
            then W.sink w s
            else (W.float w toggleFloatSize) s)
 
-
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts
    where
            doubleLts '<' = "<<"
            doubleLts x   = [x]
-
 
     -- This function is special as a template for other usages 
     -- since you can insert any program that accepts a signle line of input
@@ -509,10 +505,9 @@ qalcPrompt :: XPConfig -> String -> X ()
 qalcPrompt c ans =
     inputPrompt c (trim ans) ?+ \input -> 
         liftIO(runProcessWithInput "qalc" [input] "") >>= qalcPrompt c 
-    where
-        trim  = f . f
-            where f = reverse . dropWhile isSpace
-
+    where 
+        trim = f . f
+        f = reverse . dropWhile isSpace
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
                                                                gs_cellwidth = 130,
@@ -520,34 +515,29 @@ gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 5
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
-                     minBound            -- lowest inactive bg
-                     minBound            -- highest inactive bg
-                     (0x2a,0x50,0x9a)    -- active bg
-                     maxBound            -- inactive fg
-                     maxBound            -- active fg
+                    minBound            -- lowest inactive bg
+                    minBound            -- highest inactive bg
+                    (0x2a,0x50,0x9a)    -- active bg
+                    maxBound            -- inactive fg
+                    maxBound            -- active fg
 
     -- Grid color for spawnSelected used in [Key Binds].
 stringColorizer' :: String -> Bool -> X (String, String)
-stringColorizer' s active = if active then 
-                                pure ("#2A509A", "white")
-                             else
-                                pure ("black", "white")
-
+stringColorizer' s active = if active then pure ("#2A509A", "white")
+                                      else pure ("black", "white")
 
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
-
 
 clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)
 
-
 changeWorkspaces f i z t = do
     stackset <- gets windowset
-    when (z && currentWSHasWindow stackset) $ notifyWS
+    when (z && currentWSHasWindow stackset) notifyWS
     windows $ f i
         where 
             notifyWS = do
@@ -566,7 +556,6 @@ changeWorkspaces f i z t = do
             windowsPresent, currentWSHasWindow :: WindowSet -> Bool
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
-
     
 toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
