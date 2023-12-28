@@ -233,8 +233,8 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ----------------------------------------------------------------------------
 
-myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
-         ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
+myLayout = avoidStruts $ trackFloating $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+         ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle
         
     where
         full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
@@ -245,13 +245,13 @@ myLayout = avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEd
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xfa6c</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
-        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
+        vthreecol = renamed [Replace "<fc=#909090>\xf0835</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
         
-        grid = renamed [Replace "<fc=#909090>\xfc56</fc> Grid"] $ Grid
+        grid = renamed [Replace "<fc=#909090>\xf0758</fc> Grid"] $ Grid
         
         lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
 
