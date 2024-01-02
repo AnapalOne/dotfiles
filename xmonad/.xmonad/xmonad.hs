@@ -107,7 +107,7 @@ myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\
 
 ----------------------------------------------------------------------------
 -- Key Binds
--- > These are keybindings that I use for navigating in xmonad. 
+-- > These are keybindings that I use for everything in xmonad.
 -- 
 -- > [mod-ctrl-slash] to display key bindings. 
 -- > Do "xev | sed -ne '/^KeyPress/,/^$/p'" for key mappings.
@@ -328,7 +328,6 @@ configPrompt = def
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ----------------------------------------------------------------------------
 
-        -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
@@ -386,11 +385,9 @@ myManageHook = composeAll
             where
                 role = stringProperty "WM_WINDOW_ROLE"
         
-        -- This controls all events that are handled by xmonad.
 myEventHook = fadeWindowsEventHook
 
 
-        -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
@@ -412,8 +409,6 @@ myStartupHook = do
         spawn "steam -silent"
 
 
-        -- When the stack of windows managed by xmonad has been changed.
-        -- Useful for displaying information to status bars like xmobar or dzen.
 myLogHook xmproc = do
 
     -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
@@ -561,10 +556,10 @@ toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
     let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
     case x of
-        -- The functions of XMonad.Layout.Hidden, but with notifications.
+        -- XMonad.Layout.Hidden, but with notifications.
         "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
         "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
         
-        -- The functions of XMonad.Actions.CopyWindow, but with notifications.
+        -- XMonad.Actions.CopyWindow, but with notifications.
         "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")

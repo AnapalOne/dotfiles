@@ -1,5 +1,5 @@
 ---------------------------------------------------------
---            XMonad Config by Anapal                  --
+--            xmonad config by Anapal                  --
 --     My personal config for my (or your) needs.      --
 --                                                     --
 --      > https://github.com/AnapalOne/dotfiles        --
@@ -109,9 +109,8 @@ myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\
 ---------------------------------------------------------
 -- Key Binds
 -- > These are keybindings that I use for everything in xmonad. 
---   TODO: Might add a help section for this. 
 --
--- > modm = myModMask
+-- > [mod-ctrl-slash] to display key bindings. 
 -- > Do xev | sed -ne '/^KeyPress/,/^$/p' for key maps.
 ---------------------------------------------------------
 
@@ -339,7 +338,6 @@ logoutPrompt = def
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ---------------------------------------------------------
 
-        -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeOne
 
@@ -347,9 +345,6 @@ myManageHook = composeOne
         -- > doCenterFloat to open in flating mode, centered
         -- > doRectFloat to open in floating mode with custom parameters for width, height, x, and y.
         -- > doShift to open only in a specific workspace.
-
-        -- NOTE: This will not work when the workspaces in myWorkspaceList or myWorkspaceWords do not match the workspaces inside doShift. 
-        --       Whenever you rename those workspaces, be sure to also rename the workspaces inside doShift.
 
         -- ter 
         [ title     =? "alacritty"      -?> doShift $ myWorkspaces !! 0
@@ -403,10 +398,8 @@ myManageHook = composeOne
            where
                 role = stringProperty "WM_WINDOW_ROLE"
 
-        -- Controls all events that are handled by xmonad.
 myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e
 
-        -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
@@ -431,8 +424,6 @@ myStartupHook = do
 
         addScreenCorners screenCorners
 
-        -- Outputs status information to a status bar.
-        -- Useful for status bars like xmobar or dzen.
 myLogHook xmproc = do
     
     -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
@@ -578,11 +569,11 @@ toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
     let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
     case x of
-        -- The functions of XMonad.Layout.Hidden, but with notifications.
+        -- XMonad.Layout.Hidden, but with notifications.
         "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
         "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
         
-        -- The functions of XMonad.Actions.CopyWindow, but with notifications.
+        -- XMonad.Actions.CopyWindow, but with notifications.
         "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
 
