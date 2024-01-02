@@ -423,15 +423,15 @@ myLogHook xmproc = do
     fadeWindowsLogHook myFadeHook
 
     dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-        { ppOutput = hPutStrLn xmproc 
-        , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
-        , ppHidden = xmobarColor "#d1426e" "" . clickableWS
+        { ppOutput          = hPutStrLn xmproc 
+        , ppCurrent         = xmobarColor "#4381fb" "" . wrap "[" "]"
+        , ppHidden          = xmobarColor "#d1426e" "" . clickableWS
         , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
-        , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
-        , ppSep = "<fc=#909090> | </fc>"
-        , ppWsSep = "<fc=#666666> . </fc>"
-        , ppExtras = [windowCount] 
-        , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        , ppTitle           = xmobarColor "#ffffff" "" . shorten 50 
+        , ppSep             = "<fc=#909090> | </fc>"
+        , ppWsSep           = "<fc=#666666> . </fc>"
+        , ppExtras          = [windowCount] 
+        , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         }
 
 
