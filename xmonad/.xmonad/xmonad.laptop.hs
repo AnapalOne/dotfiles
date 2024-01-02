@@ -46,6 +46,7 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Hooks.ScreenCorners
+import XMonad.Hooks.FadeWindows
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -82,7 +83,7 @@ myGridSpawn = [ ("\xe70c VSCode",         "code"),
                 ("\xf07b Nemo",           "nemo"), 
                 ("\xf008 Kdenlive" ,      "kdenlive"),
                 ("\xf066f Discord",       "discord"),
-                ("\xf1bc Spotify",        "spotify-launcher"), 
+                ("\xf1bc Spotify",        "spotify"), 
                 ("\xf338 GIMP",           "gimp"), 
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
@@ -310,26 +311,26 @@ myScratchpads =
 
 qalcPromptConfig :: XPConfig
 qalcPromptConfig = def
-       { font = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
-       , bgColor = "black"
-       , fgColor = "white"
-       , bgHLight = "white"
-       , fgHLight = "black"
+       { font        = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
+       , bgColor     = "black"
+       , fgColor     = "white"
+       , bgHLight    = "white"
+       , fgHLight    = "black"
        , borderColor = "#646464"
-       , position = Bottom 
-       , height = 30
+       , position    = Bottom 
+       , height      = 30
        }
 
 logoutPrompt :: XPConfig
 logoutPrompt = def 
-       { font = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
-       , bgColor = "black"
-       , fgColor = "white"
-       , bgHLight = "white"
-       , fgHLight = "black"
+       { font        = "xft: Bitstream Vera Sans Mono:size=9:bold:antialias=true:hinting=true"
+       , bgColor     = "black"
+       , fgColor     = "white"
+       , bgHLight    = "white"
+       , fgHLight    = "black"
        , borderColor = "white"
-       , height = 50
-       , position = CenteredAt (0.5) (0.5)
+       , height      = 50
+       , position    = CenteredAt (0.5) (0.5)
        }
 
 
@@ -402,9 +403,8 @@ myManageHook = composeOne
            where
                 role = stringProperty "WM_WINDOW_ROLE"
 
-        -- Event handling. Not quite sure how this works yet.
-myEventHook e = do
-        screenCornerEventHook e
+        -- Controls all events that are handled by xmonad.
+myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
@@ -443,18 +443,27 @@ myLogHook xmproc = do
 
     let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
                       | otherwise = ws
+
+    fadeWindowsLogHook myFadeHook
     
     dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-                                   { ppOutput = hPutStrLn xmproc
-                                   , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
-                                   , ppHidden = xmobarColor "#d1426e" "" . wrap "" "". clickableWS
-                                   , ppHiddenNoWindows = xmobarColor "#061d8e" "". clickableWS
-                                   , ppTitle = xmobarColor "#ffffff" "" . shorten 45
-                                   , ppSep = "<fc=#666666> | </fc>"
-                                   , ppWsSep = "<fc=#666666> . </fc>"
-                                   , ppExtras = [windowCount]
-                                   , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-                                   } 
+        { ppOutput          = hPutStrLn xmproc
+        , ppCurrent         = xmobarColor "#4381fb" "" . wrap "[" "]"
+        , ppHidden          = xmobarColor "#d1426e" "" . wrap "" "". clickableWS
+        , ppHiddenNoWindows = xmobarColor "#061d8e" "". clickableWS
+        , ppTitle           = xmobarColor "#ffffff" "" . shorten 45
+        , ppSep             = "<fc=#666666> | </fc>"
+        , ppWsSep           = "<fc=#666666> . </fc>"
+        , ppExtras          = [windowCount]
+        , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        } 
+
+
+myFadeHook = composeAll
+    [ opaque        -- default, focused windows
+    , isUnfocused   --> transparency 0.10
+    , isFullscreen  --> opaque
+    ]
 
 
 ---------------------------------------------------------
@@ -481,7 +490,7 @@ main = do
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook
         , logHook            = myLogHook xmproc >> setWMName "LG3D"
-     }
+        }
 
 
 ---------------------------------------------------------
@@ -492,20 +501,17 @@ main = do
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
-
 toggleFloat :: Window -> X ()
 toggleFloat w = windows
    ( \s -> if M.member w (W.floating s)
            then W.sink w s
            else (W.float w toggleFloatSize) s)
 
-
 xmobarEscape :: String -> String
 xmobarEscape = concatMap doubleLts
    where
            doubleLts '<' = "<<"
            doubleLts x   = [x]
-
 
     -- This function is special as a template for other programs
     -- since you can insert any program here that accepts a single line of input
@@ -517,7 +523,6 @@ qalcPrompt c ans =
     where
         trim  = f . f
             where f = reverse . dropWhile isSpace
-
 
 gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
                                                                gs_cellwidth = 150,
@@ -538,17 +543,14 @@ stringColorizer' s active = if active then
                              else
                                 pure ("black", "white")
 
-
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
-
 
 clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)
-
 
 changeWorkspaces f i z t = do
     stackset <- gets windowset
@@ -572,7 +574,6 @@ changeWorkspaces f i z t = do
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
             
-
 toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
     let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
@@ -584,7 +585,6 @@ toggleNotifications x = do
         -- The functions of XMonad.Actions.CopyWindow, but with notifications.
         "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
-
 
 screenCorners :: [(ScreenCorner, X ())]
 screenCorners = [ (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
