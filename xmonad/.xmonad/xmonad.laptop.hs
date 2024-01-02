@@ -76,19 +76,19 @@ myFocusedBorderColor = "#24788F"
 toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xe70c VSCode",         "code"), 
-                ("\xf269 Firefox",        "firefox"), 
-                ("\xea84 Github Desktop", "github-desktop"),
-                ("\xf082e LibreOffice",   "libreoffice"), 
-                ("\xf07b Nemo",           "nemo"), 
-                ("\xf008 Kdenlive" ,      "kdenlive"),
-                ("\xf066f Discord",       "discord"),
-                ("\xf1bc Spotify",        "spotify"), 
-                ("\xf338 GIMP",           "gimp"), 
-                ("\xf1fc Krita",          "krita"), 
-                ("\xf03d OBS",            "obs"),
-                ("\xf02cb Audacity",      "audacity"), 
-                ("\xf04d3 Steam",         "steam")
+myGridSpawn = [ ("\xe70c VSCode",         "code")
+              , ("\xf269 Firefox",        "firefox")
+              , ("\xea84 Github Desktop", "github-desktop")
+              , ("\xf082e LibreOffice",   "libreoffice")
+              , ("\xf07b Nemo",           "nemo")
+              , ("\xf008 Kdenlive" ,      "kdenlive")
+              , ("\xf066f Discord",       "discord")
+              , ("\xf1bc Spotify",        "spotify")
+              , ("\xf338 GIMP",           "gimp")
+              , ("\xf1fc Krita",          "krita")
+              , ("\xf03d OBS",            "obs")
+              , ("\xf02cb Audacity",      "audacity")
+              , ("\xf04d3 Steam",         "steam")
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/BocchiTR"

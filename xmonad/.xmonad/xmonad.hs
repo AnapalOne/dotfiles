@@ -75,18 +75,18 @@ myFocusedBorderColor = "#24788F"
 toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf0a1e VSCode",        "code"), 
-                ("\xf269 Firefox",        "firefox"), 
-                ("\xea84 Github Desktop", "github-desktop"),
-                ("\xf0dc8 LibreOffice",   "libreoffice"), 
-                ("\xf07b Nemo",           "nemo"), 
-                ("\xf008 Kdenlive" ,      "kdenlive"),
-                ("\xf066f Discord",       "discord"),
-                ("\xf1bc Spotify",        "spotify"), 
-                ("\xf03e GIMP",           "gimp"), 
-                ("\xf1fc Krita",          "krita"), 
-                ("\xf03d OBS",            "obs"),
-                ("\xf028 Audacity",       "audacity"), 
+myGridSpawn = [ ("\xf0a1e VSCode",        "code") 
+              , ("\xf269 Firefox",        "firefox") 
+              , ("\xea84 Github Desktop", "github-desktop")
+              , ("\xf0dc8 LibreOffice",   "libreoffice")
+              , ("\xf07b Nemo",           "nemo")
+              , ("\xf008 Kdenlive" ,      "kdenlive")
+              , ("\xf066f Discord",       "discord")
+              , ("\xf1bc Spotify",        "spotify") 
+              , ("\xf03e GIMP",           "gimp")
+              , ("\xf1fc Krita",          "krita") 
+              , ("\xf03d OBS",            "obs")
+              , ("\xf028 Audacity",       "audacity")
                 ("\xf11b Steam",          "steam")
               ]
 
