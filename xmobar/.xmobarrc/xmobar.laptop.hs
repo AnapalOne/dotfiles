@@ -60,13 +60,15 @@ Config {
         , Run XPropertyLog "_XMONAD_TRAYPAD"
 
           -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf0552</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf01da</fc></fn> <rx>kB/s"
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
                              , "--normal"   , "darkorange" 
                              , "--high"     , "darkred" 
                              ] 20
+
+        -- , Run Network "eth0" [ "--template" , "<fn=1><fc=#0192ff>\xf0200</fc></fn>" ] 20
 
           -- mpris2 activity monitor for spotify
         , Run Mpris2 "spotify" [ "--template", "<fc=darkgreen>\xf1bc</fc> <artist> - <title> |"

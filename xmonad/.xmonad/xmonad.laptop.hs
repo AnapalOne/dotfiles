@@ -34,17 +34,16 @@ import XMonad.Layout.Grid
 import XMonad.Layout.Spiral
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
-import XMonad.Layout.Circle
+import XMonad.Layout.CircleEx
 import XMonad.Layout.Renamed
 import XMonad.Layout.Hidden (hideWindow, popOldestHiddenWindow, hiddenWindows)
-import XMonad.Layout.TrackFloating (trackFloating)
+import XMonad.Layout.FocusTracking
 
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Hooks.ScreenCorners
 import XMonad.Hooks.FadeWindows
 
@@ -91,7 +90,7 @@ myGridSpawn = [ ("\xe70c VSCode",         "code")
               , ("\xf04d3 Steam",         "steam")
               ]
 
-wallpaperDir = "~/Pictures/Wallpapers/Anime/BocchiTR"
+wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
 
 
 ---------------------------------------------------------
@@ -116,6 +115,9 @@ myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\
 
 altMask :: KeyMask
 altMask = mod1Mask
+
+xmonadEnabled :: Bool
+xmonadEnabled = True
 
 playerctlPlayers = "--player=spotify,cmus,spotifyd"
 
@@ -164,13 +166,14 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // system commands
     [ ((modm,                                    xK_b ), sendMessage ToggleStruts)                                                                  -- toggle xmobar to front of screen
+    , ((modm .|. controlMask,                    xK_b ), toggleScreenSpacingEnabled >> toggleWindowSpacingEnabled)                                  -- toggle gaps          
     , ((modm,                                    xK_q ), confirmPrompt logoutPrompt "recompile?" $ spawn "xmonad --recompile && xmonad --restart")  -- recompiles xmonad
     , ((modm,                               xK_Escape ), confirmPrompt logoutPrompt "logout?" $ io (exitWith ExitSuccess))                          -- logout from xmonad
     , ((modm .|. shiftMask,                 xK_Escape ), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                           -- sleep mode
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                           -- reboot computer
     , ((modm .|. controlMask,               xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
     , ((modm .|. controlMask .|. shiftMask, xK_Escape ), confirmPrompt logoutPrompt "hibernate?" $ spawn "systemctl hibernate")                     -- hibernate computer
-    , ((modm,                                    xK_l ), spawn "xscreensaver-command -lock")                                                        -- lock system
+    , ((modm,                                    xK_l ), spawn "light-locker-command -l")                                                           -- lock system
     , ((0,                     xF86XK_MonBrightnessUp ), spawn "~/Scripts/change_brightness_smooth.sh 5")                                           -- increase brightness
     , ((0,                   xF86XK_MonBrightnessDown ), spawn "~/Scripts/change_brightness_smooth.sh -5")                                          -- decrease brightness
     , ((0,                    xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5")                                                                      -- increase volume
@@ -221,12 +224,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- mod-[1..9]         = Switch to workspace 
     -- mod-shift-[1..9]   = Move window to workspace
     -- mod-control-[1..9] = Move window to workspace and switch to that workspace
+    -- mod-alt-[1..9]     = Copy window to workspace
     [ ((modm .|. m, k), changeWorkspaces f i z t)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
-        , (f, m, z, t) <- [ (W.greedyView,                     0,           False, 0) -- [ (Action, Mask, WithNotifications) ]
-                          , (W.shift,                          shiftMask,   True,  1) 
+        , (f, m, z, t) <- [ (W.greedyView,                               0, False, 0) -- [ (Action, Mask, WithNotifications) ]
+                          , (W.shift,                            shiftMask, True,  1) 
                           , (\i -> W.greedyView i . W.shift i, controlMask, True,  2)
-                          , (copy,               shiftMask .|. controlMask, True,  3) ]
+                          , (copy,                                 altMask, True,  3) ]
     ] 
 
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -245,7 +249,7 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ---------------------------------------------------------
 
-myLayout = screenCornerLayoutHook $ avoidStruts $ trackFloating (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+myLayout = screenCornerLayoutHook $ avoidStruts $ focusTracking (renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle ) 
     where
         full = renamed [Replace "<fc=#909090>\xf0e5f</fc> Full"] $ Full
@@ -256,7 +260,7 @@ myLayout = screenCornerLayoutHook $ avoidStruts $ trackFloating (renamed [CutWor
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio
+        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeColMid cnmaster cdelta cratio
         vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio
         cnmaster = 1
         cdelta = 3/100
@@ -266,7 +270,7 @@ myLayout = screenCornerLayoutHook $ avoidStruts $ trackFloating (renamed [CutWor
         
         lspiral = renamed [Replace "<fc=#909090>\xf0453</fc> Spiral"] $ spiral (6/7)
 
-        circle = renamed [Replace "<fc=#909090>\xf0766</fc> Circle"] $ Circle
+        circle = renamed [Replace "<fc=#909090>\xf0766</fc> Circle"] $ circleEx {cDelta = -3*pi/4}
 
 
 ---------------------------------------------------------
@@ -390,6 +394,7 @@ myManageHook = composeOne
         , className =? "XTerm"                -?> doCenterFloat
         , className =? "Pavucontrol"          -?> doCenterFloat
         , className =? "Qalculate-gtk"        -?> doCenterFloat
+        , className =? "Dragon-drop"          -?> doCenterFloat
         , title     =? "alsamixer"            -?> doCenterFloat
         , title     =? "welcome"              -?> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
         , role      =? "GtkFileChooserDialog" -?> doCenterFloat
@@ -398,8 +403,10 @@ myManageHook = composeOne
            where
                 role = stringProperty "WM_WINDOW_ROLE"
 
+myEventHook :: Event -> X All
 myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e
 
+myStartupHook :: X ()
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
@@ -415,12 +422,13 @@ myStartupHook = do
         -- spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
         
         spawnOnce "eww --config /home/anapal/.config/eww/ open music-widget &"
-        spawnOnce "xscreensaver --no-splash"
+        spawnOnce "light-locker"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         spawnOnce ("trayer --edge top --align right --distancefrom top --distance 18 --SetDockType true " ++   
                   "--SetPartialStrut true --height 22 --widthtype request --padding 3 --margin 20 --transparent true " ++
                   "--alpha 0 --tint 0x000000 --iconspacing 3")
         spawn "xsetroot -cursor_name left_ptr"
+        spawn "otd-daemon &"
 
         addScreenCorners screenCorners
 
@@ -449,10 +457,10 @@ myLogHook xmproc = do
         , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         } 
 
-
+myFadeHook :: Query Opacity
 myFadeHook = composeAll
     [ opaque        -- default, focused windows
-    , isUnfocused   --> transparency 0.10
+    , isUnfocused   --> transparency 0.15
     , isFullscreen  --> opaque
     ]
 
@@ -480,7 +488,7 @@ main = do
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook
-        , logHook            = myLogHook xmproc >> setWMName "LG3D"
+        , logHook            = myLogHook xmproc
         }
 
 
@@ -515,9 +523,11 @@ qalcPrompt c ans =
         trim  = f . f
             where f = reverse . dropWhile isSpace
 
-gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 60, 
-                                                               gs_cellwidth = 150,
-                                                               gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font Mono:size=12" }
+gridSystemColor colorizer = (buildDefaultGSConfig colorizer) 
+                            { gs_cellheight = 60 
+                            , gs_cellwidth = 150
+                            , gs_font = "xft:Iosevka:size=10:bold:antialias=true:hinting=true, Symbols Nerd Font Mono:size=12" 
+                            }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
@@ -529,10 +539,8 @@ systemColorizer = colorRangeFromClassName
 
     -- Grid color for spawnSelected used in [Key Binds].
 stringColorizer' :: String -> Bool -> X (String, String)
-stringColorizer' s active = if active then 
-                                pure ("#2a509a", "white")
-                             else
-                                pure ("black", "white")
+stringColorizer' s active = if active then pure ("#2a509a", "white")
+                                      else pure ("black", "white")
 
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
@@ -565,6 +573,7 @@ changeWorkspaces f i z t = do
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
             
+toggleNotifications :: String -> X ()
 toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
     let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
@@ -578,7 +587,8 @@ toggleNotifications x = do
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
 
 screenCorners :: [(ScreenCorner, X ())]
-screenCorners = [ (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
+screenCorners = [
+                -- (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
                 -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
                 ]
 
