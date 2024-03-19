@@ -174,8 +174,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. controlMask,               xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
     , ((modm .|. controlMask .|. shiftMask, xK_Escape ), confirmPrompt logoutPrompt "hibernate?" $ spawn "systemctl hibernate")                     -- hibernate computer
     , ((modm,                                    xK_l ), spawn "light-locker-command -l")                                                           -- lock system
-    , ((0,                     xF86XK_MonBrightnessUp ), spawn "~/Scripts/change_brightness_smooth.sh 5")                                           -- increase brightness
-    , ((0,                   xF86XK_MonBrightnessDown ), spawn "~/Scripts/change_brightness_smooth.sh -5")                                          -- decrease brightness
+    , ((0,                     xF86XK_MonBrightnessUp ), changeBrightness 5)                                                                        -- increase brightness
+    , ((0,                   xF86XK_MonBrightnessDown ), changeBrightness (-5))                                                                       -- decrease brightness
     , ((0,                    xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5")                                                                      -- increase volume
     , ((0,                    xF86XK_AudioLowerVolume ), spawn "pamixer -d 5")                                                                      -- decrease volume
     , ((0,                           xF86XK_AudioMute ), spawn "pamixer -t")                                                                        -- mute volume
@@ -592,3 +592,8 @@ screenCorners = [
                 -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
                 ]
 
+changeBrightness :: Integer -> X()
+changeBrightness value
+               | value > 0 = spawn ("brillo -u 150000 -A " ++ show (value)) >> notifyBrightness
+               | value < 0 = spawn ("brillo -u 150000 -U " ++ show (abs value)) >> notifyBrightness
+                    where notifyBrightness = spawn ("~/Scripts/brightness_notifs.sh")
