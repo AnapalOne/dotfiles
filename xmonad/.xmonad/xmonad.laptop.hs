@@ -168,7 +168,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,                                    xK_b ), sendMessage ToggleStruts)                                                                  -- toggle xmobar to front of screen
     , ((modm .|. controlMask,                    xK_b ), toggleScreenSpacingEnabled >> toggleWindowSpacingEnabled)                                  -- toggle gaps          
     , ((modm,                                    xK_q ), confirmPrompt logoutPrompt "recompile?" $ spawn "xmonad --recompile && xmonad --restart")  -- recompiles xmonad
-    , ((modm,                               xK_Escape ), confirmPrompt logoutPrompt "logout?" $ io (exitWith ExitSuccess))                          -- logout from xmonad
+    , ((modm,                               xK_Escape ), confirmPrompt logoutPrompt "logout?" $ spawn "light-locker-command -l")                    -- logout from xmonad
     , ((modm .|. shiftMask,                 xK_Escape ), confirmPrompt logoutPrompt "sleep?" $ spawn "systemctl suspend")                           -- sleep mode
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                           -- reboot computer
     , ((modm .|. controlMask,               xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
@@ -176,9 +176,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                                    xK_l ), spawn "light-locker-command -l")                                                           -- lock system
     , ((0,                     xF86XK_MonBrightnessUp ), changeBrightness 5 >> notifyBrightness)                                                    -- increase brightness
     , ((0,                   xF86XK_MonBrightnessDown ), changeBrightness (-5) >> notifyBrightness)                                                 -- decrease brightness
-    , ((0,                    xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5")                                                                      -- increase volume
-    , ((0,                    xF86XK_AudioLowerVolume ), spawn "pamixer -d 5")                                                                      -- decrease volume
-    , ((0,                           xF86XK_AudioMute ), spawn "pamixer -t")                                                                        -- mute volume
+    , ((0,                    xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5" >> notifyVolume)                                                                      -- increase volume
+    , ((0,                    xF86XK_AudioLowerVolume ), spawn "pamixer -d 5" >> notifyVolume)                                                                      -- decrease volume
+    , ((0,                           xF86XK_AudioMute ), spawn "pamixer -t" >> notifyVolume)                                                                        -- mute volume
     ] ++
 
     -- // playerctl
@@ -411,7 +411,7 @@ myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
         -- spawnOnce "~/Scripts/kyu-kurarin.sh &"
-        -- spawnOnce "cd GitHub/linux-wallpaperengine/build/ && ./wallengine --silent --fps 20 --screen-root eDP-1 2516038638"
+        -- spawnOnce "cd ~/Programs/linux-wallpaperengine/build/ && ./wallengine --silent --fps 20 --screen-root eDP-1 2621864884 "
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "~/Scripts/battery_notifs.sh &"
@@ -608,3 +608,6 @@ changeBrightness value
                     
 notifyBrightness :: X()
 notifyBrightness = spawn ("~/Scripts/brightness_notifs.sh")
+
+notifyVolume :: X()
+notifyVolume = spawn ("~/Scripts/volume_notifs.sh") 
