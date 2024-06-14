@@ -67,6 +67,7 @@ import qualified Data.Map.Strict                   as Map
 
 myTerminal           = "alacritty"
 myModMask            = mod4Mask -- win key
+myStatusBar          = "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
 
 myBorderWidth        = 2
 myNormalBorderColor  = "#849DAB"
@@ -333,9 +334,8 @@ configPrompt = def
 -- > Status bar configuration that includes pretty printers.
 ----------------------------------------------------------------------------
 
-myPP xmproc = xmobarPP
-              { ppOutput = hPutStrLn xmproc 
-              , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+myPP = xmobarPP
+              { ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
               , ppHidden = xmobarColor "#d1426e" "" . clickableWS
               , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
               , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
@@ -345,9 +345,10 @@ myPP xmproc = xmobarPP
               , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
               }
 
-mySB xmproc = statusBarProp "xmobar" (pure (myPP xmproc))
+mySB = statusBarProp myStatusBar
+              (copiesPP (xmobarColor "#6435e6" "") myPP)
 
-statusBarPPLogHook statusBar = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myPP statusBar
+statusBarPPLogHook = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myPP 
 
 
 
@@ -440,9 +441,9 @@ myStartupHook = do
         spawn "light-locker"
         spawn "otd-daemon &"
 
-myLogHook xmproc = do
+myLogHook = do
     fadeWindowsLogHook myFadeHook
-    statusBarPPLogHook xmproc
+    statusBarPPLogHook
 
 myFadeHook = composeAll 
     [ opaque
@@ -460,8 +461,7 @@ myFadeHook = composeAll
 
 main :: IO()
 main = do
-   xmproc <- spawnPipe "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
-   xmonad . withSB (mySB xmproc) $ docks $ ewmhFullscreen . ewmh $ desktopConfig
+    xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh $ desktopConfig
         { terminal           = myTerminal
         , modMask            = myModMask
         , workspaces         = myWorkspaces
@@ -475,7 +475,7 @@ main = do
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
         , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook <> Hacks.trayerAboveXmobarEventHook
-        , logHook            = myLogHook xmproc
+        , logHook            = myLogHook
 
         , startupHook        = myStartupHook
         }
