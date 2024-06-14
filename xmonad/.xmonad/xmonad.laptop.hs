@@ -472,6 +472,7 @@ myFadeHook = composeAll
 -- > Hypothetically, you can probably pack everything into here, but I haven't tried it yet.
 ---------------------------------------------------------
 
+main :: IO()
 main = do
    xmproc <- spawnPipe "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
    xmonad $ docks $ ewmhFullscreen . ewmh $ desktopConfig
