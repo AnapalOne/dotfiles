@@ -33,7 +33,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
-   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeStdinReader$ } $mpris2$ { <fc=#909090> $cpu$ / $coretemp$ | $gpu$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
+   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeXMonadLog$ } $mpris2$ { <fc=#909090> $cpu$ / $coretemp$ | $gpu$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
 
    -- // general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
@@ -52,7 +52,7 @@ Config {
                          ] 10
 
             -- shows pp config in xmonad.hs
-        , Run UnsafeStdinReader
+        , Run UnsafeXMonadLog
 
         , Run XPropertyLog "_XMONAD_TRAYPAD"
 
@@ -66,10 +66,10 @@ Config {
                              ] 20
 
           -- mpris2 activity monitor for spotify
-        , Run Mpris2 "spotify" [ "--template", "<fc=#909090><fn=1><fc=darkgreen>\xf1bc</fc></fn> <artist> - <title></fc>"
+        , Run Mpris2 "spotify" [ "--template", "<fc=#909090><fn=1><fc=#1ed760>\xf1bc</fc></fn> <artist> - <title></fc>"
                                , "--nastring", ""
                                , "--maxwidth", "30"
-                               ] 10
+                               ] 50
 
             -- cpu activity monitor
         , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>%"
@@ -82,6 +82,7 @@ Config {
 
             -- cpu core temperature monitor
         , Run Com "sh" ["-c", "sensors | grep Tctl | sed 's/Tctl:         +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
+
         -- , Run CoreTemp       [ "--template" , "<core0>°C"
         --                      , "--Low"      , "60"        -- units: °C
         --                      , "--High"     , "80"        -- units: °C
@@ -100,7 +101,7 @@ Config {
                              , "--low"      , "#1bc800"
                              , "--normal"   , "darkorange"
                              , "--high"     , "darkred"
-                             ] 60
+                             ] 50
 
             -- disk size monitor
         , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf02ca</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
@@ -126,7 +127,7 @@ Config {
                                         , "--"
                                               , "-O", ""
                                               , "-o", "<fc=#a0a0a0>\xea76</fc>"
-                                        ] 10
+                                        ] 5
 
             -- checks for system and application updates (alias checkupdates) 
         , Run Com "/home/anapal/.config/xmonad/scripts/checkupdate.sh" [] "checkupdates" 3000
