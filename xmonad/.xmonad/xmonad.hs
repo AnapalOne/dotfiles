@@ -15,7 +15,7 @@ import Data.Char (isSpace)
 import Data.Maybe (isJust, fromMaybe, fromJust)
 
 import System.Exit (exitWith, ExitCode(ExitSuccess))
-import System.Process (readProcess)
+import System.Process (callProcess)
 
 import XMonad.Prompt
 import XMonad.Prompt.Input
@@ -27,25 +27,25 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.CycleWS (nextWS, prevWS)
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy, wsContainingCopies)
+import XMonad.Actions.CopyWindow
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
 import XMonad.Layout.Spiral
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.Spacing
-import XMonad.Layout.Circle
+import XMonad.Layout.CircleEx
 import XMonad.Layout.Renamed
 import XMonad.Layout.Hidden (hideWindow, popOldestHiddenWindow, hiddenWindows)
-import XMonad.Layout.TrackFloating (trackFloating)
+import XMonad.Layout.FocusTracking
 
 import XMonad.Hooks.StatusBar
 import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.ScreenCorners
 import XMonad.Hooks.FadeWindows
--- TODO: import XMonad.Hooks.ScreenCorners
 
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
@@ -62,6 +62,7 @@ import qualified Data.Map.Strict                   as Map
 ----------------------------------------------------------------------------
 -- Configs
 -- > For quick configuration without scrolling the entire config file. 
+--   (it's a little tiring for me to find some parts that I want to configure) 
 ----------------------------------------------------------------------------
 
 myTerminal           = "alacritty"
@@ -75,21 +76,22 @@ myFocusedBorderColor = "#24788F"
 toggleFloatSize = (W.RationalRect (0.25) (0.25) (0.50) (0.50))
 
     -- Applications in spawnSelected. (Home or modm + f)
-myGridSpawn = [ ("\xf0a1e VSCode",        "code") 
-              , ("\xf269 Firefox",        "firefox") 
-              , ("\xea84 Github Desktop", "github-desktop")
-              , ("\xf0dc8 LibreOffice",   "libreoffice")
-              , ("\xf07b Nemo",           "nemo")
-              , ("\xf008 Kdenlive" ,      "kdenlive")
-              , ("\xf066f Discord",       "discord")
-              , ("\xf1bc Spotify",        "spotify") 
-              , ("\xf03e GIMP",           "gimp")
-              , ("\xf1fc Krita",          "krita") 
-              , ("\xf03d OBS",            "obs")
-              , ("\xf028 Audacity",       "audacity")
+myGridSpawn = [ ("\xf0a1e VSCode",        "code"), 
+                ("\xf269 Firefox",        "firefox"), 
+                ("\xea84 Github Desktop", "github-desktop"),
+                ("\xf0dc8 LibreOffice",   "libreoffice"), 
+                ("\xf07b Nemo",           "nemo"), 
+                ("\xf008 Kdenlive" ,      "kdenlive"),
+                ("\xf066f Discord",       "discord"),
+                ("\xf1bc Spotify",        "spotify"), 
+                ("\xf03e GIMP",           "gimp"), 
+                ("\xf1fc Krita",          "krita"), 
+                ("\xf03d OBS",            "obs"),
+                ("\xf028 Audacity",       "audacity"), 
                 ("\xf11b Steam",          "steam")
               ]
 
+wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
 
 
 ----------------------------------------------------------------------------
@@ -107,7 +109,7 @@ myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\
 
 ----------------------------------------------------------------------------
 -- Key Binds
--- > These are keybindings that I use for everything in xmonad.
+-- > These are keybindings that I use for navigating in xmonad. 
 -- 
 -- > [mod-ctrl-slash] to display key bindings. 
 -- > Do "xev | sed -ne '/^KeyPress/,/^$/p'" for key mappings.
@@ -137,23 +139,24 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ] ++
 
     -- // floating windows
-    [ ((modm .|. shiftMask,   xK_Tab   ), withFocused toggleFloat)                      -- toggle between tiled and floating window
-    , ((modm,                 xK_Up    ), withFocused (keysMoveWindow (0,-35)))         -- move floating window 
-    , ((modm,                 xK_Down  ), withFocused (keysMoveWindow (0,35)))          -- 
-    , ((modm,                 xK_Left  ), withFocused (keysMoveWindow (-35,0)))         --
-    , ((modm,                 xK_Right ), withFocused (keysMoveWindow (35,0)))          --
-    , ((modm .|. shiftMask,   xK_Up    ), withFocused (keysResizeWindow (0,-30) (0,0))) -- resize floating window
-    , ((modm .|. shiftMask,   xK_Down  ), withFocused (keysResizeWindow (0,30) (0,0)))  --
-    , ((modm .|. shiftMask,   xK_Left  ), withFocused (keysResizeWindow (-30,0) (0,0))) --
-    , ((modm .|. shiftMask,   xK_Right ), withFocused (keysResizeWindow (30,0) (0,0)))  --
-    , ((modm .|. controlMask, xK_Left  ), withFocused $ snapMove L Nothing)             -- snap window relative to window or desktop
-    , ((modm .|. controlMask, xK_Right ), withFocused $ snapMove R Nothing)             --
-    , ((modm .|. controlMask, xK_Up    ), withFocused $ snapMove U Nothing)             --
-    , ((modm .|. controlMask, xK_Down  ), withFocused $ snapMove D Nothing)             --
-    , ((modm .|. altMask,     xK_Left  ), withFocused $ snapGrow L Nothing)             -- snap window size relative to other windows or the desktop
-    , ((modm .|. altMask,     xK_Right ), withFocused $ snapGrow R Nothing)             --
-    , ((modm .|. altMask,     xK_Up    ), withFocused $ snapGrow U Nothing)             --
-    , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)             --
+    [ ((modm .|. shiftMask,   xK_Tab   ), withFocused toggleFloat)                                  -- toggle between tiled and floating window
+    , ((modm,                 xK_Up    ), withFocused (keysMoveWindow (0,-35)))                     -- move floating window 
+    , ((modm,                 xK_Down  ), withFocused (keysMoveWindow (0,35)))                      -- 
+    , ((modm,                 xK_Left  ), withFocused (keysMoveWindow (-35,0)))                     --
+    , ((modm,                 xK_Right ), withFocused (keysMoveWindow (35,0)))                      --
+    , ((modm .|. shiftMask,   xK_Up    ), withFocused (keysResizeWindow (0,-30) (0,0)))             -- resize floating window
+    , ((modm .|. shiftMask,   xK_Down  ), withFocused (keysResizeWindow (0,30) (0,0)))              --
+    , ((modm .|. shiftMask,   xK_Left  ), withFocused (keysResizeWindow (-30,0) (0,0)))             --
+    , ((modm .|. shiftMask,   xK_Right ), withFocused (keysResizeWindow (30,0) (0,0)))              --
+    , ((modm .|. controlMask, xK_Left  ), withFocused $ snapMove L Nothing)                         -- snap window relative to window or desktop
+    , ((modm .|. controlMask, xK_Right ), withFocused $ snapMove R Nothing)                         --
+    , ((modm .|. controlMask, xK_Up    ), withFocused $ snapMove U Nothing)                         --
+    , ((modm .|. controlMask, xK_Down  ), withFocused $ snapMove D Nothing)                         --
+    , ((modm .|. altMask,     xK_Left  ), withFocused $ snapGrow L Nothing)                         -- snap window size relative to other windows or the desktop
+    , ((modm .|. altMask,     xK_Right ), withFocused $ snapGrow R Nothing)                         --
+    , ((modm .|. altMask,     xK_Up    ), withFocused $ snapGrow U Nothing)                         --
+    , ((modm .|. altMask,     xK_Down  ), withFocused $ snapGrow D Nothing)                         --
+    , ((modm .|. controlMask, xK_b     ), toggleScreenSpacingEnabled >> toggleWindowSpacingEnabled) -- toggle gaps
     ] ++
 
     -- // system commands
@@ -164,9 +167,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,                 xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
     , ((modm .|. shiftMask .|. controlMask, xK_Escape ), confirmPrompt configPrompt "hibernation?" $ spawn "systemctl hibernate")                  -- hibernate computer
-    , ((modm,                               xK_equal  ), spawn "pamixer -i 5")                                                                     -- increase volume
-    , ((modm,                               xK_minus  ), spawn "pamixer -d 5")                                                                     -- decrease volume
-    , ((modm,                               xK_0      ), spawn "pamixer -t")                                                                       -- mute volume
+    , ((modm,                               xK_equal  ), spawn "pamixer -i 5" >> notifyVolume)                                                     -- increase volume
+    , ((modm,                               xK_minus  ), spawn "pamixer -d 5" >> notifyVolume)                                                     -- decrease volume
+    , ((modm,                               xK_0      ), spawn "pamixer -t" >> notifyVolume)                                                       -- mute volume
     ] ++
 
     -- // playerctl
@@ -177,7 +180,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // programs
     [ ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                            -- open terminal
-    , ((0,                   xK_Print ), spawn "flameshot gui")                                   -- equivelent to prntscr
+    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                   -- equivelent to prntscr 
+    , ((0,                   xK_Print ), spawn "flameshot screen")                                -- 
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                -- run program
     , ((modm .|. shiftMask,      xK_v ), spawn "alacritty -t alsamixer -e alsamixer")             -- sound system
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                   -- toggle screenkey off and on
@@ -204,9 +208,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ] ++
 
     -- // workspace navigation
-    -- mod-[1..9]         = Switch to workspace 
-    -- mod-shift-[1..9]   = Move window to workspace
-    -- mod-control-[1..9] = Move window to workspace and switch to that workspace
+    -- mod-[1..9]               = Switch to workspace 
+    -- mod-shift-[1..9]         = Move window to workspace
+    -- mod-control-[1..9]       = Move window to workspace and switch to that workspace
+    -- mod-shift-control-[1..9] = Copy window to workspace
     [ ((modm .|. m, k), changeWorkspaces f i z t)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
         , (f, m, z, t) <- [ (W.greedyView,                     0,           False, 0) -- [ (Action, Mask, WithNotifications) ]
@@ -233,7 +238,7 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 --                          [mod-shift-space] to go back to the first layout (In this case, full).
 ----------------------------------------------------------------------------
 
-myLayout = avoidStruts $ trackFloating $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
+myLayout = avoidStruts $ focusTracking $ renamed [CutWordsLeft 2] $ spacingWithEdge 6 $ hiddenWindows $ smartBorders 
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle
         
     where
@@ -245,7 +250,7 @@ myLayout = avoidStruts $ trackFloating $ renamed [CutWordsLeft 2] $ spacingWithE
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeColMid cnmaster cdelta cratio 
         vthreecol = renamed [Replace "<fc=#909090>\xf0835</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
         cnmaster = 1
         cdelta = 3/100
@@ -255,7 +260,7 @@ myLayout = avoidStruts $ trackFloating $ renamed [CutWordsLeft 2] $ spacingWithE
         
         lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
 
-        circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ Circle
+        circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ circleEx {cDelta = -3*pi/4}
 
 
 
@@ -268,12 +273,13 @@ myLayout = avoidStruts $ trackFloating $ renamed [CutWordsLeft 2] $ spacingWithE
 myScratchpads = 
         [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
         , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
-        , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
+        , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --color=dark --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
         , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
         , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
         , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
         , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
         , NS "ScrP_spt"            "alacritty -t spotify-tui -e spt"   (title =? "spotify-tui")    floatScratchpad
+        , NS "ScrP_pavucontrol"    "pavucontrol"                       (resource =? "pavucontrol") floatScratchpad
         ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
@@ -328,6 +334,7 @@ configPrompt = def
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ----------------------------------------------------------------------------
 
+        -- This handles newly created windows.
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
 
@@ -385,9 +392,11 @@ myManageHook = composeAll
             where
                 role = stringProperty "WM_WINDOW_ROLE"
         
+        -- This controls all events that are handled by xmonad.
 myEventHook = fadeWindowsEventHook
 
 
+        -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         spawnOnce "~/.fehbg &"
@@ -407,13 +416,17 @@ myStartupHook = do
                    "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
         spawn "xsetroot -cursor_name left_ptr"
         spawn "steam -silent"
+        spawn "light-locker"
+        spawn "otd-daemon &"
 
 
+        -- When the stack of windows managed by xmonad has been changed.
+        -- Useful for displaying information to status bars like xmobar or dzen.
 myLogHook xmproc = do
 
     -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
     -- TODO: how do you this
-    isCopies <- wsContainingCopies
+    isCopies <- gets wsContainingCopies
     let checkTag ws | ws `elem` isCopies = xmobarColor "#d1426e" "" . clickableWS $ ws
                     | otherwise = ws
 
@@ -423,17 +436,16 @@ myLogHook xmproc = do
     fadeWindowsLogHook myFadeHook
 
     dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-        { ppOutput          = hPutStrLn xmproc 
-        , ppCurrent         = xmobarColor "#4381fb" "" . wrap "[" "]"
-        , ppHidden          = xmobarColor "#d1426e" "" . clickableWS
+        { ppOutput = hPutStrLn xmproc 
+        , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+        , ppHidden = xmobarColor "#d1426e" "" . clickableWS
         , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
-        , ppTitle           = xmobarColor "#ffffff" "" . shorten 50 
-        , ppSep             = "<fc=#909090> | </fc>"
-        , ppWsSep           = "<fc=#666666> . </fc>"
-        , ppExtras          = [windowCount] 
-        , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
+        , ppSep = "<fc=#909090> | </fc>"
+        , ppWsSep = "<fc=#666666> . </fc>"
+        , ppExtras = [windowCount] 
+        , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         }
-
 
 myFadeHook = composeAll 
     [ opaque
@@ -504,9 +516,11 @@ qalcPrompt c ans =
         trim = f . f
         f = reverse . dropWhile isSpace
 
-gridSystemColor colorizer = (buildDefaultGSConfig colorizer) { gs_cellheight = 50, 
-                                                               gs_cellwidth = 130,
-                                                               gs_font = "xft:Iosevka:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" }
+gridSystemColor colorizer = (buildDefaultGSConfig colorizer) 
+                            { gs_cellheight = 50
+                            , gs_cellwidth = 130
+                            , gs_font = "xft:Iosevka:size=9:bold:antialias=true:hinting=true, Symbols Nerd Font:size=10" 
+                            }
 
     -- Grid color for goToSelected used in [Key Binds].
 systemColorizer = colorRangeFromClassName
@@ -551,7 +565,8 @@ changeWorkspaces f i z t = do
             windowsPresent, currentWSHasWindow :: WindowSet -> Bool
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
-    
+            
+toggleNotifications :: String -> X ()
 toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
     let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
@@ -563,3 +578,12 @@ toggleNotifications x = do
         -- XMonad.Actions.CopyWindow, but with notifications.
         "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
         "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
+
+screenCorners :: [(ScreenCorner, X ())]
+screenCorners = [
+                -- (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
+                -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
+                ]
+
+notifyVolume :: X()
+notifyVolume = spawn ("~/Scripts/volume_notifs.sh") 
