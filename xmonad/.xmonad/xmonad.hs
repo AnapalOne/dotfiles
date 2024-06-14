@@ -220,7 +220,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
                           , (copy,               shiftMask .|. controlMask, True,  3) ]
     ] 
 
-
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- // mouse bindings
@@ -330,6 +329,29 @@ configPrompt = def
 
 
 ----------------------------------------------------------------------------
+-- Status Bar
+-- > Status bar configuration that includes pretty printers.
+----------------------------------------------------------------------------
+
+myPP xmproc = xmobarPP
+              { ppOutput = hPutStrLn xmproc 
+              , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+              , ppHidden = xmobarColor "#d1426e" "" . clickableWS
+              , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
+              , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
+              , ppSep = "<fc=#909090> | </fc>"
+              , ppWsSep = "<fc=#666666> . </fc>"
+              , ppExtras = [windowCount] 
+              , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+              }
+
+mySB xmproc = statusBarProp "xmobar" (pure (myPP xmproc))
+
+statusBarPPLogHook statusBar = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myPP statusBar
+
+
+
+----------------------------------------------------------------------------
 -- Hooks
 -- > xmonad hooks for managing windows, applications, and workspaces.
 ----------------------------------------------------------------------------
@@ -395,7 +417,6 @@ myManageHook = composeAll
         -- This controls all events that are handled by xmonad.
 myEventHook = fadeWindowsEventHook
 
-
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
@@ -419,33 +440,9 @@ myStartupHook = do
         spawn "light-locker"
         spawn "otd-daemon &"
 
-
-        -- When the stack of windows managed by xmonad has been changed.
-        -- Useful for displaying information to status bars like xmobar or dzen.
 myLogHook xmproc = do
-
-    -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
-    -- TODO: how do you this
-    isCopies <- gets wsContainingCopies
-    let checkTag ws | ws `elem` isCopies = xmobarColor "#d1426e" "" . clickableWS $ ws
-                    | otherwise = ws
-
-    let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
-                      | otherwise = ws
-
     fadeWindowsLogHook myFadeHook
-
-    dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-        { ppOutput = hPutStrLn xmproc 
-        , ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
-        , ppHidden = xmobarColor "#d1426e" "" . clickableWS
-        , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
-        , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
-        , ppSep = "<fc=#909090> | </fc>"
-        , ppWsSep = "<fc=#666666> . </fc>"
-        , ppExtras = [windowCount] 
-        , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-        }
+    statusBarPPLogHook xmproc
 
 myFadeHook = composeAll 
     [ opaque
@@ -464,7 +461,7 @@ myFadeHook = composeAll
 main :: IO()
 main = do
    xmproc <- spawnPipe "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
-   xmonad $ docks $ ewmhFullscreen . ewmh $ desktopConfig
+   xmonad . withSB (mySB xmproc) $ docks $ ewmhFullscreen . ewmh $ desktopConfig
         { terminal           = myTerminal
         , modMask            = myModMask
         , workspaces         = myWorkspaces
