@@ -52,7 +52,7 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 
 import qualified XMonad.Actions.FlexibleManipulate as Flex
-import qualified XMonad.Util.Hacks                 as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
+import qualified XMonad.Util.Hacks                 as H (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook, fixSteamFlicker)
 import qualified XMonad.StackSet                   as W
 import qualified Data.Map                          as M
 import qualified Data.Map.Strict                   as Map
@@ -163,7 +163,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- // system commands
     [ ((modm,                               xK_b      ), sendMessage ToggleStruts)                                                                 -- toggle xmobar visibility
     , ((modm,                               xK_q      ), confirmPrompt configPrompt "recompile?" $ spawn "xmonad --recompile && xmonad --restart") -- recompiles xmonad
-    , ((modm,                               xK_Escape ), confirmPrompt configPrompt "logout?" $ io (exitWith ExitSuccess))                         -- logout from xmonad
+    , ((modm,                               xK_Escape ), confirmPrompt configPrompt "logout?" $ spawn "light-locker-command -l")                   -- logout from xmonad
     , ((modm .|. controlMask,               xK_Escape ), confirmPrompt configPrompt "shutdown?" $ spawn "systemctl poweroff")                      -- shutdown computer
     , ((modm .|. shiftMask,                 xK_Escape ), confirmPrompt configPrompt "sleep?" $ spawn "systemctl suspend")                          -- sleep mode
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt configPrompt "reboot?" $ spawn "systemctl reboot")                          -- reboot computer
@@ -218,7 +218,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         , (f, m, z, t) <- [ (W.greedyView,                     0,           False, 0) -- [ (Action, Mask, WithNotifications) ]
                           , (W.shift,                          shiftMask,   True,  1) 
                           , (\i -> W.greedyView i . W.shift i, controlMask, True,  2)
-                          , (copy,               shiftMask .|. controlMask, True,  3) ]
+                          , (copy,                             altMask,     True,  3) ]
     ] 
 
 myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -334,10 +334,12 @@ configPrompt = def
 -- > Status bar configuration that includes pretty printers.
 ----------------------------------------------------------------------------
 
-myPP = xmobarPP
+myPP :: PP
+myPP = def
         { ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
         , ppHidden = xmobarColor "#d1426e" "" . clickableWS
         , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
+        , ppUrgent = xmobarColor "#fa5c5f" "" . clickableWS
         , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
         , ppSep = "<fc=#909090> | </fc>"
         , ppWsSep = "<fc=#666666> . </fc>"
@@ -345,9 +347,11 @@ myPP = xmobarPP
         , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         }
 
+mySB :: StatusBarConfig
 mySB = statusBarProp myStatusBar
-        (copiesPP (xmobarColor "#6435e6" "") myPP)
+        (copiesPP (xmobarColor "#6435e6" "" . clickableWS) myPP)
 
+statusBarPPLogHook :: X ()
 statusBarPPLogHook = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myPP 
 
 
@@ -416,7 +420,7 @@ myManageHook = composeAll
                 role = stringProperty "WM_WINDOW_ROLE"
         
         -- This controls all events that are handled by xmonad.
-myEventHook = fadeWindowsEventHook
+myEventHook = fadeWindowsEventHook <> H.trayerPaddingXmobarEventHook <> H.trayerAboveXmobarEventHook <> H.fixSteamFlicker
 
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
@@ -474,7 +478,7 @@ main = do
 
         , layoutHook         = myLayout
         , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
-        , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook <> Hacks.trayerAboveXmobarEventHook
+        , handleEventHook    = myEventHook 
         , logHook            = myLogHook
 
         , startupHook        = myStartupHook
