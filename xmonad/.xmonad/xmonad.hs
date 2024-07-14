@@ -13,6 +13,7 @@ import Control.Monad (when)
 import Data.Monoid
 import Data.Char (isSpace)
 import Data.Maybe (isJust, fromMaybe, fromJust)
+import Data.List
 
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 import System.Process (callProcess)
@@ -89,7 +90,8 @@ myGridSpawn = [ ("\xf0a1e VSCode",        "code"),
                 ("\xf1fc Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
                 ("\xf028 Audacity",       "audacity"), 
-                ("\xf11b Steam",          "steam")
+                ("\xf11b Steam",          "steam"),
+                ("\xf25f Caprine",        "caprine")       
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
@@ -398,6 +400,7 @@ myManageHook = composeAll
         
         -- chat
         , className =? "discord"        --> doShift ( myWorkspaces !! 6 )
+        , className =? "Caprine"        --> doShift ( myWorkspaces !! 6 )
 
         -- mus
         , className =? "Spotify"        --> doShift ( myWorkspaces !! 7 )
@@ -436,7 +439,7 @@ myStartupHook = do
         -- && ~/Scripts/eww-fg-workaround.sh 
 
         spawnOnce "flameshot &"
-        spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
+        spawnOnce "~/Scripts/tablet_buttons.sh &"
         spawnOnce ("trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true " ++
                    "--SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true " ++
                    "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
