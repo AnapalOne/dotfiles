@@ -17,17 +17,15 @@ fi
 
 autoload -Uz add-zsh-hook
 
-# ------------------------------------------------
-# //-- Exports.
-# ------------------------------------------------
+# ------------------ Exports -------------------------
+
 export PATH=$PATH:/usr/local/bin
 export VISUAL="code"
 export EDITOR="vim"
 
 
-# ------------------------------------------------
-# //-- Aliases.
-# ------------------------------------------------
+# ------------------ Aliases -------------------------
+
 alias reboot='sudo systemctl reboot'
 alias shutdown='sudo systemctl poweroff'
 alias hibernate='sudo systemctl hibernate'
@@ -36,10 +34,9 @@ alias ls='source ranger'
 alias grep='grep --color'
 
 
-# ------------------------------------------------
-# //-- Options.
-#  /-- See [https://zsh.sourceforge.io/Intro/intro_16.html] for more.
-# ------------------------------------------------
+# ------------------ Options -------------------------
+# > See [https://zsh.sourceforge.io/Intro/intro_16.html] for more.
+
 setopt globdots			   # Show hidden files.
 setopt histignorespace	   # Don't repeat same lines from history.
 setopt interactivecomments # Enable comments by using #.
@@ -48,25 +45,22 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 #ZSH_HIGHLIGHT_STYLES[comment]="fg=black,bold"
 
 
-# ------------------------------------------------
-# //-- History options.
-# ------------------------------------------------
+# ------------------ History -------------------------
+
 HISTFILE=~/.zsh_history
 HISTSIZE=1000
 SAVEHIST=1000
 
 
-# ------------------------------------------------
-# //-- Auto complete.
-# ------------------------------------------------
+# ---------------- Auto-complete ----------------------
+
 zstyle ':completion:*' menu select matcher-list 'm:{a-z}={A-Za-z}' 
 # autoload -Uz compinit
 # compinit
 
 
-# ------------------------------------------------
-# //-- Key binds.
-# ------------------------------------------------
+# ------------------ Keybinds -------------------------
+
 bindkey -e
 
 bindkey  "^[[H"   beginning-of-line
@@ -78,9 +72,8 @@ bindkey '^[[A' 	  history-substring-search-up
 bindkey '^[[B' 	  history-substring-search-down
 
 
-# ------------------------------------------------
-# //-- Sources.
-# ------------------------------------------------
+# ------------------ Sources -------------------------
+
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
@@ -103,9 +96,9 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 
-# ------------------------------------------------
-# //-- Functions. (shamelessly copy and pasted)
-# ------------------------------------------------
+# ------------------ Functions -------------------------
+# >         (shamelessly copy and pasted)
+
 # For dynamic terminal titles.
 function xterm_title_precmd () {
 	print -Pn -- '\e]2;%n@%m %~\a'
@@ -150,7 +143,7 @@ fi
 #     return 127
 # }
 
-# //-- perl stuff, don't touch,
+# ------------ Perl stuff, don't touch --------------------
 PATH="/home/anapal/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/anapal/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/anapal/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
