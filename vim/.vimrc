@@ -27,8 +27,8 @@ syntax enable
 filetype plugin indent on
 
 " // nerdtree plugin configs
-let g:NERDTreeWinSize=50
-let g:NERDTreeWinPos="right"
+" let g:NERDTreeWinSize=50
+" let g:NERDTreeWinPos="right"
 let g:NERDTreeMouseMode=3
 let g:NERDTreeShowHidden=1
 let g:NERDTreeDirArrows=1
@@ -53,7 +53,7 @@ set fillchars-=vert:\| | set fillchars+=vert:\  " replace '|' in tab separation 
 
 
 " ------------------- Autostart Commands -------------------
-autocmd VimEnter * NERDTree | wincmd p
+" autocmd VimEnter * NERDTree | wincmd p
 
 " close vim when nerdtree is the only window
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
