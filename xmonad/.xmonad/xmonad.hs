@@ -230,9 +230,10 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- // mouse bindings
     [ ((modm,   button1), (\w -> focus w >> mouseMoveWindow w >> windows W.swapMaster)) -- move window and send to top of stack
     , ((modm,   button3), (\w -> focus w >> Flex.mouseWindow Flex.resize w))            -- resize window with right mouse button at window edge
-    , ((modm,   button4), (\w -> prevWS))      -- switch workspace to the left
-    , ((modm,   button5), (\w -> nextWS))      -- switch workspace to the right
+    , ((modm,   button4), (\w -> moveTo Prev $ anyWS :&: ignoreNSP))                    -- switch workspace to the left
+    , ((modm,   button5), (\w -> moveTo Next $ anyWS :&: ignoreNSP))                    -- switch workspace to the right
     ]
+        where ignoreNSP = ignoringWSs [scratchpadWorkspaceTag]
         
 
 
