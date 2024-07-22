@@ -6,6 +6,7 @@
 ---------------------------------------------------------
 
 import XMonad
+import XMonad.ManageHook
 
 import Control.Monad (when)
 -- import Graphics.X11.ExtraTypes.XF86
@@ -25,7 +26,7 @@ import XMonad.Prompt.ConfirmPrompt
 import XMonad.Config.Desktop
 
 import XMonad.Actions.GridSelect
-import XMonad.Actions.CycleWS (nextWS, prevWS)
+import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
 import XMonad.Actions.CopyWindow
@@ -83,15 +84,17 @@ myGridSpawn = [ ("\xf0a1e VSCode",        "code"),
                 ("\xea84 Github Desktop", "github-desktop"),
                 ("\xf0dc8 LibreOffice",   "libreoffice"), 
                 ("\xf07b Nemo",           "nemo"), 
-                ("\xf008 Kdenlive" ,      "kdenlive"),
+                ("\xf33c Kdenlive" ,      "kdenlive"),
                 ("\xf066f Discord",       "discord"),
                 ("\xf1bc Spotify",        "spotify"), 
-                ("\xf03e GIMP",           "gimp"), 
-                ("\xf1fc Krita",          "krita"), 
+                ("\xf338 GIMP",           "gimp"), 
+                ("\xf33d Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
                 ("\xf028 Audacity",       "audacity"), 
-                ("\xf11b Steam",          "steam"),
-                ("\xf25f Caprine",        "caprine")       
+                ("\xf1b6 Steam",          "steam"),
+                ("\xf25f Caprine",        "caprine"),     
+                ("\xf367 Weston",         "weston"),
+                ("\xf11b Lutris",         "lutris")         
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
@@ -201,7 +204,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")      -- spawns ncdu window
     , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")       -- spawns vim window
     , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")      -- spawns cmus window
-    , ((modm .|. shiftMask,        xK_m ), namedScratchpadAction myScratchpads "ScrP_spt")       -- spawns spotify-tui window
     , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "keybindings")    -- spawns list of xmonad keybindings
     ] ++
 
@@ -228,8 +230,8 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- // mouse bindings
     [ ((modm,   button1), (\w -> focus w >> mouseMoveWindow w >> windows W.swapMaster)) -- move window and send to top of stack
     , ((modm,   button3), (\w -> focus w >> Flex.mouseWindow Flex.resize w))            -- resize window with right mouse button at window edge
-    , ((modm,   button4), (\w -> prevWS))                                               -- switch workspace to the left
-    , ((modm,   button5), (\w -> nextWS))                                               -- switch workspace to the right
+    , ((modm,   button4), (\w -> prevWS))      -- switch workspace to the left
+    , ((modm,   button5), (\w -> nextWS))      -- switch workspace to the right
     ]
         
 
@@ -272,6 +274,7 @@ myLayout = avoidStruts $ focusTracking $ renamed [CutWordsLeft 2] $ spacingWithE
 --   Useful for when you want to quickly access an application and leave it running in the background.
 ----------------------------------------------------------------------------
 
+myScratchpads :: [NamedScratchpad]
 myScratchpads = 
         [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
         , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
@@ -280,7 +283,6 @@ myScratchpads =
         , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
         , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
         , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
-        , NS "ScrP_spt"            "alacritty -t spotify-tui -e spt"   (title =? "spotify-tui")    floatScratchpad
         , NS "ScrP_pavucontrol"    "pavucontrol"                       (resource =? "pavucontrol") floatScratchpad
         ]
     where 
@@ -337,7 +339,7 @@ configPrompt = def
 ----------------------------------------------------------------------------
 
 myPP :: PP
-myPP = def
+myPP = filterOutWsPP [scratchpadWorkspaceTag] $ def
         { ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
         , ppHidden = xmobarColor "#d1426e" "" . clickableWS
         , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
@@ -354,7 +356,7 @@ mySB = statusBarProp myStatusBar
         (copiesPP (xmobarColor "#6435e6" "" . clickableWS) myPP)
 
 statusBarPPLogHook :: X ()
-statusBarPPLogHook = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ myPP 
+statusBarPPLogHook = dynamicLogWithPP $ myPP 
 
 
 
@@ -380,6 +382,7 @@ myManageHook = composeAll
         , className =? "Subl"           --> doShift ( myWorkspaces !! 1 )
         , className =? "Code"           --> doShift ( myWorkspaces !! 1 )
         , className =? "GitHub Desktop" --> doShift ( myWorkspaces !! 1 )
+        , className =? "Weston Compositor" --> doShift ( myWorkspaces !! 1 )
         
         -- www
         , className =? "firefox"        --> doShift ( myWorkspaces !! 2 )
@@ -397,6 +400,7 @@ myManageHook = composeAll
         
         -- game
         , className =? "steam"          --> doShift ( myWorkspaces !! 5 )
+        , className =? "Lutris"         --> doShift ( myWorkspaces !! 5 )
         
         -- chat
         , className =? "discord"        --> doShift ( myWorkspaces !! 6 )
@@ -418,7 +422,8 @@ myManageHook = composeAll
         , className =? "Sxiv"                   --> doFloat
         , title     =? "dragon"                 --> doCenterFloat
         , role      =? "GtkFileChooserDialog"   --> doCenterFloat
-        ]
+        ] 
+        <+> namedScratchpadManageHook myScratchpads
             where
                 role = stringProperty "WM_WINDOW_ROLE"
         
@@ -444,7 +449,7 @@ myStartupHook = do
                    "--SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true " ++
                    "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
         spawn "xsetroot -cursor_name left_ptr"
-        spawn "steam -silent"
+        -- spawn "steam -silent"
         spawn "light-locker"
         spawn "otd-daemon &"
 
@@ -480,7 +485,7 @@ main = do
         , mouseBindings      = myMouseBinds
 
         , layoutHook         = myLayout
-        , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
+        , manageHook         = myManageHook 
         , handleEventHook    = myEventHook 
         , logHook            = myLogHook
 
