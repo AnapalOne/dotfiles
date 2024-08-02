@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Since eww does not want to go in front of any windows, this (bad) hack puts eww at the top of 
-#   the window stack by restarting eww. This is bad because eww obstructs focus with other 
-#   windows when in fg and could potentially cause problems with eww itself.
-
-# TODO: find a way to put eww in bg when not in use, then put in fg when called, and vice versa without restarting eww.
+#Since eww currently does not go in front of any windows for some reason, this is a temporary fix.
 
 lastsong=
 while true; do

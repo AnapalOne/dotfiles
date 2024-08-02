@@ -41,9 +41,9 @@
           $cyan$discord$clear$                 -- text and voice app                             $cyan$utsushi$clear$                 -- printer/scanner management
           $cyan$github-desktop$clear$          -- github                                         $cyan$piper$clear$                   -- mouse configs
           $cyan$libreoffice$clear$             -- office suite                                   $cyan$waydroid$clear$                -- container-based Android emulator
-          $cyan$nemo$clear$                    -- file manager
+          $cyan$nemo$clear$                    -- file manager                                   $cyan$weston$clear$                  -- Wayland compositor
           $cyan$qbittorrent$clear$             -- torrenting
-          $cyan$calibre$clear$                 -- e-book reader
+          $cyan$caprine$clear$                 -- third-party Messenger app
           
                                                                                                 Do $red$pacman -Qe$clear$ to list all installed packages.
                                                                                         

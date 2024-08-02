@@ -434,7 +434,7 @@ myEventHook = fadeWindowsEventHook <> H.trayerPaddingXmobarEventHook <> H.trayer
         -- Executes whenever xmonad starts or restarts.
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
-        spawnOnce "~/.fehbg &"
+        -- spawnOnce "~/.fehbg &"
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
@@ -453,6 +453,7 @@ myStartupHook = do
         -- spawn "steam -silent"
         spawn "light-locker"
         spawn "otd-daemon &"
+        spawnOnce "sleep 3 && xwinwrap -ni -fdt -fs -un -nf -ovr -- mpv -wid WID --loop --no-audio ~/Videos/Wallpapers/zzzz.mp4"
 
 myLogHook = do
     fadeWindowsLogHook myFadeHook

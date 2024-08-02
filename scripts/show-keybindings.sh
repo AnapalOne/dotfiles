@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Extracts and displays only the keybindings in my xmonad conifg. (~/.xmonad/xmonad.hs)
-# P.S. Only works on my config, as sed and awk specifically filters my xmonad format.
+
+# P.S.
+# Will only work on this specific config, as sed and awk specifically filters my xmonad format.
+# Will break if even one character is added, thus this script is very fragile.
 
 column_separator="$(printf "\033[34;1m%.s─\033[0m" $(seq 1 100))"
 

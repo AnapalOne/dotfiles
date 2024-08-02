@@ -32,6 +32,7 @@ alias hibernate='sudo systemctl hibernate'
 
 alias ls='source ranger'
 alias grep='grep --color'
+alias logout='loginctl terminate-user $(whoami)'
 
 
 # ------------------ Options -------------------------
@@ -144,9 +145,9 @@ fi
 # }
 
 # ------------ Perl stuff, don't touch --------------------
-PATH="/home/anapal/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/anapal/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/anapal/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/anapal/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/anapal/perl5"; export PERL_MM_OPT;
+PATH="/home/anapal/.local/share/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/anapal/.local/share/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/anapal/.local/share/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/anapal/.local/share/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/anapal/.local/share/perl5"; export PERL_MM_OPT;
 source /usr/share/nvm/init-nvm.sh

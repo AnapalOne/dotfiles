@@ -41,3 +41,4 @@ exec xterm -geometry 80x66+0+0 -name login
 # polkit authentication agent
 lxpolkit &
 lxsession &
+ssh-agent -s &
