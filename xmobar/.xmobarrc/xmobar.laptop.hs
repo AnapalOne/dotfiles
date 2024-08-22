@@ -36,7 +36,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "  $battery$  $default:Master$ | $UnsafeStdinReader$ }{ <fc=#909090>$cpu$ / $coretemp$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
+   , template = "  $battery$  $default:Master$ | $UnsafeXMonadLog$ }{ <fc=#909090>$cpu$/$coretemp$$memory$$dynnetwork$$disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
 
 
    -- // general behavior
@@ -56,12 +56,12 @@ Config {
                        ] 10
 
           -- shows pp config in xmonad.hs
-        , Run UnsafeStdinReader
+        , Run UnsafeXMonadLog
 
         , Run XPropertyLog "_XMONAD_TRAYPAD"
 
           -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf0552</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf01da</fc></fn> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "| <fn=1><fc=#0192ff>\xf0552</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf01da</fc></fn> <rx>kB/s "
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
@@ -78,7 +78,7 @@ Config {
                                ] 50
 
           -- cpu activity monitor
-        , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>%"
+        , Run Cpu            [ "--template" , "<fn=1><fc=#3cfb05>\xf108</fc></fn> <total>% "
                              , "--Low"      , "50"         -- units: %
                              , "--High"     , "85"         -- units: %
                              , "--low"      , "#1bc800"
@@ -87,7 +87,7 @@ Config {
                              ] 50
 
           -- cpu core temperature monitor
-        , Run CoreTemp       [ "--template" , "<core0>°C"
+        , Run CoreTemp       [ "--template" , " <core0>°C "
         --                      -- , "--Low"      , "60"        -- units: °C
         --                      -- , "--High"     , "80"        -- units: °C
         --                      -- , "--low"      , "#1bc800"
@@ -98,7 +98,7 @@ Config {
         -- , Run Com "sh" ["-c", "sensors | grep 'Package id 0' | sed 's/Package id 0:  +//' | sed 's/C.*$/C/'" ] "coretemp" 50
                           
           -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>%"
+        , Run Memory         [ "--template" ,"| <fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>% "
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
                              , "--low"      , "#1bc800"
@@ -107,7 +107,7 @@ Config {
                              ] 50
 
           -- disk size monitor
-        , Run DiskU [("/", "<fn=1><fc=#f7a60e>\xf0a0</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
+        , Run DiskU [("/", "| <fn=1><fc=#f7a60e>\xf0a0</fc></fn> <fc=#9f9f9f><used>B / <size>B</fc>")] 
                     [] 50
 
           -- battery monitor (<timeleft> in discharging status for battery time left)
