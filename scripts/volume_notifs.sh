@@ -1,10 +1,18 @@
 #!/bin/bash
 
-volume="$(pamixer --get-volume-human | sed -e "s/%//g")"
+volume="$(pamixer --get-volume | sed -e "s/%//g")"
+muted="$(pacmd list-sinks | awk '/muted/ {print $2}')"
 
-if [[ $volume == "muted" ]]; then
-    notify-send -p --app-name="system monitor" -u low "Volume" "Muted." -h string:x-canonical-private-synchronous:volume_notifs --icon="null"
-    exit
+if [[ $volume -le 20 ]]; then
+    volume_logo=""
+elif [[ $volume -le 60 ]]; then
+    volume_logo=""
+else
+    volume_logo=""
 fi
 
-notify-send --app-name="system monitor" -u low -h int:value:$volume -h string:x-canonical-private-synchronous:volume_notifs "Volume" --icon="null"
+if [[ "$muted" == "yes" ]]; then
+    volume_logo="󰝟"
+fi
+
+notify-send --app-name="system monitor" -u low -h int:value:$volume -h string:x-canonical-private-synchronous:volume_notifs "Volume  $volume_logo"
