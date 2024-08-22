@@ -429,9 +429,11 @@ myManageHook = composeAll
                 role = stringProperty "WM_WINDOW_ROLE"
         
         -- This controls all events that are handled by xmonad.
+myEventHook :: Event -> X All
 myEventHook = fadeWindowsEventHook <> H.trayerPaddingXmobarEventHook <> H.trayerAboveXmobarEventHook <> H.fixSteamFlicker
 
         -- Executes whenever xmonad starts or restarts.
+myStartupHook :: X ()
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
         -- spawnOnce "~/.fehbg &"
@@ -459,6 +461,7 @@ myLogHook = do
     fadeWindowsLogHook myFadeHook
     statusBarPPLogHook
 
+myFadeHook :: Query Opacity
 myFadeHook = composeAll 
     [ opaque
     , isUnfocused --> transparency 0.10
