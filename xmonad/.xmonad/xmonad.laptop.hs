@@ -6,6 +6,7 @@
 ---------------------------------------------------------
 
 import XMonad
+import XMonad.ManageHook
 
 import Control.Monad (when)
 import Graphics.X11.ExtraTypes.XF86
@@ -13,6 +14,7 @@ import Graphics.X11.ExtraTypes.XF86
 import Data.Monoid
 import Data.Char (isSpace)
 import Data.Maybe (isJust, fromMaybe, fromJust)
+import Data.List
 
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 import System.Process (callProcess)
@@ -24,10 +26,10 @@ import XMonad.Prompt.ConfirmPrompt
 import XMonad.Config.Desktop
 
 import XMonad.Actions.GridSelect
-import XMonad.Actions.CycleWS (nextWS, prevWS)
+import XMonad.Actions.CycleWS
 import XMonad.Actions.FloatKeys
 import XMonad.Actions.FloatSnap
-import XMonad.Actions.CopyWindow (kill1, copyToAll, killAllOtherCopies, copy, wsContainingCopies)
+import XMonad.Actions.CopyWindow
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Grid
@@ -52,7 +54,7 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
 
 import qualified XMonad.Actions.FlexibleManipulate as Flex
-import qualified XMonad.Util.Hacks                 as Hacks (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook)
+import qualified XMonad.Util.Hacks                 as H (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook, fixSteamFlicker)
 import qualified XMonad.StackSet                   as W
 import qualified Data.Map                          as M
 import qualified Data.Map.Strict                   as Map
@@ -64,8 +66,9 @@ import qualified Data.Map.Strict                   as Map
 --   (it's a little tiring for me to find some parts that I want to configure) 
 ---------------------------------------------------------
 
-myTerminal              = "alacritty"
-myModMask               = mod4Mask -- win key
+myTerminal  = "alacritty"
+myModMask   = mod4Mask -- win key
+myStatusBar = "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
 
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
@@ -88,6 +91,7 @@ myGridSpawn = [ ("\xe70c VSCode",         "code")
               , ("\xf03d OBS",            "obs")
               , ("\xf02cb Audacity",      "audacity")
               , ("\xf04d3 Steam",         "steam")
+              , ("\xf25f Caprine",        "caprine")
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
@@ -116,9 +120,6 @@ myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\
 altMask :: KeyMask
 altMask = mod1Mask
 
-xmonadEnabled :: Bool
-xmonadEnabled = True
-
 playerctlPlayers = "--player=spotify,cmus,spotifyd"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -127,7 +128,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm,                 xK_BackSpace ), kill1)                                -- close focused window
     , ((modm,                 xK_space     ), sendMessage NextLayout)               -- rotate layout
     , ((modm .|. shiftMask,   xK_space     ), setLayout $ XMonad.layoutHook conf)   -- reset layout order
-    , ((mod1Mask,             xK_Tab       ), windows W.focusUp     )               -- rotate focus between windows
+    , ((altMask,              xK_Tab       ), windows W.focusUp     )               -- rotate focus between windows
     , ((modm,                 xK_Return    ), windows W.swapMaster  )               -- swap focus master and window
     , ((modm .|. shiftMask,   xK_comma     ), sendMessage Shrink    )               -- decreases master window size
     , ((modm .|. shiftMask,   xK_period    ), sendMessage Expand    )               -- increases master window size
@@ -238,9 +239,10 @@ myMouseBinds conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- // mouse bindings
     [ ((modm,   button1), (\w -> focus w >> mouseMoveWindow w >> windows W.swapMaster)) -- move window and send to top of stack
     , ((modm,   button3), (\w -> focus w >> Flex.mouseWindow Flex.resize w))            -- resize window with right mouse button at window edge
-    , ((modm,   button4), (\w -> prevWS))                                               -- switch workspace to the left
-    , ((modm,   button5), (\w -> nextWS))                                               -- switch workspace to the right
+    , ((modm,   button4), (\w -> moveTo Prev $ anyWS :&: ignoreNSP))                    -- switch workspace to the left
+    , ((modm,   button5), (\w -> moveTo Next $ anyWS :&: ignoreNSP))                    -- switch workspace to the right
     ]
+        where ignoreNSP = ignoringWSs [scratchpadWorkspaceTag]
 
 
 ---------------------------------------------------------
@@ -279,6 +281,7 @@ myLayout = screenCornerLayoutHook $ avoidStruts $ focusTracking (renamed [CutWor
 --   Useful for when you want to quickly access an application and leave it running in the background.
 ---------------------------------------------------------
 
+myScratchpads :: [NamedScratchpad]
 myScratchpads = 
          [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
          , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad 
@@ -337,6 +340,34 @@ logoutPrompt = def
        }
 
 
+
+----------------------------------------------------------------------------
+-- Status Bar
+-- > Status bar configuration that includes pretty printers.
+----------------------------------------------------------------------------
+
+myPP :: PP
+myPP = filterOutWsPP [scratchpadWorkspaceTag] $ def
+        { ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
+        , ppHidden = xmobarColor "#d1426e" "" . clickableWS
+        , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
+        , ppUrgent = xmobarColor "#fa5c5f" "" . clickableWS
+        , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
+        , ppSep = "<fc=#909090> | </fc>"
+        , ppWsSep = "<fc=#666666> . </fc>"
+        , ppExtras = [windowCount] 
+        , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        }
+
+mySB :: StatusBarConfig
+mySB = statusBarProp myStatusBar
+        (copiesPP (xmobarColor "#6435e6" "" . clickableWS) myPP)
+
+statusBarPPLogHook :: X ()
+statusBarPPLogHook = dynamicLogWithPP $ myPP 
+
+
+
 ---------------------------------------------------------
 -- Hooks
 -- > xmonad hooks for managing windows, applications, and workspaces.
@@ -379,6 +410,7 @@ myManageHook = composeOne
         
         -- chat
         , className =? "discord"        -?> doShift $ myWorkspaces !! 6 
+        , className =? "Caprine"        -?> doShift $ myWorkspaces !! 6
   
         -- mus
         , className =? "Spotify"        -?> doShift $ myWorkspaces !! 7 
@@ -400,11 +432,12 @@ myManageHook = composeOne
         , role      =? "GtkFileChooserDialog" -?> doCenterFloat
         , isDialog                            -?> doCenterFloat
         ]
+        <+> namedScratchpadManageHook myScratchpads
            where
                 role = stringProperty "WM_WINDOW_ROLE"
 
 myEventHook :: Event -> X All
-myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e
+myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e 
 
 myStartupHook :: X ()
 myStartupHook = do
@@ -432,31 +465,9 @@ myStartupHook = do
 
         addScreenCorners screenCorners
 
-myLogHook xmproc = do
-    
-    -- Check if workspace has a copied window. If there is, suffix "*" to the workspace name.
-    -- TODO: how do you this
-    isCopies <- wsContainingCopies
-    let checkTag ws | ws `elem` isCopies = xmobarColor "#d1426e" "" . clickableWS $ ws
-                    | otherwise = ws
-
-    let checkTagNW ws | ws `elem` isCopies = xmobarColor "#061d8e" "" . clickableWS $ ws
-                      | otherwise = ws
-
+myLogHook = do
     fadeWindowsLogHook myFadeHook
-    
-    dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
-        { ppOutput          = hPutStrLn xmproc
-        , ppCurrent         = xmobarColor "#4381fb" "" . wrap "[" "]"
-        , ppHidden          = xmobarColor "#d1426e" "" . clickableWS
-        , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
-        , ppUrgent          = xmobarColor "#6a329f" "" . clickableWS
-        , ppTitle           = xmobarColor "#ffffff" "" . shorten 45
-        , ppSep             = "<fc=#666666> | </fc>"
-        , ppWsSep           = "<fc=#666666> . </fc>"
-        , ppExtras          = [windowCount]
-        , ppOrder           = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-        } 
+    statusBarPPLogHook
 
 myFadeHook :: Query Opacity
 myFadeHook = composeAll
@@ -474,8 +485,7 @@ myFadeHook = composeAll
 
 main :: IO()
 main = do
-   xmproc <- spawnPipe "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
-   xmonad $ docks $ ewmhFullscreen . ewmh $ desktopConfig
+   xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh $ desktopConfig
         { terminal           = myTerminal
         , modMask            = myModMask
         , workspaces         = myWorkspaces
@@ -486,11 +496,12 @@ main = do
         , keys               = myKeys
         , mouseBindings      = myMouseBinds
 
-        , startupHook        = myStartupHook
         , layoutHook         = myLayout
-        , manageHook         = myManageHook <+> namedScratchpadManageHook myScratchpads
-        , handleEventHook    = myEventHook <> Hacks.trayerPaddingXmobarEventHook
-        , logHook            = myLogHook xmproc
+        , manageHook         = myManageHook 
+        , handleEventHook    = myEventHook <> H.trayerPaddingXmobarEventHook <> H.trayerAboveXmobarEventHook <> H.fixSteamFlicker
+        , logHook            = myLogHook
+
+        , startupHook        = myStartupHook
         }
 
 
@@ -594,14 +605,6 @@ screenCorners = [
                 -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
                 ]
 
--- changeBrightness :: Integer -> Int -> X()
--- changeBrightness value delay
---                | value > 0 = runProcessWithInputAndWait "brillo" ["-u", "150000", "-A", show (value)] "" delay
---                | value < 0 = runProcessWithInputAndWait "brillo" ["-u", "150000", "-U", show (abs value)] "" delay
--- changeBrightness :: Integer -> X()
--- changeBrightness value
---                | value > 0 = liftIO $ callProcess "brillo" ["-u", "150000", "-A", show value]
---                | value < 0 = liftIO $ callProcess "brillo" ["-u", "150000", "-U", show (abs value)]
 changeBrightness :: Integer -> X()
 changeBrightness value
                | value > 0 = spawn ("brillo -u 150000 -A " ++ show (value))
