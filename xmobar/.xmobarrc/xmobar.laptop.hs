@@ -23,6 +23,7 @@ Config {
    --              BottomP 120 0
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
    , position = Static { xpos = 12, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
+   -- , position = Static { xpos = 12, ypos = 16, width = 4072, height = 28 } -- for 4096x2160 screens
 
 
    -- // border
