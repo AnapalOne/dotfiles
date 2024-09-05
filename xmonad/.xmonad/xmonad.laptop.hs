@@ -263,7 +263,7 @@ myLayout = screenCornerLayoutHook $ avoidStruts $ focusTracking (renamed [CutWor
         ratio = 1/2
         
         hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeColMid cnmaster cdelta cratio
-        vthreecol = renamed [Replace "<fc=#909090>\xfd33</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio
+        vthreecol = renamed [Replace "<fc=#909090>\xf0835</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
