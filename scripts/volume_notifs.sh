@@ -1,7 +1,7 @@
 #!/bin/bash
 
 volume="$(pamixer --get-volume | sed -e "s/%//g")"
-muted="$(pacmd list-sinks | awk '/muted/ {print $2}')"
+muted="$(pacmd list-sinks | awk '/muted/ {a=$2} END{print a}')"
 
 if [[ $volume -le 20 ]]; then
     volume_logo=""
