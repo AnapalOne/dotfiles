@@ -429,6 +429,7 @@ myManageHook = composeOne
         , className =? "Dragon-drop"          -?> doCenterFloat
         , title     =? "alsamixer"            -?> doCenterFloat
         , title     =? "welcome"              -?> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
+        , title =? "todo" <&&> className =? "Alacritty" -?> doCenterFloat
         , role      =? "GtkFileChooserDialog" -?> doCenterFloat
         , isDialog                            -?> doCenterFloat
         ]
@@ -450,6 +451,7 @@ myStartupHook = do
         spawnOnce "~/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
+        spawnOnce "conky &"
 
         -- TODO: redo eww widget and fg workaround if need be
         -- spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
