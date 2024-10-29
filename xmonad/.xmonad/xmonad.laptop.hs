@@ -94,7 +94,7 @@ myGridSpawn = [ ("\xe70c VSCode",         "code")
               , ("\xf25f Caprine",        "caprine")
               ]
 
-wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
+wallpaperDir = "~/Pictures/Wallpapers/Anime/Genshin"
 
 
 ---------------------------------------------------------
@@ -443,20 +443,23 @@ myEventHook e = screenCornerEventHook e >> fadeWindowsEventHook e
 myStartupHook :: X ()
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
+
+        -- // wallpaper managers
         spawnOnce "~/.fehbg &"
         -- spawnOnce "~/Scripts/kyu-kurarin.sh &"
         -- spawnOnce "cd ~/Programs/linux-wallpaperengine/build/ && ./wallengine --silent --fps 20 --screen-root eDP-1 2621864884 "
+
+        -- // song title and lyric monitor
+        spawnOnce "python $HOME/Scripts/sptlrx_lyrics.py &"
+        spawnOnce "conky --config=$HOME/.config/conky/conky_todo.conf   &"
+        spawnOnce "conky --config=$HOME/.config/conky/conky_lyrics.conf &"
+
+        -- // starting programs
         spawnOnce "picom &"
-        spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
-        spawnOnce "~/Scripts/battery_notifs.sh &"
+        spawnOnce "$HOME/.config/xmonad/scripts/startup_window.sh"
+        spawnOnce "$HOME/Scripts/battery_notifs.sh &"
         spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "conky &"
-
-        -- TODO: redo eww widget and fg workaround if need be
-        -- spawnOnce "(eww --config /home/anapal/.config/eww/ open music-widget && /home/anapal/Scripts/eww-fg-workaround.sh) &"
-        
-        spawnOnce "eww --config /home/anapal/.config/eww/ open music-widget &"
         spawnOnce "light-locker"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         spawnOnce ("trayer --edge top --align right --distancefrom top --distance 18 --SetDockType true " ++   
@@ -603,8 +606,8 @@ toggleNotifications x = do
 
 screenCorners :: [(ScreenCorner, X ())]
 screenCorners = [
-                -- (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
-                -- , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
+                (SCUpperRight, spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " right"))
+                , (SCUpperLeft,  spawn ("~/.config/xmonad/scripts/wallpaper_setter/setWallpaper " ++ wallpaperDir ++ " left"))
                 ]
 
 changeBrightness :: Integer -> X()
