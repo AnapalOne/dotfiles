@@ -52,9 +52,10 @@ import XMonad.Hooks.FadeWindows
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
+import XMonad.Util.StickyWindows
 
 import qualified XMonad.Actions.FlexibleManipulate as Flex
-import qualified XMonad.Util.Hacks                 as H (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook, fixSteamFlicker)
+import qualified XMonad.Util.Hacks                 as H (trayPaddingXmobarEventHook, trayAbovePanelEventHook, fixSteamFlicker)
 import qualified XMonad.StackSet                   as W
 import qualified Data.Map                          as M
 import qualified Data.Map.Strict                   as Map
@@ -90,11 +91,14 @@ myGridSpawn = [ ("\xf0a1e VSCode",        "code"),
                 ("\xf338 GIMP",           "gimp"), 
                 ("\xf33d Krita",          "krita"), 
                 ("\xf03d OBS",            "obs"),
-                ("\xf028 Audacity",       "audacity"), 
-                ("\xf1b6 Steam",          "steam"),
-                ("\xf25f Caprine",        "caprine"),     
-                ("\xf367 Weston",         "weston"),
-                ("\xf11b Lutris",         "lutris")         
+                ("\xf028 Audacity",       "audacity")
+                -- ("\xf367 Weston",         "weston"),
+             ]
+
+myGameSpawn = [ ("\xf1b6 Steam",           "steam"),
+                ("\xf0414 RPCS3",          "rpcs3"),
+                ("\xf0a14 Sober (Roblox)", "flatpak run org.vinegarhq.Sober"),
+                ("\xf0373 Prism Launcher", "prismlauncher")
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
@@ -108,7 +112,9 @@ wallpaperDir = "~/Pictures/Wallpapers/Anime/Touhou"
 ----------------------------------------------------------------------------
 
 myWorkspaces :: [String]
-myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspaces = map (\s -> "<fn=2>" ++ s ++ "</fn>")  -- append <fn=2>...</fn> to use 2nd font of additionalFonts in .xmobarrc
+               ["\xf120", "\xf121", "\xf059f", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf001", "\xf1fc"] -- Icons.
+
 -- myWorkspaces = ["ter", "dev", "www", "doc", "vid", "game", "chat", "mus", "art"] -- Words.
 
 
@@ -140,8 +146,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                 xK_period    ), windows W.swapDown)                 --
     , ((modm,                 xK_backslash ), toggleNotifications "hide")         -- hide window
     , ((modm .|. shiftMask,   xK_backslash ), toggleNotifications "unhide")       -- restore the last hidden window
-    , ((modm,                 xK_c         ), toggleNotifications "copyAll")      -- copy window to all workspaces
-    , ((modm .|. controlMask, xK_c         ), toggleNotifications "copiesKill")   -- delete all window copies
+    , ((modm,                 xK_c         ), withFocused stick)                  -- stick window to all workspaces
+    , ((modm .|. controlMask, xK_c         ), withFocused unstick)                -- unstick window
     ] ++
 
     -- // floating windows
@@ -198,25 +204,28 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ] ++
     
     -- // scratchpad
-    [ ((modm .|. controlMask, xK_Return ), namedScratchpadAction myScratchpads "ScrP_alacritty") -- spawns alacritty 
-    , ((modm .|. shiftMask,    xK_slash ), namedScratchpadAction myScratchpads "help")           -- spawns list of programs
-    , ((modm,                  xK_grave ), namedScratchpadAction myScratchpads "ScrP_htop")      -- spawns htop window
-    , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")      -- spawns ncdu window
-    , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")       -- spawns vim window
-    , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")      -- spawns cmus window
-    , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "keybindings")    -- spawns list of xmonad keybindings
+    [ ((modm .|. controlMask, xK_Return ), namedScratchpadAction myScratchpads "ScrP_alacritty")        -- spawns alacritty 
+    , ((modm .|. shiftMask,    xK_slash ), namedScratchpadAction myScratchpads "help")                  -- spawns list of programs
+    , ((modm,                  xK_grave ), namedScratchpadAction myScratchpads "ScrP_htop")             -- spawns htop window
+    , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")             -- spawns ncdu window
+    , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")              -- spawns vim window
+    , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")             -- spawns cmus window
+    , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "keybindings")           -- spawns list of xmonad keybindings
+    , ((modm .|. controlMask,      xK_v ), namedScratchpadAction myScratchpads "ScrP_pavucontrol")      -- spawns audio manager
+    , ((modm .|. shiftMask,        xK_b ), namedScratchpadAction myScratchpads "ScrP_blueman-manager")  -- spawns bluetooth manager
     ] ++
 
     -- // grid
     [ ((modm,                  xK_Tab ), goToSelected $ gridSystemColor systemColorizer) -- opens grid with currently opened applications
-    , ((0,                    xK_Menu ), spawnSelected' myGridSpawn)                     -- opens grid with programs defined in 'myGridSpawn'
+    , ((0,                    xK_Menu ), spawnSelected' myGridSpawn)                     -- opens grid with favorited programs
+    , ((controlMask,          xK_Menu ), spawnSelected' myGameSpawn)                     -- opens grid with selected games
     ] ++
 
     -- // workspace navigation
     -- mod-[1..9]               = Switch to workspace 
     -- mod-shift-[1..9]         = Move window to workspace
     -- mod-control-[1..9]       = Move window to workspace and switch to that workspace
-    -- mod-shift-control-[1..9] = Copy window to workspace
+    -- mod-alt-[1..9]           = Copy window to workspace
     [ ((modm .|. m, k), changeWorkspaces f i z t)
         | (i, k) <- zip (myWorkspaces) [xK_1 .. xK_9]
         , (f, m, z, t) <- [ (W.greedyView,                     0,           False, 0) -- [ (Action, Mask, WithNotifications) ]
@@ -247,23 +256,23 @@ myLayout = avoidStruts $ focusTracking $ renamed [CutWordsLeft 2] $ spacingWithE
          ( full ||| htiled ||| vtiled ||| hthreecol ||| vthreecol ||| grid ||| lspiral ) ||| circle
         
     where
-        full = renamed [Replace "<fc=#909090>\xeb4c</fc> Full"] $ Full
+        full = renamed [Prepend "<fc=#909090>\xeb4c</fc> "] $ Full
         
-        htiled = renamed [Replace "<fc=#909090>\xebc8</fc> Tiled"] $ Tall nmaster delta ratio        
-        vtiled = renamed [Replace "<fc=#909090>\xf0c9</fc> Tiled"] $ Mirror $ Tall nmaster delta ratio
+        htiled = renamed [Prepend "<fc=#909090>\xebc8</fc> "] $ Tall nmaster delta ratio        
+        vtiled = renamed [Prepend "<fc=#909090>\xf0c9</fc> "] $ Mirror $ Tall nmaster delta ratio
         nmaster = 1
         delta = 3/100
         ratio = 1/2
         
-        hthreecol = renamed [Replace "<fc=#909090>\xf1487</fc> ThreeCol"] $ ThreeColMid cnmaster cdelta cratio 
-        vthreecol = renamed [Replace "<fc=#909090>\xf0835</fc> ThreeCol"] $ Mirror $ ThreeCol cnmaster cdelta cratio 
+        hthreecol = renamed [Prepend "<fc=#909090>\xf1487</fc> "] $ ThreeColMid cnmaster cdelta cratio 
+        vthreecol = renamed [Prepend "<fc=#909090>\xf0835</fc> "] $ Mirror $ ThreeCol cnmaster cdelta cratio 
         cnmaster = 1
         cdelta = 3/100
         cratio = 1/2
         
-        grid = renamed [Replace "<fc=#909090>\xf0758</fc> Grid"] $ Grid
+        grid = renamed [Prepend "<fc=#909090>\xf0758</fc> "] $ Grid
         
-        lspiral = renamed [Replace "<fc=#909090>\xe206</fc> Spiral"] $ spiral (6/7)
+        lspiral = renamed [Prepend "<fc=#909090>\xe206</fc> "] $ spiral (6/7)
 
         circle = renamed [Replace "<fc=#909090>\xf10c</fc> Circle"] $ circleEx {cDelta = -3*pi/4}
 
@@ -277,14 +286,15 @@ myLayout = avoidStruts $ focusTracking $ renamed [CutWordsLeft 2] $ spacingWithE
 
 myScratchpads :: [NamedScratchpad]
 myScratchpads = 
-        [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
-        , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
-        , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu --color=dark --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
-        , NS "ScrP_alacritty"      "alacritty -t scratchpad"           (title =? "scratchpad")     floatScratchpad
-        , NS "ScrP_htop"           "alacritty -t htop -e htop"         (title =? "htop")           floatScratchpad
-        , NS "ScrP_vim"            "alacritty -t vim -e vim"           (title =? "vim")            floatScratchpad
-        , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"         (title =? "cmus")           floatScratchpad
-        , NS "ScrP_pavucontrol"    "pavucontrol"                       (resource =? "pavucontrol") floatScratchpad
+        [ NS "help"                 "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
+        , NS "keybindings"          "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad
+        , NS "ScrP_ncdu"            "alacritty -t ncdu -e ncdu --color=dark --exclude /home/anapal/HDD/" (title =? "ncdu") floatScratchpad
+        , NS "ScrP_alacritty"       "alacritty -t scratchpad"           (title =? "scratchpad")          terminalScratchpad
+        , NS "ScrP_htop"            "alacritty -t htop -e htop"         (title =? "htop")                floatScratchpad
+        , NS "ScrP_vim"             "alacritty -t vim -e vim"           (title =? "vim")                 floatScratchpad
+        , NS "ScrP_cmus"            "alacritty -t cmus -e cmus"         (title =? "cmus")                floatScratchpad
+        , NS "ScrP_pavucontrol"     "pavucontrol"                       (resource =? "pavucontrol")      floatScratchpad
+        , NS "ScrP_blueman-manager" "blueman-manager"                   (className =? "Blueman-manager") floatScratchpad
         ]
     where 
        floatScratchpad = customFloating $ W.RationalRect l t w h
@@ -301,6 +311,12 @@ myScratchpads =
                     lh = 0.90 - hh
                     th = 0.45 - wh
 
+       terminalScratchpad = customFloating $ W.RationalRect lt tt wt ht
+                where
+                    wt = 0.39
+                    ht = 0.28
+                    lt = 0.87 - ht
+                    tt = 1.05 - wt
 
 
 ----------------------------------------------------------------------------
@@ -380,10 +396,9 @@ myManageHook = composeAll
         [ title     =? "alacritty"      --> doShift ( myWorkspaces !! 0 )
         
         -- dev
-        , className =? "Subl"           --> doShift ( myWorkspaces !! 1 )
-        , className =? "Code"           --> doShift ( myWorkspaces !! 1 )
+        , className =? "code"           --> doShift ( myWorkspaces !! 1 )
         , className =? "GitHub Desktop" --> doShift ( myWorkspaces !! 1 )
-        , className =? "Weston Compositor" --> doShift ( myWorkspaces !! 1 )
+        , className =? "Blender"        --> doShift ( myWorkspaces !! 1 )
         
         -- www
         , className =? "firefox"        --> doShift ( myWorkspaces !! 2 )
@@ -401,11 +416,11 @@ myManageHook = composeAll
         
         -- game
         , className =? "steam"          --> doShift ( myWorkspaces !! 5 )
-        , className =? "Lutris"         --> doShift ( myWorkspaces !! 5 )
+        , className =? "itch"           --> doShift ( myWorkspaces !! 5 )
+        , className =? "prismlauncher"  --> doShift ( myWorkspaces !! 5 )
         
         -- chat
         , className =? "discord"        --> doShift ( myWorkspaces !! 6 )
-        , className =? "Caprine"        --> doShift ( myWorkspaces !! 6 )
 
         -- mus
         , className =? "Spotify"        --> doShift ( myWorkspaces !! 7 )
@@ -417,51 +432,66 @@ myManageHook = composeAll
         -- // Programs that will open as floating windows.
         , title     =? "welcome"                --> doCenterFloat
         , title     =? "alsamixer"              --> doCenterFloat
+        , title     =? "dragon"                 --> doCenterFloat
+        , className =? "Pavucontrol"            --> doCenterFloat
         , className =? "Nemo"                   --> doCenterFloat
         , className =? "XTerm"                  --> doCenterFloat
         , className =? "KeyOverlay"             --> doCenterFloat
         , className =? "Sxiv"                   --> doFloat
-        , title     =? "dragon"                 --> doCenterFloat
+        , className =? "Cairo-dock"             --> doCenterFloat <+> hasBorder False
+        , appName   =? "iwgtk"                  --> doCenterFloat
         , role      =? "GtkFileChooserDialog"   --> doCenterFloat
+
+        , isDialog                              --> doFloat
         ] 
         <+> namedScratchpadManageHook myScratchpads
             where
                 role = stringProperty "WM_WINDOW_ROLE"
         
         -- This controls all events that are handled by xmonad.
-myEventHook :: Event -> X All
-myEventHook = fadeWindowsEventHook <> H.trayerPaddingXmobarEventHook <> H.trayerAboveXmobarEventHook <> H.fixSteamFlicker
+myEventHook = fadeWindowsEventHook <> 
+        H.trayPaddingXmobarEventHook (className =? "stalonetray") "_XMONAD_TRAYPAD" <> 
+        H.trayAbovePanelEventHook (className =? "stalonetray") (appName =? "xmobar") <> 
+        H.fixSteamFlicker
 
         -- Executes whenever xmonad starts or restarts.
-myStartupHook :: X ()
 myStartupHook = do
         spawnOnce "xdotool mousemove 960 540"
-        -- spawnOnce "~/.fehbg &"
+
+        -- // wallpaper managers
+        spawnOnce "~/.fehbg &"
+
+        -- // song title and lyric monitor
+        spawnOnce "python $HOME/Scripts/sptlrx_lyrics.py &"
+        spawnOnce "conky --config=$HOME/.config/conky/conky_todo.conf   &"
+        spawnOnce "conky --config=$HOME/.config/conky/conky_lyrics.conf &"
+
+        -- // starting commands/programs
         spawnOnce "picom &"
         spawnOnce "~/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "unclutter &"
         spawnOnce "eww open music-widget --config /home/anapal/.config/eww/ &"
-
-        -- TODO:
-        -- Remake eww-music-widget to not interfere with windows in inactivity
-        -- && ~/Scripts/eww-fg-workaround.sh 
-
         spawnOnce "flameshot &"
         spawnOnce "~/Scripts/tablet_buttons.sh &"
-        spawnOnce ("trayer --edge top --align right --distancefrom top --distance 16 --SetDockType true " ++
-                   "--SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true " ++
-                   "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
+        spawnOnce "stalonetray &"
+        spawnOnce "snixembed &"
+        -- spawnOnce ("trayer --edge top --align right --distancefrom top --distance 12 --SetDockType true " ++
+        --            "--SetPartialStrut true --height 22 --widthtype request --padding 5 --margin 20 --transparent true " ++
+        --            "--alpha 0 --tint 0x000000 --iconspacing 3 -l")
         spawn "xsetroot -cursor_name left_ptr"
-        -- spawn "steam -silent"
-        spawn "light-locker"
+        spawn "light-locker --no-lock-on-suspend"
         spawn "otd-daemon &"
-        spawnOnce "sleep 3 && xwinwrap -ni -fdt -fs -un -nf -ovr -- mpv -wid WID --loop --no-audio ~/Videos/Wallpapers/zzzz.mp4"
+        spawnOnce "ibus start"
+        spawnOnce "blueman-applet &"
+        spawnOnce "iwgtk -i"
+        spawnOnce "cairo-dock -o &"
+
+        -- spawnOnce "sleep 3 && xwinwrap -ni -fdt -fs -un -nf -ovr -- mpv -wid WID --loop --no-audio ~/Videos/Wallpapers/zzzz.mp4"
 
 myLogHook = do
     fadeWindowsLogHook myFadeHook
     statusBarPPLogHook
 
-myFadeHook :: Query Opacity
 myFadeHook = composeAll 
     [ opaque
     , isUnfocused --> transparency 0.10
@@ -478,7 +508,7 @@ myFadeHook = composeAll
 
 main :: IO()
 main = do
-    xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh $ desktopConfig
+    xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh . sticky $ desktopConfig
         { terminal           = myTerminal
         , modMask            = myModMask
         , workspaces         = myWorkspaces
@@ -519,8 +549,8 @@ xmobarEscape = concatMap doubleLts
            doubleLts '<' = "<<"
            doubleLts x   = [x]
 
-    -- This function is special as a template for other usages 
-    -- since you can insert any program that accepts a signle line of input
+    -- This function is special as a template since you can 
+    -- insert any program that accepts a signle line of input
     -- and outputs another.
 qalcPrompt :: XPConfig -> String -> X () 
 qalcPrompt c ans =
@@ -549,15 +579,18 @@ stringColorizer' :: String -> Bool -> X (String, String)
 stringColorizer' s active = if active then pure ("#2A509A", "white")
                                       else pure ("black", "white")
 
+    -- Modified spawnSelected to include custom program names for GridSelect
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
 
+    -- Make workspace names navigable through mouse clicks
 clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)
 
+    -- Modular change workspace function. Currently adds notifications in workspace navigation
 changeWorkspaces f i z t = do
     stackset <- gets windowset
     when (z && currentWSHasWindow stackset) notifyWS
@@ -570,16 +603,18 @@ changeWorkspaces f i z t = do
                 let rstrip = reverse . dropWhile isSpace . reverse
                 let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
                 let windowName = parseSlash . rstrip . shorten 40 $ wn
+                let workspaceName = take (length i - length "<fn=2>" - length "</fn>") $ drop (length "<fn=2>") i -- remove tags from workspace name
                 
                 case t of 
-                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
-                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ i)
-                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ i)
+                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ workspaceName)
+                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ workspaceName)
+                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ workspaceName)
 
             windowsPresent, currentWSHasWindow :: WindowSet -> Bool
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
-            
+
+    -- Family function for notifications on event            
 toggleNotifications :: String -> X ()
 toggleNotifications x = do
     let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 

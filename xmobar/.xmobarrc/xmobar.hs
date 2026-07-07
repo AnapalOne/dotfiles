@@ -9,7 +9,7 @@ Config {
 
    -- // appearance
      font =            "Bitstream Vera Sans Mono, Source Han Sans JP Normal 8, Bold 8"
-   , additionalFonts = ["Symbols Nerd Font 10"]
+   , additionalFonts = ["Symbols Nerd Font 10", "Symbols Nerd Font 9"]
    , bgColor =         "black"
    , fgColor =         "white"
    , borderColor =     "#ffffff"
@@ -21,7 +21,9 @@ Config {
    --              Static { xpos = 16 , ypos = 16, width = 1888, height = 25 }
    --              BottomW C 75
    --              BottomP 120 0
-   , position = Static { xpos = 12 , ypos = 16, width = 1892, height = 25 }
+   , position = Static { xpos = 12 , ypos = 10, width = 1892, height = 25 }
+   -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
+   -- , position = Static { xpos = 12, ypos = 16, width = 4072, height = 28 } -- for 4096x2160 screens
 
 
    -- options: TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder 
@@ -33,7 +35,7 @@ Config {
    -- // layout
    , sepChar =  "$"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment eff214
-   , template = "   $default:Master$ <fc=#909090>|</fc> $UnsafeXMonadLog$ } $mpris2$ { <fc=#909090> $cpu$ / $coretemp$ | $gpu$ | $memory$ | $dynnetwork$ | $disku$</fc> [ <fc=#ababab>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
+   , template = "  $default:Master$ | $UnsafeXMonadLog$ } { <fc=#909090>$cpu$ / $coretemp$$gpu$$memory$$dynnetwork$$disku$</fc> [ <fc=#ABABAB>$uptime$ | $date$</fc> ] $_XMONAD_TRAYPAD$"
 
    -- // general behavior
    , lowerOnStart =     True    -- send to bottom of window stack on start
@@ -57,7 +59,7 @@ Config {
         , Run XPropertyLog "_XMONAD_TRAYPAD"
 
             -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s"
+        , Run DynNetwork     [ "--template" , "<fn=1><fc=#0192ff>\xf093</fc></fn> <tx>kB/s / <fn=1><fc=#0192ff>\xf019</fc></fn> <rx>kB/s | "
                              , "--Low"      , "5000000"     -- units: B/s
                              , "--High"     , "20000000"    -- units: B/s
                              , "--low"      , "#1bc800"
@@ -81,7 +83,7 @@ Config {
                              ] 50
 
             -- cpu core temperature monitor
-        , Run Com "sh" ["-c", "sensors | grep Tctl | sed 's/Tctl:         +//' | sed 's/[ \t]*$//'" ] "coretemp" 50
+        , Run Com "sh" ["-c", "sensors | grep Tctl | sed -e 's/Tctl:[ +]*//g' -e 's/[ \t]*$/ | /g'" ] "coretemp" 50
 
         -- , Run CoreTemp       [ "--template" , "<core0>°C"
         --                      , "--Low"      , "60"        -- units: °C
@@ -92,10 +94,10 @@ Config {
         --                      ] 50
                           
             -- gpu activity monitor (alias gpu) (<fc=#a9a9a9>$gpu$</fc><fc=#909090>%</fc>)
-        , Run Com "/home/anapal/.config/xmonad/scripts/gpu_monitor.sh" [] "gpu" 50
+        , Run Com "sh" ["-c", "/home/anapal/.config/xmonad/scripts/gpu_monitor_amdgpu.sh 2> /dev/null"] "gpu" 50
 
             -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fn=1><fc=#f44336>\xf2db</fc></fn> <usedratio>%"
+        , Run Memory         [ "--template" ," | <fn=1><fc=#f44336>\xefc5</fc></fn> <usedratio>% | "
                              , "--Low"      , "60"        -- units: %
                              , "--High"     , "90"        -- units: %
                              , "--low"      , "#1bc800"
