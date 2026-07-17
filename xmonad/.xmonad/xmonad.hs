@@ -144,10 +144,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_period    ), sendMessage Expand)                 -- increases master window size
     , ((modm,                 xK_comma     ), windows W.swapUp)                   -- move tiled window
     , ((modm,                 xK_period    ), windows W.swapDown)                 --
-    , ((modm,                 xK_backslash ), toggleNotifications "hide")         -- hide window
-    , ((modm .|. shiftMask,   xK_backslash ), toggleNotifications "unhide")       -- restore the last hidden window
-    , ((modm,                 xK_c         ), withFocused stick)                  -- stick window to all workspaces
-    , ((modm .|. controlMask, xK_c         ), withFocused unstick)                -- unstick window
+    , ((modm,                 xK_backslash ), withFocused hideWindow <> toggleNotifications "hide")   -- hide window
+    , ((modm .|. shiftMask,   xK_backslash ), popOldestHiddenWindow <> toggleNotifications "unhide")  -- restore the last hidden window
+    , ((modm,                 xK_c         ), withFocused stick <> toggleNotifications "sticky")      -- stick window to all workspaces
+    , ((modm .|. controlMask, xK_c         ), withFocused unstick <> toggleNotifications "unsticky")  -- unstick window
     ] ++
 
     -- // floating windows
@@ -210,7 +210,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,    xK_grave ), namedScratchpadAction myScratchpads "ScrP_ncdu")             -- spawns ncdu window
     , ((modm,                      xK_v ), namedScratchpadAction myScratchpads "ScrP_vim")              -- spawns vim window
     , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")             -- spawns cmus window
-    , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "keybindings")           -- spawns list of xmonad keybindings
+    , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "kebindings")           -- spawns list of xmonad keybindings
     , ((modm .|. controlMask,      xK_v ), namedScratchpadAction myScratchpads "ScrP_pavucontrol")      -- spawns audio manager
     , ((modm .|. shiftMask,        xK_b ), namedScratchpadAction myScratchpads "ScrP_blueman-manager")  -- spawns bluetooth manager
     ] ++
@@ -597,18 +597,15 @@ changeWorkspaces f i z t = do
     windows $ f i
         where 
             notifyWS = do
-                wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+                wn <- getWindowName
                 
                 let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
-                let rstrip = reverse . dropWhile isSpace . reverse
-                let parseSlash = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
-                let windowName = parseSlash . rstrip . shorten 40 $ wn
                 let workspaceName = take (length i - length "<fn=2>" - length "</fn>") $ drop (length "<fn=2>") i -- remove tags from workspace name
                 
                 case t of 
-                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ workspaceName)
-                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ workspaceName)
-                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ workspaceName)
+                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wn ++ "] to '" ++ workspaceName)
+                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wn ++ "] and shifting to '" ++ workspaceName)
+                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ wn ++ "] to '" ++ workspaceName)
 
             windowsPresent, currentWSHasWindow :: WindowSet -> Bool
             windowsPresent = null . W.index . W.view i
@@ -617,16 +614,24 @@ changeWorkspaces f i z t = do
     -- Family function for notifications on event            
 toggleNotifications :: String -> X ()
 toggleNotifications x = do
-    let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
-    let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
+    wn <- getWindowName
+
+    let hideNotifyArgs   = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
+    let copyNotifyArgs   = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
+    let stickyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wSticky -a 'sticky windows'" 
+
     case x of
         -- XMonad.Layout.Hidden, but with notifications.
-        "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
-        "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
+        "hide"   -> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window [" ++ wn ++ "] hidden.'")
+        "unhide" -> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window [" ++ wn ++ "] unhidden.'")
         
         -- XMonad.Actions.CopyWindow, but with notifications.
-        "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
-        "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
+        "copyAll"     -> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied ["++ wn ++ "] to all workspaces.'")
+        "copiesKill"  -> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of [" ++ wn ++ "].'")
+
+        -- XMonad.Util.StickyWindows, but with notifications.
+        "sticky"   -> spawn ("notify-send " ++ stickyNotifyArgs ++ " 'Made window [" ++ wn ++ "] sticky.'")
+        "unsticky" -> spawn ("notify-send " ++ stickyNotifyArgs ++ " 'Unstuck window [" ++ wn ++ "].'")
 
 screenCorners :: [(ScreenCorner, X ())]
 screenCorners = [
@@ -636,3 +641,13 @@ screenCorners = [
 
 notifyVolume :: X()
 notifyVolume = spawn ("~/Scripts/volume_notifs.sh") 
+
+getWindowName :: X String
+getWindowName = do
+    wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+
+    let rstrip = reverse . dropWhile isSpace . reverse
+    let parseSlash = map (\x -> if x == '\'' then '`' else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
+    let windowName = parseSlash . rstrip . shorten 40 $ wn
+
+    return windowName
