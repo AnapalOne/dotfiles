@@ -9,7 +9,7 @@ Config {
 
    -- // appearance
      font =         "Bitstream Vera Sans Mono, Symbols Nerd Font 12, Source Han Sans JP Normal 9, WenQuanYi Zen Hei Mono 9, Bold 9"
-   , additionalFonts = ["Symbols Nerd Font Mono 11"]
+   , additionalFonts = ["Symbols Nerd Font Mono 10", "Symbols Nerd Font Mono 9"]
    , bgColor =      "black"
    , fgColor =      "white"
    , borderColor =  "#ffffff"
@@ -21,8 +21,8 @@ Config {
    --              Static { xpos = 14 , ypos = 10, width = 1330, height = 20 }
   --              BottomW C 75
    --              BottomP 120 0
+   , position = Static { xpos = 12, ypos = 10, width = 1892, height = 28 } -- for 1980x1080 screens
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
-   , position = Static { xpos = 12, ypos = 16, width = 1892, height = 28 } -- for 1980x1080 screens
    -- , position = Static { xpos = 12, ypos = 16, width = 4072, height = 28 } -- for 4096x2160 screens
 
 
@@ -136,7 +136,7 @@ Config {
 
         -- volume (alias %default:Master%)
         -- , Run Com "/home/anapal/Scripts/volume.sh" [] "volume" 10
-        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=2><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
+        , Run Volume "default" "Master" [ "-t", "<fc=#a0a0a0><fn=1><volumebar></fn> <volume>% <fn=1><status></fn></fc>"
                                         , "-f", "\xf057f\xf057f\xf057f\xf057f\xf0580\xf0580\xf0580\xf057e\xf057e\xf057e"
                                         , "-W", "0"
 

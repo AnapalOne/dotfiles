@@ -52,6 +52,7 @@ import XMonad.Hooks.FadeWindows
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
 import XMonad.Util.NamedScratchpad
+import XMonad.Util.StickyWindows
 
 import qualified XMonad.Actions.FlexibleManipulate as Flex
 import qualified XMonad.Util.Hacks                 as H (trayerPaddingXmobarEventHook, trayerAboveXmobarEventHook, fixSteamFlicker)
@@ -68,7 +69,7 @@ import qualified Data.Map.Strict                   as Map
 
 myTerminal  = "alacritty"
 myModMask   = mod4Mask -- win key
-myStatusBar = "xmobar -x 0 ~/.xmobarrc/xmobar.hs"
+myStatusBar = "xmobar -x 0 ~/.xmobarrc"
 
 myBorderWidth        = 3
 myNormalBorderColor  = "#849DAB"
@@ -85,13 +86,12 @@ myGridSpawn = [ ("\xe70c VSCode",         "code")
               , ("\xf07b Nemo",           "nemo")
               , ("\xf008 Kdenlive" ,      "kdenlive")
               , ("\xf066f Discord",       "discord")
-              , ("\xf1bc Spotify",        "spotify")
+              , ("\xf1bc Spotify",        "spotify-launcher")
               , ("\xf338 GIMP",           "gimp")
               , ("\xf1fc Krita",          "krita")
               , ("\xf03d OBS",            "obs")
-              , ("\xf02cb Audacity",      "audacity")
               , ("\xf04d3 Steam",         "steam")
-              , ("\xf25f Caprine",        "caprine")
+              , ("\xf07c0 Virt-manager",  "virt-manager")
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Genshin"
@@ -105,7 +105,9 @@ wallpaperDir = "~/Pictures/Wallpapers/Anime/Genshin"
 ---------------------------------------------------------
 
 myWorkspaces :: [String]
-myWorkspaces = ["\xf120", "\xf121", "\xf0239", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf0388", "\xf1fc"] -- Icons.
+myWorkspaces = map (\s -> "<fn=2>" ++ s ++ "</fn>")  -- append <fn=2>...</fn> to use 2nd font of additionalFonts in .xmobarrc
+               ["\xf120", "\xf121", "\xf059f", "\xf0219", "\xf03d", "\xf11b", "\xf1d7", "\xf001", "\xf1fc"] -- Icons.
+
 -- myWorkspaces = ["ter", "dev", "www", "doc", "vid", "game", "chat", "mus", "art"] -- Words.
 
 
@@ -134,10 +136,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_period    ), sendMessage Expand    )               -- increases master window size
     , ((modm,                 xK_comma     ), windows W.swapUp      )               -- move tiled window
     , ((modm,                 xK_period    ), windows W.swapDown    )               --
-    , ((modm,                 xK_backslash ), toggleNotifications "hide")           -- hide window
-    , ((modm .|. shiftMask,   xK_backslash ), toggleNotifications "unhide")         -- restore the last hidden window
-    , ((modm,                 xK_c         ), toggleNotifications "copyAll")        -- copy window to all workspaces
-    , ((modm .|. controlMask, xK_c         ), toggleNotifications "copiesKill")     -- delete all window copies
+    , ((modm,                 xK_backslash ), withFocused hideWindow <> toggleNotifications "hide")     -- hide window
+    , ((modm .|. shiftMask,   xK_backslash ), popOldestHiddenWindow <> toggleNotifications "unhide")    -- restore the last hidden window
+    , ((modm,                 xK_c         ), withFocused stick <> toggleNotifications "sticky")       -- copy window to all workspaces
+    , ((modm .|. controlMask, xK_c         ), withFocused unstick <> toggleNotifications "unsticky")  -- delete all window copies
     ] ++
 
     -- // workspaces
@@ -177,9 +179,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                                    xK_l ), spawn "light-locker-command -l")                                                           -- lock system
     , ((0,                     xF86XK_MonBrightnessUp ), changeBrightness 5 >> notifyBrightness)                                                    -- increase brightness
     , ((0,                   xF86XK_MonBrightnessDown ), changeBrightness (-5) >> notifyBrightness)                                                 -- decrease brightness
-    , ((0,                    xF86XK_AudioRaiseVolume ), spawn "pamixer -i 5" >> notifyVolume)                                                                      -- increase volume
-    , ((0,                    xF86XK_AudioLowerVolume ), spawn "pamixer -d 5" >> notifyVolume)                                                                      -- decrease volume
-    , ((0,                           xF86XK_AudioMute ), spawn "pamixer -t" >> notifyVolume)                                                                        -- mute volume
+    , ((0,                    xF86XK_AudioRaiseVolume ), spawn "wpctl set-volume @DEFAULT_SINK@ 5%+" >> notifyVolume)                               -- increase volume
+    , ((0,                    xF86XK_AudioLowerVolume ), spawn "wpctl set-volume @DEFAULT_SINK@ 5%-" >> notifyVolume)                               -- decrease volume
+    , ((0,                           xF86XK_AudioMute ), spawn "wpctl set-mute @DEFAULT_SINK@ toggle" >> notifyVolume)                              -- mute volume
     ] ++
 
     -- // playerctl
@@ -188,11 +190,15 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,             xF86XK_AudioStop  ), spawn $ "playerctl stop " ++ playerctlPlayers)           -- stop player
     , ((0,             xF86XK_AudioPrev  ), spawn $ "playerctl previous " ++ playerctlPlayers)       -- previous song/video/track
     , ((0,             xF86XK_AudioNext  ), spawn $ "playerctl next " ++ playerctlPlayers)           -- next song/video/track
+    , ((modm,          xK_apostrophe     ), spawn $ "playerctl play-pause " ++ playerctlPlayers)     -- play-pause player
+    , ((modm,          xK_bracketleft    ), spawn $ "playerctl previous " ++ playerctlPlayers)       -- previous song/video/track
+    , ((modm,          xK_bracketright   ), spawn $ "playerctl next " ++ playerctlPlayers)           -- next song/video/track
     ] ++
 
     -- // programs
     [ ((modm .|. shiftMask, xK_Return ), spawn $ XMonad.terminal conf)                               -- open terminal
-    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- equivelent to snipping tool in Windows
+    , ((modm .|. shiftMask,      xK_s ), spawn "flameshot gui")                                      -- screenshot tool
+    , ((0,                    xK_Print), spawn "flameshot gui")                                      -- screenshot tool
     , ((modm,                    xK_r ), spawn "dmenu_run -b -nb black -nf white")                   -- run program
     , ((modm .|. shiftMask,      xK_c ), qalcPrompt qalcPromptConfig "qalc (Press esc to exit)" )    -- quick calculator
     , ((modm .|. shiftMask,      xK_k ), spawn "~/Scripts/toggle_screenkey.sh")                      -- toggle screenkey off and on
@@ -212,7 +218,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                      xK_m ), namedScratchpadAction myScratchpads "ScrP_cmus")         -- spawns cmus window 
     , ((modm .|. shiftMask,        xK_b ), namedScratchpadAction myScratchpads "ScrP_blueman")      -- spawns bluetooth manager 
     , ((modm .|. shiftMask,        xK_v ), namedScratchpadAction myScratchpads "ScrP_alsamixer")    -- spawns spotify-tui window 
-    , ((modm .|. controlMask,      xK_v ), namedScratchpadAction myScratchpads "ScrP_pavucontrol")  -- spawns audio manager 
+    , ((modm .|. controlMask,      xK_v ), namedScratchpadAction myScratchpads "ScrP_pwvucontrol")  -- spawns audio manager 
     , ((modm .|. controlMask,  xK_slash ), namedScratchpadAction myScratchpads "keybindings")       -- spawns list of xmonad keybindings
     ] ++
 
@@ -286,13 +292,13 @@ myScratchpads =
          [ NS "help"                "alacritty -t 'list of programs' -e ~/.config/xmonad/scripts/help.sh" (title =? "list of programs") floatScratchpad
          , NS "keybindings"         "alacritty -t 'xmonad keybindings' -e ~/.config/xmonad/scripts/show-keybindings.sh" (title =? "xmonad keybindings") helpScratchpad 
          , NS "ScrP_alsamixer"      "alacritty -t alsamixer -e alsamixer"   (title =? "alsamixer")          floatScratchpad
-         , NS "ScrP_alacritty"      "alacritty -t scratchpad"               (title =? "scratchpad")         floatScratchpad
+         , NS "ScrP_alacritty"      "alacritty -t scratchpad"               (title =? "scratchpad")         terminalScratchpad
          , NS "ScrP_htop"           "alacritty -t htop -e htop"             (title =? "htop")               floatScratchpad
          , NS "ScrP_vim"            "alacritty -t vim -e vim"               (title =? "vim")                floatScratchpad
          , NS "ScrP_ncdu"           "alacritty -t ncdu -e ncdu"             (title =? "ncdu")               floatScratchpad
          , NS "ScrP_cmus"           "alacritty -t cmus -e cmus"             (title =? "cmus")               floatScratchpad
          , NS "ScrP_blueman"        "blueman-manager"                       (resource =? "blueman-manager") floatScratchpad
-         , NS "ScrP_pavucontrol"    "pavucontrol"                           (resource =? "pavucontrol")     floatScratchpad
+         , NS "ScrP_pwvucontrol"    "pwvucontrol"                           (resource =? "pwvucontrol")     floatScratchpad
          ]
     where 
         floatScratchpad = customFloating $ W.RationalRect l t w h
@@ -301,6 +307,13 @@ myScratchpads =
                     h = 0.88
                     l = 0.94 - h
                     t = 0.98 - w
+
+        terminalScratchpad = customFloating $ W.RationalRect l t w h
+                where
+                    w = 0.55
+                    h = 0.40
+                    l = 0.42 
+                    t = 0.55
 
         helpScratchpad = customFloating $ W.RationalRect l t w h
                 where
@@ -385,7 +398,7 @@ myManageHook = composeOne
         [ title     =? "alacritty"      -?> doShift $ myWorkspaces !! 0
         
         -- dev
-        , className =? "Code"           -?> doShift $ myWorkspaces !! 1
+        , className =? "code"           -?> doShift $ myWorkspaces !! 1
         , className =? "GitHub Desktop" -?> doShift $ myWorkspaces !! 1
         , className =? "Arduino IDE"    -?> doShift $ myWorkspaces !! 1
         
@@ -427,8 +440,9 @@ myManageHook = composeOne
         , className =? "Pavucontrol"          -?> doCenterFloat
         , className =? "Qalculate-gtk"        -?> doCenterFloat
         , className =? "Dragon-drop"          -?> doCenterFloat
+        , appName   =? "iwgtk"                -?> doCenterFloat
         , title     =? "alsamixer"            -?> doCenterFloat
-        , title     =? "welcome"              -?> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.6)
+        , title     =? "welcome"              -?> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.65)
         , title =? "todo" <&&> className =? "Alacritty" -?> doCenterFloat
         , role      =? "GtkFileChooserDialog" -?> doCenterFloat
         , isDialog                            -?> doCenterFloat
@@ -458,15 +472,20 @@ myStartupHook = do
         spawnOnce "picom &"
         spawnOnce "$HOME/.config/xmonad/scripts/startup_window.sh"
         spawnOnce "$HOME/Scripts/battery_notifs.sh &"
-        spawnOnce "libinput-gestures &"
+        spawnOnce "snixembed --fork"
+        --spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "light-locker"
+        spawnOnce "light-locker --no-lock-on-lid --no-lock-on-suspend"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
-        spawnOnce ("trayer --edge top --align right --distancefrom top --distance 18 --SetDockType true " ++   
+        spawnOnce ("trayer --edge top --align right --distancefrom top --distance 12 --SetDockType true " ++   
                   "--SetPartialStrut true --height 22 --widthtype request --padding 3 --margin 20 --transparent true " ++
                   "--alpha 0 --tint 0x000000 --iconspacing 3")
         spawn "xsetroot -cursor_name left_ptr"
-        spawn "otd-daemon &"
+        spawn "lxsession &"
+        spawnOnce "ibus start"
+        spawnOnce "iwgtk -i &"
+        spawnOnce "blueman-applet &"
+        --spawn "otd-daemon &"
 
         addScreenCorners screenCorners
 
@@ -490,7 +509,7 @@ myFadeHook = composeAll
 
 main :: IO()
 main = do
-   xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh $ desktopConfig
+   xmonad $ withSB mySB . docks . ewmhFullscreen . ewmh . sticky $ desktopConfig
         { terminal           = myTerminal
         , modMask            = myModMask
         , workspaces         = myWorkspaces
@@ -503,7 +522,10 @@ main = do
 
         , layoutHook         = myLayout
         , manageHook         = myManageHook 
-        , handleEventHook    = myEventHook <> H.trayerPaddingXmobarEventHook <> H.trayerAboveXmobarEventHook <> H.fixSteamFlicker
+        , handleEventHook    = myEventHook
+                                <> H.trayerPaddingXmobarEventHook
+                                <> H.trayerAboveXmobarEventHook
+                                <> H.fixSteamFlicker
         , logHook            = myLogHook
 
         , startupHook        = myStartupHook
@@ -530,8 +552,8 @@ xmobarEscape = concatMap doubleLts
            doubleLts '<' = "<<"
            doubleLts x   = [x]
 
-    -- This function is special as a template for other programs
-    -- since you can insert any program here that accepts a single line of input
+    -- This function is special as a template since you can
+    -- insert any program that accepts a signle line of input
     -- and outputs another.
 qalcPrompt :: XPConfig -> String -> X () 
 qalcPrompt c ans =
@@ -560,49 +582,59 @@ stringColorizer' :: String -> Bool -> X (String, String)
 stringColorizer' s active = if active then pure ("#2a509a", "white")
                                       else pure ("black", "white")
 
+    -- Modified spawnSelected to include custom program names for GridSelect
 spawnSelected' :: [(String, String)] -> X ()
 spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
                     where conf = (gridSystemColor stringColorizer')
 
+    -- Make workspace names navigable through mouse clicks
 clickableWS ws = "<action=xdotool set_desktop " ++ show i ++ ">" ++ ws ++ "</action>"
     where
         workspaceIndices = Map.fromList $ zipWith (,) myWorkspaces [1..]
         i = subtract 1 (fromJust $ Map.lookup ws workspaceIndices)
 
+    -- Modular change workspace function. Currently adds notifications in workspace navigation
 changeWorkspaces f i z t = do
     stackset <- gets windowset
-    when (z && currentWSHasWindow stackset) $ notifyWS
+    when (z && currentWSHasWindow stackset) notifyWS
     windows $ f i
-        where 
+        where
             notifyWS = do
-                wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
-                
-                let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'" 
-                let rstrip = reverse . dropWhile isSpace . reverse
-                let sterilize = map (\x -> if x == '\'' then '`'; else x) -- an apostrophe breaks the command inside 'spawn', sterilize with a backtick
-                let windowName = sterilize . rstrip . shorten 40 $ wn
-                
-                case t of 
-                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] to '" ++ i)
-                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ windowName ++ "] and shifting to '" ++ i)
-                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ windowName ++ "] to '" ++ i)
+                wn <- getWindowName
+
+                let notifyWSArgs = "-u low -h string:x-canonical-private-synchronous:wsMove -a 'xmonad workspaces'"
+                let workspaceName = take (length i - length "<fn=2>" - length "</fn>") $ drop (length "<fn=2>") i -- remove tags from workspace name
+
+                case t of
+                    1 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wn ++ "] to '" ++ workspaceName)
+                    2 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Moving [" ++ wn ++ "] and shifting to '" ++ workspaceName)
+                    3 -> spawn ("notify-send " ++ notifyWSArgs ++ " 'Copying [" ++ wn ++ "] to '" ++ workspaceName)
 
             windowsPresent, currentWSHasWindow :: WindowSet -> Bool
             windowsPresent = null . W.index . W.view i
             currentWSHasWindow = isJust . W.peek
-            
+
+    -- Family function for notifications on event
 toggleNotifications :: String -> X ()
 toggleNotifications x = do
-    let hideNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'" 
-    let copyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'" 
+    wn <- getWindowName
+
+    let hideNotifyArgs   = "-u low -h string:x-canonical-private-synchronous:wHide -a 'hide windows'"
+    let copyNotifyArgs   = "-u low -h string:x-canonical-private-synchronous:wCopy -a 'copy windows'"
+    let stickyNotifyArgs = "-u low -h string:x-canonical-private-synchronous:wSticky -a 'sticky windows'"
+
     case x of
         -- XMonad.Layout.Hidden, but with notifications.
-        "hide"   -> withFocused hideWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window hidden.'")
-        "unhide" -> popOldestHiddenWindow >> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window unhidden.'")
-        
-        -- XMonad.Actions.CopyWindow, but with notifications.
-        "copyAll"     -> windows copyToAll >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied window to all workspaces.'")
-        "copiesKill"  -> killAllOtherCopies >> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of the window.'")
+        "hide"   -> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window [" ++ wn ++ "] hidden.'")
+        "unhide" -> spawn ("notify-send " ++ hideNotifyArgs ++ " 'Window [" ++ wn ++ "] unhidden.'")
+
+        -- UNUSED. XMonad.Actions.CopyWindow, but with notifications.
+        "copyAll"     -> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Copied ["++ wn ++ "] to all workspaces.'")
+        "copiesKill"  -> spawn ("notify-send " ++ copyNotifyArgs ++ " 'Killed all copies of [" ++ wn ++ "].'")
+
+        -- XMonad.Util.StickyWindows, but with notifications.
+        "sticky"   -> spawn ("notify-send " ++ stickyNotifyArgs ++ " 'Made window [" ++ wn ++ "] sticky.'")
+        "unsticky" -> spawn ("notify-send " ++ stickyNotifyArgs ++ " 'Unstuck window [" ++ wn ++ "].'")
 
 screenCorners :: [(ScreenCorner, X ())]
 screenCorners = [
@@ -620,3 +652,13 @@ notifyBrightness = spawn ("~/Scripts/brightness_notifs.sh")
 
 notifyVolume :: X()
 notifyVolume = spawn ("~/Scripts/volume_notifs.sh") 
+
+getWindowName :: X String
+getWindowName = do
+    wn <- runProcessWithInput "xdotool" ["getactivewindow", "getwindowname"] ""
+
+    let rstrip = reverse . dropWhile isSpace . reverse
+    let parseSlash = map (\x -> if x == '\'' then '`' else x) -- an apostrophe breaks the command inside 'spawn', so replace with a backtick
+    let windowName = parseSlash . rstrip . shorten 40 $ wn
+
+    return windowName
