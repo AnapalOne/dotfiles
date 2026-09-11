@@ -21,7 +21,7 @@ Config {
    --              Static { xpos = 14 , ypos = 10, width = 1330, height = 20 }
   --              BottomW C 75
    --              BottomP 120 0
-   , position = Static { xpos = 12, ypos = 10, width = 1892, height = 28 } -- for 1980x1080 screens
+   , position = Static { xpos = 12, ypos = 10, width = 1895, height = 28 } -- for 1980x1080 screens
    -- , position = Static { xpos = 12, ypos = 12, width = 1341, height = 22 } -- for 1366x768 screens
    -- , position = Static { xpos = 12, ypos = 16, width = 4072, height = 28 } -- for 4096x2160 screens
 
@@ -125,7 +125,7 @@ Config {
                                        -- ac "off" status
                                        , "-o" , "<left>%"
                                        -- ac "on" status
-                                       , "-O" , "<left>% \xe315"
+                                       , "-O" , "<left>% \xf140b"
                                        -- ac "idle" status
                                        , "-i" , "Idle.."    
                              ] 25
