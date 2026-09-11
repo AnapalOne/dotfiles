@@ -91,7 +91,8 @@ myGridSpawn = [ ("\xe70c VSCode",         "code")
               , ("\xf1fc Krita",          "krita")
               , ("\xf03d OBS",            "obs")
               , ("\xf04d3 Steam",         "steam")
-              , ("\xf07c0 Virt-manager",  "virt-manager")
+              , ("\xe6bb Obsidian",       "obsidian")
+              , ("\xf370 Thunderbird",    "thunderbird")
               ]
 
 wallpaperDir = "~/Pictures/Wallpapers/Anime/Genshin"
@@ -176,7 +177,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. altMask,                   xK_Escape ), confirmPrompt logoutPrompt "reboot?" $ spawn "systemctl reboot")                           -- reboot computer
     , ((modm .|. controlMask,               xK_Escape ), confirmPrompt logoutPrompt "shutdown?" $ spawn "systemctl poweroff")                       -- shutdown computer
     , ((modm .|. controlMask .|. shiftMask, xK_Escape ), confirmPrompt logoutPrompt "hibernate?" $ spawn "systemctl hibernate")                     -- hibernate computer
-    , ((modm,                                    xK_l ), spawn "light-locker-command -l")                                                           -- lock system
     , ((0,                     xF86XK_MonBrightnessUp ), changeBrightness 5 >> notifyBrightness)                                                    -- increase brightness
     , ((0,                   xF86XK_MonBrightnessDown ), changeBrightness (-5) >> notifyBrightness)                                                 -- decrease brightness
     , ((0,                    xF86XK_AudioRaiseVolume ), spawn "wpctl set-volume @DEFAULT_SINK@ 5%+" >> notifyVolume)                               -- increase volume
@@ -363,11 +363,12 @@ myPP :: PP
 myPP = filterOutWsPP [scratchpadWorkspaceTag] $ def
         { ppCurrent = xmobarColor "#4381fb" "" . wrap "[" "]"
         , ppHidden = xmobarColor "#d1426e" "" . clickableWS
-        , ppHiddenNoWindows = xmobarColor "#061d8e" "" . clickableWS
+        , ppHiddenNoWindows = xmobarColor "#0824ad" "" . clickableWS
+        -- , ppVisibleNoWindows = Just $ xmobarColor "#4381fb" "" . wrap "[" "]"
         , ppUrgent = xmobarColor "#fa5c5f" "" . clickableWS
         , ppTitle = xmobarColor "#ffffff" "" . shorten 50 
         , ppSep = "<fc=#909090> | </fc>"
-        , ppWsSep = "<fc=#666666> . </fc>"
+        , ppWsSep = "<fc=#666666> : </fc>"
         , ppExtras = [windowCount] 
         , ppOrder = \(ws:l:t:ex) -> [ws,l]++ex++[t]
         }
@@ -410,6 +411,7 @@ myManageHook = composeOne
         -- doc
         , resource  =? "libreoffice"    -?> doShift $ myWorkspaces !! 3
         , className =? "calibre"        -?> doShift $ myWorkspaces !! 3
+        , className =? "md.obsidian.Obsidian" -?> doShift $ myWorkspaces !! 3
         
         -- vid
         , className =? "obs"            -?> doShift $ myWorkspaces !! 4
@@ -424,6 +426,7 @@ myManageHook = composeOne
         -- chat
         , className =? "discord"        -?> doShift $ myWorkspaces !! 6 
         , className =? "Caprine"        -?> doShift $ myWorkspaces !! 6
+        , className =? "org.mozilla.Thunderbird" -?> doShift $ myWorkspaces !! 6
   
         -- mus
         , className =? "Spotify"        -?> doShift $ myWorkspaces !! 7 
@@ -440,6 +443,7 @@ myManageHook = composeOne
         , className =? "Pavucontrol"          -?> doCenterFloat
         , className =? "Qalculate-gtk"        -?> doCenterFloat
         , className =? "Dragon-drop"          -?> doCenterFloat
+        , className =? "zenity"               -?> doCenterFloat
         , appName   =? "iwgtk"                -?> doCenterFloat
         , title     =? "alsamixer"            -?> doCenterFloat
         , title     =? "welcome"              -?> doRectFloat (W.RationalRect 0.21 0.18 0.56 0.65)
@@ -475,7 +479,7 @@ myStartupHook = do
         spawnOnce "snixembed --fork"
         --spawnOnce "libinput-gestures &"
         spawnOnce "unclutter &"
-        spawnOnce "light-locker --no-lock-on-lid --no-lock-on-suspend"
+        spawnOnce "light-locker --no-lock-on-lid --lock-on-suspend --no-late-locking --idle-hint"
         spawnOnce "$HOME/Scripts/tablet_buttons.sh &"
         spawnOnce ("trayer --edge top --align right --distancefrom top --distance 12 --SetDockType true " ++   
                   "--SetPartialStrut true --height 22 --widthtype request --padding 3 --margin 20 --transparent true " ++
